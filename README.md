@@ -57,10 +57,6 @@ Aby uruchomić projekt lokalnie:
 README.md            - Dokumentacja projektu
 ```
 
-## Wkład
-
-Jeśli chcesz pomóc w rozwoju projektu, zapraszamy do składania pull requestów. Przed rozpoczęciem pracy, zapoznaj się z naszym [przewodnikiem po kontrybucjach](CONTRIBUTING.md).
-
 ## Licencja
 
 Projekt jest objęty licencją MIT. Szczegóły w pliku [LICENSE](LICENSE).
