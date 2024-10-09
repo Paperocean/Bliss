@@ -14,6 +14,15 @@ const Footer = () => {
                         Warunki korzystania
                     </a>
                 </p>
+                <p className="mt-4">
+                    <a className="text-blue-400 hover:text-blue-500 transition duration-300 mx-2" href="#">
+                        Kontakt
+                    </a>
+                    <span className="text-gray-500 mx-2">|</span>
+                    <a className="text-blue-400 hover:text-blue-500 transition duration-300 mx-2" href="#">
+                        O nas
+                    </a>
+                </p>
             </div>
         </footer>
     );

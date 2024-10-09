@@ -1,18 +1,19 @@
 import React from 'react';
+import { FaSearch } from 'react-icons/fa'; // Import ikony z react-icons
 
 const SearchBar = () => {
-    return (
-        <div className="search-bar w-1/2 flex items-center bg-gray-100 p-2 rounded-md shadow-md">
-            <input 
-                className="flex-grow p-2 rounded-l-md border-none focus:outline-none" 
-                placeholder="Wyszukaj..." 
-                type="text" 
-            />
-            <button className="bg-blue-500 p-2 rounded-r-md hover:bg-blue-600 focus:outline-none">
-                <i className="fas fa-search text-white" />
-            </button>
-        </div>
-    );
+  return (
+    <div className="search-bar flex items-center">
+      <input
+        type="text"
+        placeholder="Szukaj wydarzeń..."
+        className="flex-grow p-2 rounded-l-full"
+      />
+      <button className="p-2 bg-blue-500 text-white rounded-r-full">
+        <FaSearch />
+      </button>
+    </div>
+  );
 };
 
 export default SearchBar;
