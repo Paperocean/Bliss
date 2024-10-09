@@ -1,54 +1,87 @@
-.App {
-  text-align: center;
-  font-family: 'Arial', sans-serif;
+body {
+  font-family: 'Roboto', sans-serif;
+  background-image: url('images/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  color: white;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-  transition: transform 0.2s ease-in-out;
-}
-
-.App-logo:hover {
-  transform: scale(1.1);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #1e1e1e;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: #f5f5f5;
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
   padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: grid;
+  grid-template-rows: repeat(4, auto);
+  grid-gap: 20px;
 }
 
-.App-link {
-  color: #61dafb;
-  text-decoration: none;
-  border-bottom: 2px solid transparent;
-  transition: color 0.3s ease, border-bottom 0.3s ease;
+.nav-container {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  grid-row: 1;
 }
 
-.App-link:hover {
-  color: #21a1f1;
-  border-bottom: 2px solid #21a1f1;
+.search-bar {
+  background: linear-gradient(to right, #4b6cb7, #182848);
+  border-radius: 25px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  grid-row: 2;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.search-bar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 5px 10px;
+  flex-grow: 1;
+  font-size: 1rem;
+}
+
+.search-bar button {
+  background: #182848;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.search-bar button:hover {
+  background: #4b6cb7;
+}
+
+.event-list {
+  background: #182848;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
+  grid-row: 3;
+}
+
+.event-list img {
+  border-radius: 15px;
+  margin-bottom: 10px;
+  transition: transform 0.3s;
+}
+
+.event-list img:hover {
+  transform: scale(1.05);
+}
+
+.footer {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  text-align: center;
+  margin-top: 40px;
+  border-radius: 10px;
+  grid-row: 4;
 }
