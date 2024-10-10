@@ -1,7 +1,7 @@
-# ConTic - System Rezerwacji Biletów na Koncerty Online 🎫🎶
+# Bliss - System Rezerwacji Biletów na Koncerty Online 🎫🎶
 
 ## Opis Projektu
-ConTic to nowoczesny system rezerwacji biletów na koncerty, który umożliwia użytkownikom przeglądanie, rezerwowanie oraz zakup biletów na różne wydarzenia muzyczne. Nasz system został zaprojektowany z myślą o intuicyjności, szybkości i responsywności, aby zapewnić użytkownikom jak najlepsze doświadczenie przy zakupie biletów na ulubione koncerty.
+Bliss to nowoczesny system rezerwacji biletów na koncerty, który umożliwia użytkownikom przeglądanie, rezerwowanie oraz zakup biletów na różne wydarzenia muzyczne. Nasz system został zaprojektowany z myślą o intuicyjności, szybkości i responsywności, aby zapewnić użytkownikom jak najlepsze doświadczenie przy zakupie biletów na ulubione koncerty.
 
 ### Funkcje:
 - Przeglądanie nadchodzących wydarzeń koncertowych w formie listy lub kalendarza.
@@ -25,11 +25,11 @@ Aby uruchomić projekt lokalnie:
 
 1. Sklonuj repozytorium:
    ```bash
-   git clone https://github.com/twoj-uzytkownik/contic.git
+   git clone https://github.com/twoj-uzytkownik/Bliss.git
    ```
 2. Przejdź do katalogu projektu:
    ```bash
-   cd contic
+   cd Bliss
    ```
 3. Zainstaluj zależności frontendowe:
    ```bash
