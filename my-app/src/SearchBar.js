@@ -6,7 +6,7 @@ const SearchBar = () => {
     <div className="search-bar">
       <input
         type="text"
-        placeholder="Szukaj wydarzeń..."
+        placeholder="Szukaj wydarzenia..."
       />
       <button>
         <FaSearch />
