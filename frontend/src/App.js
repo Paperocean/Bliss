@@ -1,18 +1,20 @@
-import './App.css';
 import React from 'react';
-import Header from './Header';
-import SearchBar from './SearchBar';
-import EventList from './EventList';
-import Footer from './Footer';
+import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HomePage from './homepage/Homepage';
+import EventPage from './eventpage/Eventpage';
 
 const App = () => {
   return (
-    <div className="container mx-auto p-4">
-      <Header />
-      <SearchBar />
-      <EventList />
-      <Footer />
-    </div>
+    <Router>
+      <Routes>
+        <Route exact path="/" element={<HomePage />} />
+        <Route path="/event" element={<EventPage />} />
+        <Route path="/cart" element={<EventPage />} />
+        <Route path="/profile" element={<EventPage />} />
+        <Route path="/login" element={<EventPage />} />
+      </Routes>
+    </Router>
   );
 };
 

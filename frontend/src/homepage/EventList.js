@@ -1,7 +1,7 @@
 import React from 'react';
-import img1 from './images/img1.jpg'; // Zaktualizuj ścieżki, aby odpowiadały lokalizacji obrazów
-import img2 from './images/img2.jpg';
-import img3 from './images/img3.jpg';
+import img1 from '../images/img1.jpg'; // Zaktualizuj ścieżki, aby odpowiadały lokalizacji obrazów
+import img2 from '../images/img2.jpg';
+import img3 from '../images/img3.jpg';
 
 const EventList = () => {
     return (

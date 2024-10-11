@@ -1,0 +1,30 @@
+body.eventpage {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.eventpage .container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.eventpage header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.eventpage .event-main {
+    padding: 20px;
+}
+
+.eventpage .event-details,
+.eventpage .event-schedule {
+    margin-bottom: 20px;
+}
