@@ -1,4 +1,4 @@
-/* body {
+body {
   background-color: black;
   color: white;
   font-family: 'Arial', sans-serif;
@@ -17,4 +17,4 @@
   grid-template-columns: repeat(12, auto);
   grid-gap: 20px;
   row-gap: 100px;
-} */
+}

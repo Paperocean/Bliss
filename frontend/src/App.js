@@ -6,6 +6,7 @@ import EventPage from './eventpage/Eventpage';
 
 const App = () => {
   return (
+    <div classname="app">
     <Router>
       <Routes>
         <Route exact path="/" element={<HomePage />} />
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/login" element={<EventPage />} />
       </Routes>
     </Router>
+    </div>
   );
 };
 

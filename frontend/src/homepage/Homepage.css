@@ -160,6 +160,7 @@ body.homepage {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: grid;
     margin: 0 100px;
+    margin: 0 auto; /* Centruje kontener na stronie */
   }
   
   /* Pseudo-element z gradientem */
@@ -206,26 +207,37 @@ body.homepage {
     align-items: center;
     margin-top: 20px;
     position: relative; /* Umożliwia absolutne pozycjonowanie napisu */
+    justify-content: center; /* Wyśrodkowanie w poziomie */
   }
   
   .homepage .event-list a {
-    position: relative; /* Umożliwia pozycjonowanie pseudo-elementów */
-    display: inline-block; /* Umożliwia efekty hover */
-    transition: transform 0.3s; /* Dodano animację dla obrazków */
-  }
-  
-  .homepage .event-list img {
+    position: relative;
+    display: inline-block;
+    width: 250px; /* Stała szerokość dla każdego eventu */
+    height: 350px; /* Stała wysokość dla każdego eventu */
+    transition: transform 0.3s;
+    overflow: hidden; /* Ukrywa nadmiar obrazu, jeśli przekroczy rozmiar kontenera */
+    z-index: 0; /* Ustawienie z-index, aby było miejsce na pseudo-elementy */
     border-radius: 15px;
-    margin-bottom: 30px; /* Większy margines dolny */
-    transition: transform 0.3s, box-shadow 0.3s; /* Dodano animację dla cienia */
-  }
-  
-  .homepage .event-list img:hover {
+}
+
+.homepage .event-list img {
+    border-radius: 15px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Utrzymuje proporcje obrazu i wypełnia kontener */
+    margin-bottom: 0; /* Usuń margines, aby obraz wypełniał kontener */
+    transition: transform 0.3s, box-shadow 0.3s;
+    z-index: 1; /* Ustawia obrazek nad tłem, ale pod pseudo-elementami przy najechaniu */
+}
+
+.homepage .event-list img:hover {
     transform: scale(1.05);
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Cień przy najechaniu */
-  }
-  
-  .homepage .event-list a:hover::before {
+    z-index: 2; /* Ustawia obrazek nad wszystkim podczas efektu hover */
+}
+
+.homepage .event-list a:hover::before {
     content: '';
     position: absolute;
     top: 0;
@@ -233,14 +245,15 @@ body.homepage {
     right: 0;
     bottom: 0;
     border-radius: 15px; /* Dopasowuje promień do obrazka */
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)); /* Podświetlenie przy najechaniu */
+    background: rgba(255, 255, 255, 0.2); /* Subtelna biała poświata */
     pointer-events: none; /* Umożliwia interakcję z obrazkiem */
-    z-index: -1; /* Ustawia pseudo-element za obrazkiem */
-  }
+    z-index: 3; /* Ustawienie pseudo-elementu nad obrazem */
+    transition: background 0.3s; /* Animacja dla poświaty */
+}
   
   .homepage .event-caption {
     position: absolute; /* Pozycjonuje napis nad obrazem */
-    top: 30%; /* Ustawienie na środku */
+    top: 30%; /* Wyśrodkowanie pionowe */
     left: 50%; /* Wyśrodkowanie poziome */
     transform: translate(-50%, -50%); /* Umożliwia wyśrodkowanie */
     color: #ffffff; /* Kolor tekstu */
