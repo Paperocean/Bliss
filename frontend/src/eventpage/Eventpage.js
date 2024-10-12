@@ -5,7 +5,7 @@ import Footer from '../homepage/Footer'; // Zaimportowany Footer z Homepage
 
 const EventPage = () => {
   return (
-    <div className="eventpage">
+    <div className="app">
         <div className="container">
         <Header /> {/* Użycie Headera z Homepage */}
         <main className="event-main">
