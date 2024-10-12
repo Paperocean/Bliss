@@ -1,24 +1,28 @@
 import React from 'react';
 import '../App.css';
-import Header from '../homepage/Header'; // Zaimportowany Header z Homepage
-import Footer from '../homepage/Footer'; // Zaimportowany Footer z Homepage
+import Header from '../homepage/Header';
+import Footer from '../homepage/Footer';
+import EventCategories from './EventCategories';
+import { Route, Routes } from 'react-router-dom';
+import CategoryEvents from './CategoryEvents';
 
 const EventPage = () => {
   return (
     <div className="app">
-        <div className="container">
-        <Header /> {/* Użycie Headera z Homepage */}
+      <div className="container">
+        <Header />
         <main className="event-main">
-          <section className="event-details">
-            <h2>Event Details</h2>
-            <p>Details about the event will go here.</p>
+          <section className="event-categories">
+            <h2 className="animated-title">Event Categories</h2>
+            <EventCategories />
           </section>
-          <section className="event-schedule">
-            <h2>Event Schedule</h2>
-            <p>Schedule of the event will go here.</p>
+          <section className="category-events">
+            <Routes>
+              <Route path="/events/:category" element={<CategoryEvents />} />
+            </Routes>
           </section>
         </main>
-        <Footer /> {/* Użycie Footera z Homepage */}
+        <Footer />
       </div>
     </div>
   );

@@ -1,25 +1,34 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // Importuj Link do nawigacji
 import img1 from '../images/img1.jpg'; // Zaktualizuj ścieżki, aby odpowiadały lokalizacji obrazów
 import img2 from '../images/img2.jpg';
 import img3 from '../images/img3.jpg';
+
+const events = [
+    { category: 'rock', img: img1, caption: 'ROCK' },
+    { category: 'party', img: img2, caption: 'PARTY' },
+    { category: 'pop', img: img3, caption: 'POP' }
+];
 
 const EventList = () => {
     return (
         <div className="event-list-container">
             <h1 className='event-list-title'>POPULARNE KATEGORIE</h1>
             <div className="event-list">
-                <a href="https://example.com/event1" className="transform transition-transform hover:scale-105">
-                    <img alt="Event 1" className="rounded-lg shadow-md" src={img1} />
-                    <p className="event-caption">ROCK</p> {/* Dodano napis */}
-                </a>
-                <a href="https://example.com/event2" className="transform transition-transform hover:scale-105">
-                    <img alt="Event 2" className="rounded-lg shadow-md" src={img2} />
-                    <p className="event-caption">IMPREZA</p> {/* Dodano napis */}
-                </a>
-                <a href="https://example.com/event3" className="transform transition-transform hover:scale-105">
-                    <img alt="Event 3" className="rounded-lg shadow-md" src={img3} />
-                    <p className="event-caption">POP</p> {/* Dodano napis */}
-                </a>
+                {events.map(event => (
+                    <Link 
+                        key={event.category} 
+                        to={`/events/${event.category}`} // Zaktualizowano, aby używać event.category
+                        className="transform transition-transform hover:scale-105"
+                    >
+                        <img 
+                            alt={`Event ${event.caption}`} 
+                            className="rounded-lg shadow-md" 
+                            src={event.img} 
+                        />
+                        <p className="event-caption">{event.caption}</p>
+                    </Link>
+                ))}
             </div>
         </div>
     );

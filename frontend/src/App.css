@@ -1,3 +1,4 @@
+  /* Global Styles */
   body {
     background-color: black;
     color: white;
@@ -6,325 +7,583 @@
     padding: 0;
     height: 100%;
     display: grid;
-    grid-template-rows: 1fr auto; /* 1fr dla treści, auto dla stopki */
+    grid-template-rows: 1fr auto; /* 1fr for content, auto for footer */
   }
 
+  /* Container Styles */
   .container {
     display: grid;
-    /* border: 1px solid white; */
     grid-template-columns: repeat(12, auto);
     grid-template-rows: 1fr auto;
     grid-gap: 20px;
     row-gap: 100px;
-    min-height: 100vh; /* Ustal minimalną wysokość kontenera */
+    min-height: 100vh; /* Set minimum height of the container */
   }
+
   
-  /* Styl dla nagłówka */
+
+  /* Header Styles */
   .header-container {
     grid-row: 1;
     grid-column: 1 / -1;
     background: rgba(0, 0, 0, 0.5);
-    padding: 20px; 
-    padding-top: 5px;
-    padding-left: 50px;
+    padding: 20px 50px 20px 50px;
     display: flex;
-    align-items: center; /* Wyśrodkuj pionowo */
+    align-items: center; /* Center vertically */
     justify-content: space-between;
-    border-bottom: 1px solid white;
-    height: 200px; /* Ustal stałą wysokość nagłówka */
-    max-height: 200px; /* Ustal maksymalną wysokość nagłówka */
-    overflow: hidden; /* Ukrywa nadmiar treści, jeśli jest zbyt dużo */
-    flex: 0 0 auto; /* Zapobiega powiększaniu się nagłówka */
+    border-bottom: none; /* Usunięcie białej linii */
+    height: 200px; /* Fixed header height */
+    max-height: 200px; /* Max header height */
+    overflow: hidden; /* Hide overflow content */
+    flex: 0 0 auto; /* Prevent header from growing */
+    position: relative; /* Aby umożliwić umieszczenie pseudo-elementu */
   }
   
-/* Tytuł nagłówka */
-.header-title {
-  font-size: 50px;
-  font-style: italic;
-  color: #ffffff;
-  display: flex;
-  align-items: center; /* Wyśrodkuj pionowo */
-  padding: 40px;
-  text-shadow: 4px 4px 10px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.2);
-  margin-left: 100px;
-  transform: rotate(-5deg) translate(10px, -5px); /* Rotacja i przesunięcie tekstu */
-  position: relative; /* Umożliwia pozycjonowanie pseudo-elementów */
-  overflow: hidden; /* Ukrywa nadmiar treści */
-  transition: color 0.3s ease, text-shadow 0.3s ease; /* Animacja kolorów i cienia */
-}
+  .header-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0; /* Na dole headera */
+    left: 0;
+    right: 0;
+    height: 20px; /* Wysokość efektu */
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)); /* Gradient do pasujących kolorów */
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.7); /* Cień na górnej krawędzi efektu */
+    z-index: -1; /* Umieść za innymi elementami */
+  }
+  
 
-/* Pseudo-element do podświetlenia */
-.header-title::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 150%;
-  height: 150%;
-  background: rgba(255, 255, 255, 0.2); /* Subtelne jasne podświetlenie */
-  border-radius: 50%; /* Zaokrąglony kształt tła */
-  transform: translate(-50%, -50%) scale(0); /* Ukrycie tła na starcie */
-  transition: transform 0.4s ease; /* Animacja powiększenia */
-  z-index: -1; /* Umieszcza podświetlenie za tekstem */
-}
+  .header-title {
+    font-size: 50px;
+    font-style: italic;
+    color: #ffffff;
+    display: flex;
+    align-items: center; /* Center vertically */
+    padding: 40px;
+    text-shadow: 4px 4px 10px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.2);
+    margin-left: 100px;
+    transform: rotate(-5deg) translate(10px, -5px); /* Rotate and translate text */
+    position: relative; /* Enable positioning of pseudo-elements */
+    overflow: hidden; /* Hide overflow content */
+    transition: color 0.3s ease, text-shadow 0.3s ease; /* Animate colors and shadow */
+  }
 
-/* Efekt podświetlenia przy najechaniu */
-.header-title:hover {
-  color: #ffcc00; /* Zmiana koloru tekstu na ciepły złoty */
-  text-shadow: 4px 4px 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.6); /* Wzmocnienie cienia */
-}
-
-/* Styl dla linku w nagłówku */
-.header-title a {
-  color: #ffffff; /* Kolor nieodwiedzonego linku */
-  text-decoration: none; /* Brak podkreślenia */
-  transition: color 0.3s ease, text-shadow 0.3s ease; /* Animacja kolorów i cienia */
-}
-
-.header-title a:visited {
-  color: #ffffff; /* Kolor odwiedzonego linku */
-}
-
-.header-title a:focus {
-  outline: none; /* Usuń obrys wokół linku po kliknięciu */
-}
-
-.header-title a:hover {
-  color: #ffcc00; /* Kolor po najechaniu */
-  text-shadow: 4px 4px 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.6); /* Podświetlenie po najechaniu */
-}
-
-.header-title a:active {
-  color: #ffcc00; /* Kolor podczas klikania */
-}
-
-  /* Linki nawigacyjne */
-.nav-links a {
-  font-size: 20px;
-  color: #ffffff; /* Kolor tekstu */
-  margin: 10px 30px;
-  transition: color 0.3s ease, text-shadow 0.3s ease; /* Animacja kolorów i cienia */
-  text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.2);
-  padding: 5px 10px; /* Dodano padding dla większego efektu */
-  border-radius: 10px; /* Zaokrąglenie rogów */
-  position: relative; /* Umożliwia pozycjonowanie pseudo-elementów */
-  overflow: hidden; /* Ukrywa nadmiar treści */
-  text-decoration: none;
-}
-
-/* Usunięcie fioletowego podświetlenia */
-.nav-links a:visited {
-  color: #ffffff; /* Ustaw kolor odwiedzonego linku taki sam, jak nieodwiedzonego */
-  text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.2); /* Ten sam cień */
-}
-
-/* Pseudo-element do podświetlenia */
-.nav-links a::before {
+  .header-title::before {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
     width: 150%;
     height: 150%;
-    background: rgba(255, 255, 255, 0.2); /* Subtelne jasne podświetlenie */
-    border-radius: 50%; /* Zaokrąglony kształt tła */
-    transform: translate(-50%, -50%) scale(0); /* Ukrycie tła na starcie */
-    transition: transform 0.4s ease; /* Animacja powiększenia */
-    z-index: -1; /* Umieszcza podświetlenie za tekstem */
-}
+    background: rgba(255, 255, 255, 0.2); /* Subtle light highlight */
+    border-radius: 50%; /* Rounded background shape */
+    transform: translate(-50%, -50%) scale(0); /* Hide background initially */
+    transition: transform 0.4s ease; /* Scale animation */
+    z-index: -1; /* Place highlight behind text */
+  }
 
-/* Efekt podświetlenia przy najechaniu */
-.nav-links a:hover {
-    color: #ffcc00; /* Zmiana koloru tekstu na ciepły złoty */
-    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(255, 255, 255, 0.6); /* Wzmocnienie cienia */
+  .header-title:hover {
+    color: #ffcc00; /* Change text color to warm gold */
+    text-shadow: 4px 4px 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.6); /* Enhance shadow */
+  }
+
+  .header-title a {
+    color: #ffffff; /* Unvisited link color */
+    text-decoration: none; /* No underline */
+    transition: color 0.3s ease, text-shadow 0.3s ease; /* Animate colors and shadow */
+  }
+
+  .header-title a:visited {
+    color: #ffffff; /* Visited link color */
+  }
+
+  .header-title a:focus {
+    outline: none; /* Remove outline on focus */
+  }
+
+  .header-title a:hover {
+    color: #ffcc00; /* Hover color */
+    text-shadow: 4px 4px 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(255, 255, 255, 0.6); /* Highlight on hover */
+  }
+
+  .header-title a:active {
+    color: #ffcc00; /* Active link color */
+  }
+
+  /* Navigation Links */
+  .nav-links a {
+    font-size: 20px;
+    color: #ffffff; /* Text color */
+    margin: 10px 30px;
+    transition: color 0.3s ease, text-shadow 0.3s ease; /* Animate colors and shadow */
+    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.2);
+    padding: 5px 10px; /* Added padding for better effect */
+    border-radius: 10px; /* Rounded corners */
+    position: relative; /* Enable positioning of pseudo-elements */
+    overflow: hidden; /* Hide overflow content */
+    text-decoration: none;
+  }
+
+  .nav-links a:visited {
+    color: #ffffff; /* Set visited link color same as unvisited */
+    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.2); /* Same shadow */
+  }
+
+  .nav-links a::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 150%;
+    background: rgba(255, 255, 255, 0.2); /* Subtle light highlight */
+    border-radius: 50%; /* Rounded background shape */
+    transform: translate(-50%, -50%) scale(0); /* Hide background initially */
+    transition: transform 0.4s ease; /* Scale animation */
+    z-index: -1; /* Place highlight behind text */
+  }
+
+  .nav-links a:hover {
+    color: #ffcc00; /* Change text color to warm gold */
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(255, 255, 255, 0.6); /* Enhance shadow */
     text-decoration: underline;
     text-underline-offset: 5px;
+  }
+
+
+
+
+/* Search Bar */
+.search-bar {
+  grid-column: 7 / 12;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(46, 134, 95, 0.6)); /* Gradient dopasowany do kontenera */
+  border-radius: 25px;
+  padding: 10px 20px; /* Increased padding for comfort */
+  display: flex;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6); /* Prominent shadow */
+  margin: auto 0;
+  margin-top: 30px;
+  transition: transform 0.3s, box-shadow 0.3s; /* Hover animation */
 }
 
-   .search-bar {
-    grid-column: 2 / 12;
-    background: linear-gradient(135deg, #000000, #4b6cb7); /* Czarny do jasnego gradientu */
-    border-radius: 25px;
-    padding: 10px 20px; /* Zwiększone padding dla większego komfortu */
-    display: flex;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6); /* Wyrazisty cień */
-    margin: auto 0;
-    margin-top: 30px;
-    transition: transform 0.3s, box-shadow 0.3s; /* Animacja podczas najechania */
-  }
-  
-   .search-bar:hover {
-    transform: translateY(-5px); /* Lekko uniesienie przy najechaniu */
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7); /* Zwiększony cień przy najechaniu */
-  }
-  
-   .search-bar input {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: white;
-    padding: 10px 20px; /* Zwiększone padding */
-    flex-grow: 1;
-    font-size: 1rem;
-    border-radius: 20px; /* Zaokrąglenie inputu */
-    transition: background 0.3s; /* Animacja zmiany tła */
-  }
-  
-   .search-bar input:hover {
-    background: rgba(255, 255, 255, 0.1); /* Efekt tła na hover */
-  }
-  
-   .search-bar button {
-    background: #1a242f; /* Ciemniejszy kolor przycisku */
-    border: none;
-    border-radius: 50%;
-    padding: 10px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.3s; /* Animacja zmiany koloru i transformacji */
-  }
-  
-   .search-bar button:hover {
-    background: #4b6cb7; /* Kolor przy najechaniu */
-    transform: scale(1.1); /* Powiększenie przy najechaniu */
-  }
-  
-   .search-bar input::placeholder {
-    color: white; /* Ustaw kolor placeholdera na biały */
-    opacity: 0.7; /* Opcjonalnie, ustaw przezroczystość */
-  }
-  
-   .search-bar svg {
-    width: 20px;
-    height: 20px;
-    fill: white; /* Kolor ikony SVG */
-  }
-  
-   .event-list-container {
-    position: relative; /* Umożliwia pozycjonowanie pseudo-elementów */
-    grid-row: 2;
-    background: #182848; /* Podstawowy kolor tła */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: grid;
-    margin: 0 100px;
-    margin: 0 auto; /* Centruje kontener na stronie */
-  }
-  
-  /* Pseudo-element z gradientem */
-   .event-list-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.3), rgba(255, 0, 0, 0.5) 40%, rgba(0, 0, 255, 0.3) 70%);
-    pointer-events: none; /* Umożliwia interakcję z treścią pod nim */
-    opacity: 0.5; /* Ustala przezroczystość efektu */
-    border-radius: 10px; /* Dopasowuje promień do kontenera */
-    z-index: 1; /* Ustawia pseudo-element poniżej zawartości kontenera */
-  }
-  
-  /* Treść kontenera */
-   .event-list-title {
-    font-size: 30px;
-    color: #ffffff;
-    margin-bottom: 20px;
-    text-align: center;
-    position: relative; /* Umożliwia wyświetlenie tekstu nad gradientem */
-    z-index: 2; /* Wyższy z-index, aby tekst był widoczny */
-  }
-  
-  /* Podkreślenie w środku */
-   .event-list-title::after {
-    content: '';
-    position: absolute;
-    left: 50%; /* Ustawia lewy brzeg podkreślenia na środku */
-    width: 70%; /* Szerokość podkreślenia */
-    height: 4px; /* Wysokość podkreślenia */
-    background: #ffffff; /* Gradient jako kolor podkreślenia */
-    transform: translateX(-50%); /* Przesuwa podkreślenie w lewo o 50% własnej szerokości */
-    bottom: -10px; /* Przesuwa podkreślenie w dół o 10 pikseli */
-  }
-  
-   .event-list {
-    display: flex;
-    flex-direction: row;
-    gap: 30px; /* Odstępy między wydarzeniami */
-    align-items: center;
-    margin-top: 20px;
-    position: relative; /* Umożliwia absolutne pozycjonowanie napisu */
-    justify-content: center; /* Wyśrodkowanie w poziomie */
-  }
-  
-   .event-list a {
-    position: relative;
-    display: inline-block;
-    width: 250px; /* Stała szerokość dla każdego eventu */
-    height: 350px; /* Stała wysokość dla każdego eventu */
-    transition: transform 0.3s;
-    overflow: hidden; /* Ukrywa nadmiar obrazu, jeśli przekroczy rozmiar kontenera */
-    z-index: 0; /* Ustawienie z-index, aby było miejsce na pseudo-elementy */
-    border-radius: 15px;
+.search-bar:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
+  box-shadow: 0 8px 30px rgba(64, 224, 208, 0.7); /* Increased shadow on hover */
 }
 
- .event-list img {
-    border-radius: 15px;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Utrzymuje proporcje obrazu i wypełnia kontener */
-    margin-bottom: 0; /* Usuń margines, aby obraz wypełniał kontener */
-    transition: transform 0.3s, box-shadow 0.3s;
-    z-index: 1; /* Ustawia obrazek nad tłem, ale pod pseudo-elementami przy najechaniu */
+.search-bar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff; /* Utrzymanie białego koloru dla tekstu */
+  padding: 10px 20px; /* Increased padding */
+  flex-grow: 1;
+  font-size: 1rem;
+  border-radius: 20px; /* Rounded input */
+  transition: background 0.3s; /* Background change animation */
 }
 
- .event-list img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Cień przy najechaniu */
-    z-index: 2; /* Ustawia obrazek nad wszystkim podczas efektu hover */
+.search-bar input:hover {
+  background: rgba(255, 255, 255, 0.2); /* Zmiana tła na jaśniejsze przy najechaniu */
 }
 
- .event-list a:hover::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 15px; /* Dopasowuje promień do obrazka */
-    background: rgba(255, 255, 255, 0.2); /* Subtelna biała poświata */
-    pointer-events: none; /* Umożliwia interakcję z obrazkiem */
-    z-index: 3; /* Ustawienie pseudo-elementu nad obrazem */
-    transition: background 0.3s; /* Animacja dla poświaty */
+.search-bar button {
+  background: rgba(255, 255, 255, 0.2); /* Dopasowany kolor przycisku */
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s; /* Color and transform animation */
 }
-  
-   .event-caption {
-    position: absolute; /* Pozycjonuje napis nad obrazem */
-    top: 30%; /* Wyśrodkowanie pionowe */
-    left: 50%; /* Wyśrodkowanie poziome */
-    transform: translate(-50%, -50%); /* Umożliwia wyśrodkowanie */
-    color: #ffffff; /* Kolor tekstu */
-    font-size: 30px; /* Rozmiar czcionki */
-    font-weight: bold; /* Pogrubienie tekstu */
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 0, 0, 0.7); /* Efekt podświetlenia */
-    text-align: center; /* Wyśrodkowanie tekstu */
-    transition: transform 0.3s; /* Dodano animację do napisu */
+
+.search-bar button:hover {
+  background: rgba(64, 224, 208, 0.8); /* Dopasowany kolor przycisku przy najechaniu */
+  transform: scale(1.1); /* Scale on hover */
+}
+
+.search-bar input::placeholder {
+  color: #ffffff; /* Placeholder color */
+  opacity: 0.7; /* Optional opacity */
+}
+
+.search-bar svg {
+  width: 20px;
+  height: 20px;
+  fill: white; /* SVG icon color */
+}
+
+
+
+
+/* Event List Container */
+.event-list-container {
+  position: relative; /* Enable positioning of pseudo-elements */
+  grid-column: 3 / 6;
+  grid-row: 2;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), rgba(46, 134, 95, 0.6) 40%, rgba(0, 0, 0, 0.8) 70%); /* Zastosowanie gradientu z event-main */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(64, 224, 208, 0.5); /* Turkusowy cień dla kontenera */
+  display: grid;
+  margin: 0 auto; /* Center container on page */
+  transition: transform 0.3s, box-shadow 0.3s; /* Dodano efekt cienia */
+}
+
+/* Pseudo-element for fog effect */
+.event-list-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.5) 70%); /* Adjusted gradient for fog effect */
+  pointer-events: none; /* Allow interaction with content below */
+  opacity: 0.7; /* Opacity of the fog effect */
+  border-radius: 10px; /* Match radius to container */
+  z-index: 1; /* Place pseudo-element below container content */
+}
+
+/* Event List Title */
+.event-list-title {
+  font-size: 2rem; /* Zwiększona wielkość czcionki */
+  text-align: center;
+  margin: 20px 0; /* Odstępy góra-dół */
+  color: #FFD700; /* Złoty kolor tekstu */
+  position: relative; /* Enable positioning of pseudo-elements */
+  opacity: 0; /* Start invisible */
+  transform: translateY(-30px); /* Większy efekt przesunięcia */
+  animation: fadeInUp 0.6s forwards, bounce 1s infinite; /* Dodano efekt 'bounce' */
+}
+
+/* Event List */
+.event-list {
+  display: flex;
+  flex-direction: row;
+  gap: 30px; /* Space between events */
+  align-items: center;
+  margin-top: 20px;
+  position: relative; /* Enable absolute positioning of caption */
+  justify-content: center; /* Center horizontally */
+}
+
+/* Event Link */
+.event-list a {
+  position: relative;
+  display: inline-block;
+  width: 250px; /* Fixed width for each event */
+  height: 350px; /* Fixed height for each event */
+  transition: transform 0.3s, box-shadow 0.3s; /* Add transition for shadow */
+  overflow: hidden; /* Hide overflow content */
+  z-index: 0; /* Set z-index for pseudo-elements */
+  border-radius: 15px;
+}
+
+/* Event image styling */
+.event-list img {
+  border-radius: 15px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Maintain image aspect ratio and fill container */
+  margin-bottom: 0; /* Remove margin to fill container */
+  transition: transform 0.3s, box-shadow 0.3s;
+  z-index: 1; /* Place image above background but below pseudo-elements */
+}
+
+/* Effect on hover for images */
+.event-list img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Shadow on hover */
+  z-index: 2; /* Place image above everything on hover */
+}
+
+/* Pseudo-element effect on hover */
+.event-list a:hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 15px; /* Match radius to image */
+  /* background: rgba(255, 215, 0, 0.6); */
+  background: rgba(255, 255, 255, 0.2);
+  pointer-events: none; /* Allow interaction with image */
+  z-index: 3; /* Place pseudo-element above image */
+  transition: background 0.3s; /* Background animation */
+}
+
+/* Event caption styling */
+.event-caption {
+  position: absolute; /* Position caption above image */
+  top: 30%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Center */
+  color: #ffffff; /* Text color */
+  font-size: 30px; /* Font size */
+  font-weight: bold; /* Bold text */
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 0, 0, 0.7); /* Highlight effect */
+  text-align: center; /* Center text */
+  transition: transform 0.3s; /* Add animation to caption */
+}
+
+/* Lift caption on hover */
+.event-list a:hover .event-caption {
+  transform: translate(-50%, -70%); /* Lift caption on hover */
+}
+
+/* Effect for the link on hover */
+.event-list a:hover {
+  transform: translateY(-5px); /* Slight lift effect on hover */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Enhanced shadow on hover */
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+  .event-list {
+    flex-direction: column; /* Stack events vertically on small screens */
   }
-  
-   .event-list a:hover .event-caption {
-    transform: translate(-50%, -70%); /* Uniesienie napisu przy najechaniu */
-  }
-  
-  /* Styl stopki */
+}
+
+
+
+
+
+  /* Footer Styles */
   .footer {
     grid-column: 1 / -1;
     background: transparent;
     color: #ffffff6b;
     font-size: 14px;
     display: flex;
-    justify-content: center; /* Wyśrodkuj w poziomie */
+    justify-content: center; /* Center horizontally */
     text-align: center;
-    padding: 20px; /* Dodaj trochę odstępu */
-    margin-top: auto; /* Przylega do dołu strony */
+    padding: 20px; /* Add some padding */
+    margin-top: auto; /* Stick to the bottom of the page */
   }
+
+
+
+
+/* Main Event Section */
+.event-main {
+  grid-column: 4 / 8; /* Rozciągnięcie sekcji na większość ekranu */
+  padding: 40px;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), rgba(46, 134, 95, 0.6) 40%, rgba(0, 0, 0, 0.8) 70%);
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(64, 224, 208, 0.5); /* Turkusowy cień dla sekcji */
+  transition: transform 0.3s, box-shadow 0.3s; /* Dodano efekt cienia */
+  position: relative; /* Aby animacje działały na tle */
+}
+
+/* Shadow Effect on Hover */
+.event-main:hover {
+  box-shadow: 0 12px 50px rgba(64, 224, 208, 0.8); /* Wzmocnienie cienia na hover */
+  transform: translateY(-5px); /* Lekka animacja do góry na hover */
+}
+
+/* Animated Title */
+.animated-title {
+  font-size: 2.5rem; /* Zwiększona wielkość czcionki */
+  text-align: center;
+  margin-bottom: 20px;
+  opacity: 0;
+  transform: translateY(-30px); /* Większy efekt przesunięcia */
+  animation: fadeInUp 0.6s forwards, bounce 1s infinite; /* Dodano efekt 'bounce' */
+  color: #FFD700; /* Złoty kolor dla tytułu */
+  margin: auto 0; /* Wyśrodkowanie tytułu */
+}
+
+/* Keyframes for Title Animation */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Event Categories */
+.event-categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Slightly larger min width */
+  gap: 20px;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Keyframes for Fade In Effect */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stylizacja listy kategorii */
+.event-categories-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Stylizacja elementów kategorii */
+.category-item {
+  margin: 10px 0;
+  transition: transform 0.3s, color 0.3s;
+}
+
+.category-item:hover {
+  transform: scale(1.05);
+  color: #FF7F50; /* Jasny czerwony na hover */
+}
+
+/* Linki w kategoriach */
+.category-item a {
+  text-decoration: none;
+  color: #FFFFFF; /* Biały kolor dla linków */
+  font-size: 1.2rem;
+  font-weight: bold; /* Pogrubienie tekstu linków */
+  transition: color 0.3s; /* Dodano animację dla koloru */
+}
+
+.category-item a:hover {
+  color: #FFCC00; /* Zmiana koloru tekstu linków po najechaniu */
+}
+
+/* Category Events Section */
+.category-events-container {
+  display: flex;
+  flex-direction: row;
+  gap: 100px; /* Odstęp między listą wydarzeń a podglądem */
+}
+
+/* Event Preview */
+.event-preview {
+  background: rgba(0, 0, 0, 0.85); /* Ciemne tło dla podglądu */
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  flex: 1; /* Rozciąga podgląd na dostępne miejsce */
+  transition: transform 0.3s, box-shadow 0.3s; /* Dodano animację dla cienia */
+}
+
+.event-preview:hover {
+  transform: scale(1.02); /* Efekt powiększenia po najechaniu */
+  box-shadow: 0 12px 60px rgba(0, 0, 0, 0.7); /* Wzmocnienie cienia na hover */
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+  .event-categories {
+    grid-template-columns: 1fr; /* Wyświetlanie kategorii w jednej kolumnie na mniejszych ekranach */
+  }
+
+  .event-main {
+    padding: 20px; /* Zmniejszenie paddingu na mniejszych ekranach */
+  }
+
+  .animated-title {
+    font-size: 2rem; /* Mniejsza czcionka na mniejszych ekranach */
+  }
+
+  .category-events-container {
+    flex-direction: column; /* Zmiana kierunku na kolumnę na małych ekranach */
+    gap: 40px; /* Zmniejszenie odstępu */
+  }
+}
+
+/* Stylizacja w efekcie */
+.category-item:before {
+  content: ''; /* Dodanie pseudo-elementu */
+  display: block;
+  height: 3px; /* Wysokość lini separatora */
+  width: 0; /* Początkowa szerokość */
+  background: #FF7F50; /* Kolor separatora */
+  transition: width 0.3s; /* Animacja dla szerokości */
+}
+
+.category-item:hover:before {
+  width: 100%; /* Szerokość separatora na hover */
+}
+
+
+
+
+/* Event List Container */
+/* Event List */
+.event-list {
+  display: flex; /* Use flexbox for layout */
+  margin-top: 20px;
+}
+
+/* Individual Event Item */
+.event-item {
+  background: rgba(189, 1, 247, 0.1);
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+}
+
+/* Hover effect for event item */
+.event-item:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Event Preview */
+.event-preview {
+  background: rgba(255, 255, 0, 0.1); /* Spotlight color */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s, opacity 0.3s;
+  opacity: 0; /* Start invisible */
+  transform: translateY(20px); /* Start below */
+  width: 70%; /* Adjust width for the preview */
+}
+
+/* Animation for event preview */
+.animated-preview {
+  animation: fadeInUp 0.5s forwards; /* Fade in effect */
+}
+
+/* Transition effect for event preview when selected */
+.event-preview.active {
+  opacity: 1; /* Fully visible */
+  transform: translateY(0); /* Move into position */
+}
+
+/* Keyframes for fade-in effect */
+@keyframes fadeInUp {
+  from {
+      opacity: 0; /* Start invisible */
+      transform: translateY(20px); /* Start below */
+  }
+  to {
+      opacity: 1; /* Fully visible */
+      transform: translateY(0); /* End in position */
+  }
+}
+
+/* Additional Styles for Responsiveness */
+@media (max-width: 768px) {
+  .event-list {
+      flex-direction: column; /* Stack vertically on small screens */
+  }
+
+  .event-categories, .event-preview {
+      width: 100%; /* Full width on small screens */
+      margin-left: 0; /* Reset left margin */
+  }
+}
