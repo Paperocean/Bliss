@@ -6,18 +6,27 @@ app.use(express.json());
 
 app.get('/api/tickets', async (req, res) => {
   try {
+    console.log("Request received for tickets");
     const result = await pool.query('SELECT * FROM tickets');
+    console.log("Query result:", result.rows);
     res.json(result.rows);
   } catch (err) {
-    console.error(err.message);
+    console.error("Error message:", err.message);
     res.status(500).send('Server Error');
   }
 });
 
-app.get('/', (req, res) => {
-    res.send('Serwer działa!');
-  });
+// Endpoint root '/' now queries the database and displays result
+app.get('/', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM tickets');
+    res.json(result.rows); // Return tickets as the response
+  } catch (err) {
+    console.error("Error fetching tickets:", err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 app.listen(5000, () => {
-  console.log('Server is running on port 3000');
+  console.log('Server is running on port 5000');
 });

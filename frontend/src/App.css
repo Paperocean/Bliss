@@ -219,13 +219,13 @@
   position: relative; /* Enable positioning of pseudo-elements */
   grid-column: 3 / 6;
   grid-row: 2;
-  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), rgba(46, 134, 95, 0.6) 40%, rgba(0, 0, 0, 0.8) 70%); /* Zastosowanie gradientu z event-main */
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), rgba(46, 134, 95, 0.6) 40%, rgba(0, 0, 0, 0.8) 70%);
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 8px 30px rgba(64, 224, 208, 0.5); /* Turkusowy cień dla kontenera */
+  box-shadow: 0 8px 30px rgba(64, 224, 208, 0.5);
   display: grid;
   margin: 0 auto; /* Center container on page */
-  transition: transform 0.3s, box-shadow 0.3s; /* Dodano efekt cienia */
+  transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s; /* Combine transitions */
 }
 
 /* Pseudo-element for fog effect */
@@ -236,23 +236,29 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.5) 70%); /* Adjusted gradient for fog effect */
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.5) 50%);
   pointer-events: none; /* Allow interaction with content below */
-  opacity: 0.7; /* Opacity of the fog effect */
+  opacity: 0.5; /* Adjust opacity for fog */
   border-radius: 10px; /* Match radius to container */
   z-index: 1; /* Place pseudo-element below container content */
 }
 
+/* Hide fog for the selected event */
+.event-list a.selected {
+  position: relative; /* Required for absolute positioning of caption */
+  z-index: 2; /* Place the selected event above fog */
+}
+
 /* Event List Title */
 .event-list-title {
-  font-size: 2rem; /* Zwiększona wielkość czcionki */
+  font-size: 2rem; /* Increased font size */
   text-align: center;
-  margin: 20px 0; /* Odstępy góra-dół */
-  color: #FFD700; /* Złoty kolor tekstu */
+  margin: 20px 0; /* Top-bottom spacing */
+  color: #FFD700; /* Gold text color */
   position: relative; /* Enable positioning of pseudo-elements */
   opacity: 0; /* Start invisible */
-  transform: translateY(-30px); /* Większy efekt przesunięcia */
-  animation: fadeInUp 0.6s forwards, bounce 1s infinite; /* Dodano efekt 'bounce' */
+  transform: translateY(-30px); /* Larger offset */
+  animation: fadeInUp 0.6s forwards, bounce 1s infinite; /* Added bounce effect */
 }
 
 /* Event List */
@@ -262,7 +268,6 @@
   gap: 30px; /* Space between events */
   align-items: center;
   margin-top: 20px;
-  position: relative; /* Enable absolute positioning of caption */
   justify-content: center; /* Center horizontally */
 }
 
@@ -272,10 +277,16 @@
   display: inline-block;
   width: 250px; /* Fixed width for each event */
   height: 350px; /* Fixed height for each event */
-  transition: transform 0.3s, box-shadow 0.3s; /* Add transition for shadow */
+  transition: transform 0.3s, box-shadow 0.3s; /* Transition for shadow */
   overflow: hidden; /* Hide overflow content */
   z-index: 0; /* Set z-index for pseudo-elements */
   border-radius: 15px;
+}
+
+/* Accessible Focus Styles */
+.event-list a:focus {
+  outline: 2px dashed #FFD700; /* Gold outline for focused links */
+  outline-offset: 4px; /* Offset for better visibility */
 }
 
 /* Event image styling */
@@ -283,33 +294,15 @@
   border-radius: 15px;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Maintain image aspect ratio and fill container */
-  margin-bottom: 0; /* Remove margin to fill container */
-  transition: transform 0.3s, box-shadow 0.3s;
-  z-index: 1; /* Place image above background but below pseudo-elements */
+  object-fit: cover; /* Maintain image aspect ratio */
+  transition: transform 0.3s, box-shadow 0.3s, outline 0.3s; /* Add outline transition */
 }
 
 /* Effect on hover for images */
 .event-list img:hover {
   transform: scale(1.05);
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Shadow on hover */
-  z-index: 2; /* Place image above everything on hover */
-}
-
-/* Pseudo-element effect on hover */
-.event-list a:hover::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 15px; /* Match radius to image */
-  /* background: rgba(255, 215, 0, 0.6); */
-  background: rgba(255, 255, 255, 0.2);
-  pointer-events: none; /* Allow interaction with image */
-  z-index: 3; /* Place pseudo-element above image */
-  transition: background 0.3s; /* Background animation */
+  outline: 2px solid rgba(255, 215, 0, 0.6); /* Gold outline on hover */
 }
 
 /* Event caption styling */
@@ -318,17 +311,23 @@
   top: 30%; /* Center vertically */
   left: 50%; /* Center horizontally */
   transform: translate(-50%, -50%); /* Center */
-  color: #ffffff; /* Text color */
+  color: #ffffff; /* Default text color */
   font-size: 30px; /* Font size */
   font-weight: bold; /* Bold text */
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 0, 0, 0.7); /* Highlight effect */
-  text-align: center; /* Center text */
-  transition: transform 0.3s; /* Add animation to caption */
+  transition: transform 0.3s, color 0.3s; /* Add animation to caption */
 }
 
 /* Lift caption on hover */
 .event-list a:hover .event-caption {
   transform: translate(-50%, -70%); /* Lift caption on hover */
+  color: #FFD700; /* Change text color to gold on hover */
+}
+
+/* Change text color when the image is focused */
+.event-list a:focus .event-caption {
+  color: #FFD700; /* Gold color for focused text */
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.7); /* Optional darker shadow */
 }
 
 /* Effect for the link on hover */
