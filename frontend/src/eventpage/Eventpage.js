@@ -1,13 +1,13 @@
 import React from 'react';
 import './Eventpage.css';
+import Header from '../homepage/Header'; // Zaimportowany Header z Homepage
+import Footer from '../homepage/Footer'; // Zaimportowany Footer z Homepage
 
 const EventPage = () => {
   return (
     <div className="eventpage">
       <div className="container">
-        <header className="event-header">
-          <h1>Event Page</h1>
-        </header>
+        <Header /> {/* Użycie Headera z Homepage */}
         <main className="event-main">
           <section className="event-details">
             <h2>Event Details</h2>
@@ -18,6 +18,7 @@ const EventPage = () => {
             <p>Schedule of the event will go here.</p>
           </section>
         </main>
+        <Footer /> {/* Użycie Footera z Homepage */}
       </div>
     </div>
   );
