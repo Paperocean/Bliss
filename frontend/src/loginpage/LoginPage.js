@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../App.css';
 
 const LoginPage = () => {
@@ -7,6 +7,11 @@ const LoginPage = () => {
     const [name, setName] = useState(''); // nowy stan dla imienia
     const [isRegister, setIsRegister] = useState(false); // toggle between login and register
 
+    useEffect(() => {
+        console.log('Welcome to the Login Page'); // Log przy każdym wejściu na stronę
+    }, []); // Pusty array oznacza, że efekt wykona się tylko przy zamontowaniu komponentu
+
+
     const handleSubmit = async (e) => {
         
         e.preventDefault();
@@ -14,7 +19,18 @@ const LoginPage = () => {
         const endpoint = isRegister ? '/register' : '/login';
 
         try {
-            const response = await fetch(`https://bliss-instance-1.chsq4e0qk2i3.eu-north-1.rds.amazonaws.com/prod${endpoint}`, {
+            const testResponse = await fetch(`https://bliss-instance-1.chsq4e0qk2i3.eu-north-1.rds.amazonaws.com/test`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            const testData = await testResponse.json();
+            console.log('Test response:', testData); // Zobacz odpowiedź w konsoli
+    
+
+            const response = await fetch(process.env.DATABASE_URL + endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
