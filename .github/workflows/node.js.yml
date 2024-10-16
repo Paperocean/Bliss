@@ -27,21 +27,22 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm' # Optional: caching npm dependencies
+        cache-dependency-path: ./frontend/package-lock.json
 
     - name: Change directory to frontend
-      run: cd Bliss/frontend
+      run: cd ./frontend
 
     # Install dependencies
     - name: Install dependencies
       run: npm ci
-      working-directory: Bliss/frontend
+      working-directory: ./frontend
 
     # Build the project (if applicable)
     - name: Build the project
       run: npm run build --if-present
-      working-directory: Bliss/frontend
+      working-directory: ./frontend
 
     # Run tests
     - name: Run tests
       run: npm test
-      working-directory: Bliss/frontend
+      working-directory: ./frontend
