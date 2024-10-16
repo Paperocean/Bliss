@@ -3,9 +3,5 @@ import App from './App';
 import { MemoryRouter } from 'react-router-dom';
 
 test('renders learn react link', () => {
-  render(
-    <MemoryRouter initialEntries={['/']}>
-      <App />
-    </MemoryRouter>
-  );
+  render(<App />);
 });
