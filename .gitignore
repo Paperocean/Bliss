@@ -1,0 +1,7 @@
+# IDE files
+.vscode/
+.idea/
+
+# DB files
+pg_data/
+db_data/
