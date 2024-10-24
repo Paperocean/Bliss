@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-frontend:
+  build:
     runs-on: ubuntu-latest
 
     strategy:
@@ -21,7 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Setup Node.js environment
+    # Setup Node.js environment for frontend
     - name: Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4.0.4
       with:
@@ -39,6 +39,21 @@ jobs:
       run: npm run build --if-present
       working-directory: ./frontend
 
+    # Install concurrently
+    - name: Install concurrently
+      run: npm install concurrently --save-dev
+      working-directory: ./frontend
+
+    # Start backend and frontend services together
+    - name: Start backend and frontend
+      run: npm start
+      working-directory: ./frontend
+
+    # Wait for services to be ready (if necessary)
+    - name: Wait for services to be ready
+      run: |
+        sleep 10  # Adjust this time as necessary
+
     # Run frontend tests
     - name: Run frontend tests
       run: npm test
@@ -46,7 +61,11 @@ jobs:
 
   build-backend:
     runs-on: ubuntu-latest
-    needs: build-frontend  # Ensure backend builds after frontend
+    needs: build  # Ensure backend builds after frontend
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -55,7 +74,7 @@ jobs:
     - name: Setup Node.js for backend
       uses: actions/setup-node@v4.0.4
       with:
-        node-version: '18.x'  # Specify the Node.js version for the backend
+        node-version: ${{ matrix.node-version }}  # Match the Node.js version from frontend
         cache: 'npm' # Optional: caching npm dependencies
         cache-dependency-path: ./backend/package-lock.json
 

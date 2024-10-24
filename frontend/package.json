@@ -12,10 +12,12 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
+    "start-backend": "cd ../backend && docker-compose up --build",
+    "start-frontend": "react-scripts start"
   },
   "eslintConfig": {
     "extends": [
@@ -38,6 +40,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@testing-library/react": "^16.0.1",
+    "concurrently": "^9.0.1",
     "react-router-dom": "^6.27.0"
   }
 }
