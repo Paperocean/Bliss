@@ -1,0 +1,12 @@
+
+Szukanie docker ip:
+
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' postgres-container
+
+Łączenie sie z dockerem:
+
+psql -h <CONTAINER_IP> -U postgres -d bliss
+
+Budowanie bazy danych:
+
+docker-compose up --build

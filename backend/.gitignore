@@ -1,5 +1,2 @@
-# Wyklucz folder node_modules
 node_modules/
-
-# Wyklucz plik .env z danymi wrażliwymi
 .env
