@@ -1,0 +1,46 @@
+/* ======================= HOME PAGE ======================== */
+------- HOME PAGE -------
+container
+
+-------- HEADER ---------
+header-container
+header-title
+nav-links
+
+-------- EVENTLIST ----------
+event-list-container
+event-list-title
+event-list
+event-caption
+
+------- SEARCH BAR ----------
+search-bar
+
+---------- FOOTER ------------
+footer
+
+/* ======================= EVENT PAGE ======================== */
+-------- EVENT PAGE -------
+container
+event-main
+event-categories
+animated-title
+category-events
+
+------- EVENT CATEGORIES -----
+event-categories-list
+category-item
+
+------- CATEGORY EVENTS -------
+category-events-container
+category-header
+events-layout
+event-list
+event-item
+event-details animated-details??
+
+/* ======================= LOGIN PAGE ======================== */
+------- LOGIN PAGE ------
+login-page
+login-form
+form-group
