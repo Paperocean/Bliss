@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../App.css';
+import './Eventpage.css';
 import Header from '../homepage/Header';
 import Footer from '../homepage/Footer';
 import EventCategories from './EventCategories';
@@ -15,7 +15,6 @@ const EventPage = () => {
     };
 
     return (
-        <div className="app">
             <div className="container">
                 <Header />
                 <main className="event-main">
@@ -32,7 +31,6 @@ const EventPage = () => {
                 </main>
                 <Footer />
             </div>
-        </div>
     );
 };
 

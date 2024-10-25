@@ -1,23 +1,27 @@
 /* ------- HOME PAGE ------- */
+.container {
+  display: grid;
+  grid-template-columns: repeat(12, auto);
+  grid-template-rows: 1fr auto;
+  grid-gap: 20px;
+  row-gap: 100px;
+  min-height: 100vh; /* Set minimum height of the container */
+}
+
 .header-container {
-    display: grid;
-    grid-template-columns: repeat(12, auto);
-    grid-template-rows: 1fr auto;
-    grid-gap: 20px;
-    row-gap: 100px;
-    min-height: 100vh; /* Set minimum height of the container */
-    grid-row: 1;
-    grid-column: 1 / -1;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 20px 50px;
-    align-items: center; /* Center vertically */
-    justify-content: space-between;
-    border-bottom: none; /* Remove white line */
-    height: 200px; /* Fixed header height */
-    max-height: 200px; /* Max header height */
-    overflow: hidden; /* Hide overflow content */
-    flex: 0 0 auto; /* Prevent header from growing */
-    position: relative; /* Enable pseudo-element positioning */
+  grid-row: 1;
+  grid-column: 1 / -1;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 20px 50px 20px 50px;
+  display: flex;
+  align-items: center; /* Center vertically */
+  justify-content: space-between;
+  border-bottom: none; /* Usunięcie białej linii */
+  height: 200px; /* Fixed header height */
+  max-height: 200px; /* Max header height */
+  overflow: hidden; /* Hide overflow content */
+  flex: 0 0 auto; /* Prevent header from growing */
+  position: relative; /* Aby umożliwić umieszczenie pseudo-elementu */
 }
 
 .header-container::after {
