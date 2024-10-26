@@ -1,0 +1,199 @@
+.container {
+    display: grid;
+    grid-template-columns: repeat(12, auto);
+    grid-template-rows: 1fr auto;
+    grid-gap: 20px;
+    row-gap: 100px;
+    min-height: 100vh; /* Set minimum height of the container */
+  }
+
+
+  /* -------- EVENT PAGE -------  */
+/* Main Event Section */
+.event-main {
+    grid-column: 4 / 8; /* Rozciągnięcie sekcji na większość ekranu */
+    padding: 40px;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), rgba(46, 134, 95, 0.6) 40%, rgba(0, 0, 0, 0.8) 70%);
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(64, 224, 208, 0.5); /* Turkusowy cień dla sekcji */
+    transition: transform 0.3s, box-shadow 0.3s; /* Dodano efekt cienia */
+    position: relative; /* Aby animacje działały na tle */
+  }
+  
+  /* Shadow Effect on Hover */
+  .event-main:hover {
+    box-shadow: 0 12px 50px rgba(64, 224, 208, 0.8); /* Wzmocnienie cienia na hover */
+    transform: translateY(-5px); /* Lekka animacja do góry na hover */
+  }
+  
+  /* Animated Title */
+  .animated-title {
+    font-size: 2.5rem; /* Zwiększona wielkość czcionki */
+    text-align: center;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(-30px); /* Większy efekt przesunięcia */
+    animation: fadeInUp 0.6s forwards, bounce 1s infinite; /* Dodano efekt 'bounce' */
+    color: #FFD700; /* Złoty kolor dla tytułu */
+    margin: auto 0; /* Wyśrodkowanie tytułu */
+  }
+  
+  /* Keyframes for Title Animation */
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .event-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Slightly larger min width */
+    gap: 20px;
+    animation: fadeIn 0.6s ease-in-out;
+  }
+  
+  /* Keyframes for Fade In Effect */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .event-categories {
+      grid-template-columns: 1fr; /* Wyświetlanie kategorii w jednej kolumnie na mniejszych ekranach */
+    }
+  
+    .event-main {
+      padding: 20px; /* Zmniejszenie paddingu na mniejszych ekranach */
+    }
+  
+    .animated-title {
+      font-size: 2rem; /* Mniejsza czcionka na mniejszych ekranach */
+    }
+  
+    .category-events-container {
+      flex-direction: column; /* Zmiana kierunku na kolumnę na małych ekranach */
+      gap: 40px; /* Zmniejszenie odstępu */
+    }
+  }
+
+  
+  /* ------- EVENT CATEGORIES ----- */
+/* Stylizacja listy kategorii */
+.event-categories-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Stylizacja elementów kategorii */
+  .category-item {
+    margin: 10px 0;
+    transition: transform 0.3s, color 0.3s;
+  }
+  
+  .category-item:hover {
+    transform: scale(1.05);
+    color: #FF7F50; /* Jasny czerwony na hover */
+  }
+  
+  /* Linki w kategoriach */
+  .category-item a {
+    text-decoration: none;
+    color: #FFFFFF; /* Biały kolor dla linków */
+    font-size: 1.2rem;
+    font-weight: bold; /* Pogrubienie tekstu linków */
+    transition: color 0.3s; /* Dodano animację dla koloru */
+  }
+  
+  .category-item a:hover {
+    color: #FFCC00; /* Zmiana koloru tekstu linków po najechaniu */
+  }
+
+  /* ------- CATEGORY EVENTS ------- */
+/* Category Events Section */
+.category-events-container {
+    display: flex;
+    flex-direction: row;
+    gap: 100px; /* Odstęp między listą wydarzeń a podglądem */
+  }
+  
+/* Event List */
+.event-list {
+    display: flex; /* Use flexbox for layout */
+    margin-top: 20px;
+  }
+  
+  /* Individual Event Item */
+  .event-item {
+    background: rgba(189, 1, 247, 0.1);
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+  }
+  
+  /* Hover effect for event item */
+  .event-item:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+  }
+  
+  /* Animation for event preview */
+  .animated-preview {
+    animation: fadeInUp 0.5s forwards; /* Fade in effect */
+  }
+  
+  /* Keyframes for fade-in effect */
+  @keyframes fadeInUp {
+    from {
+        opacity: 0; /* Start invisible */
+        transform: translateY(20px); /* Start below */
+    }
+    to {
+        opacity: 1; /* Fully visible */
+        transform: translateY(0); /* End in position */
+    }
+  }
+  
+  /* Additional Styles for Responsiveness */
+  @media (max-width: 768px) {
+    .event-list {
+        flex-direction: column; /* Stack vertically on small screens */
+    }
+  
+    .event-categories {
+        width: 100%; /* Full width on small screens */
+        margin-left: 0; /* Reset left margin */
+    }
+  }
+  
+  /* Stylizacja w efekcie */
+  .category-item:before {
+    content: ''; /* Dodanie pseudo-elementu */
+    display: block;
+    height: 3px; /* Wysokość lini separatora */
+    width: 0; /* Początkowa szerokość */
+    background: #FF7F50; /* Kolor separatora */
+    transition: width 0.3s; /* Animacja dla szerokości */
+  }
+  
+  .category-item:hover:before {
+    width: 100%; /* Szerokość separatora na hover */
+  }
+  
