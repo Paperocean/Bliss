@@ -1,6 +1,8 @@
 # Wybieramy obraz bazowy
 FROM node:14
 
+RUN apt-get update && apt-get install -y postgresql-client
+
 # Ustawiamy katalog roboczy
 WORKDIR /usr/src/app
 

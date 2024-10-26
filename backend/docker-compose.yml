@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   postgres:
     image: postgres
@@ -12,6 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
 
@@ -25,14 +25,18 @@ services:
       PGDATABASE: ${PGDATABASE}
       PGHOST: postgres
       PGPORT: 5432
+      PORT: 5000
     ports:
       - "5000:5000"
     depends_on:
       - postgres
+
     networks:
       - app-network
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: sh -c "until pg_isready -h $PGHOST -p $PGPORT; do echo 'Waiting for PostgreSQL...'; sleep 1; done && npm start" # waiting for postgre container
 
 volumes:
   postgres_data:
