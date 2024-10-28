@@ -7,6 +7,7 @@ import CategoryEvents from './eventpage/CategoryEvents';
 import CartPage from './cartpage/CartPage';
 import ProfilePage from './profilepage/ProfilePage';
 import LoginPage from './loginpage/LoginPage';
+import RegisterPage from './registerpage/RegisterPage';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/events/:category" element={<CategoryEvents />} />
         </Routes>
       </Router>

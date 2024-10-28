@@ -1,36 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
+import { useNavigate } from 'react-router-dom'; // Import hooka do nawigacji
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [name, setName] = useState(''); // nowy stan dla imienia
-    const [isRegister, setIsRegister] = useState(false); // toggle between login and register
+    const [username, setUsername] = useState('');
+    const [isRegister, setIsRegister] = useState(false);
+    const navigate = useNavigate(); // Hook do nawigacji
 
     useEffect(() => {
-        console.log('Welcome to the Login Page'); // Log przy każdym wejściu na stronę
-    }, []); // Pusty array oznacza, że efekt wykona się tylko przy zamontowaniu komponentu
-
+        console.log('Welcome to the Login Page');
+    }, []);
 
     const handleSubmit = async (e) => {
-        
         e.preventDefault();
-        console.log("Form submitted"); // Dodaj ten log
-        const endpoint = isRegister ? '/register' : '/login';
-
+        console.log("Form submitted");
+    
+        // Ustal endpoint na podstawie trybu rejestracji
+        const endpoint = isRegister ? 'http://localhost:5000/register' : 'http://localhost:5000/login';
+    
         try {
-            const testResponse = await fetch(`https://bliss-instance-1.chsq4e0qk2i3.eu-north-1.rds.amazonaws.com/test`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-    
-            const testData = await testResponse.json();
-            console.log('Test response:', testData); // Zobacz odpowiedź w konsoli
-    
-
-            const response = await fetch(process.env.DATABASE_URL + endpoint, {
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,10 +29,10 @@ const LoginPage = () => {
                 body: JSON.stringify({
                     email,
                     password,
-                    ...(isRegister && { name })
+                    ...(isRegister && { username })
                 }),
             });
-
+    
             const data = await response.json();
             if (data.success) {
                 console.log(isRegister ? 'Registration successful' : 'Login successful');
@@ -57,14 +48,14 @@ const LoginPage = () => {
         <div className="login-page">
             <form className="login-form" onSubmit={handleSubmit}>
                 <h2>{isRegister ? 'Register' : 'Login'}</h2>
-                {isRegister && ( // pokaż pole name tylko podczas rejestracji
+                {isRegister && (
                     <div className="form-group">
-                        <label htmlFor="name">Name:</label>
+                        <label htmlFor="username">Username:</label>
                         <input
                             type="text"
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             required
                         />
                     </div>
@@ -93,6 +84,11 @@ const LoginPage = () => {
                 <p onClick={() => setIsRegister(!isRegister)}>
                     {isRegister ? 'Already have an account? Log in' : 'Need an account? Register'}
                 </p>
+                {!isRegister && (
+                    <button type="button" onClick={() => navigate('/register')}>
+                        Go to Registration
+                    </button>
+                )}
             </form>
         </div>
     );
