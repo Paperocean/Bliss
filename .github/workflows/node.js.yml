@@ -38,7 +38,7 @@ jobs:
 
       # Start frontend service
       - name: Start frontend service
-        run: npm start
+        run: npm start &
         working-directory: ./frontend
 
       # Wait for frontend to be ready (if necessary)
