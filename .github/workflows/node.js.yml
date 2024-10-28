@@ -80,6 +80,20 @@ jobs:
         run: npm run build --if-present
         working-directory: ./backend
 
+      # Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      # Verify Docker Compose installation
+      - name: Verify Docker Compose installation
+        run: docker-compose --version
+
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       # Start backend service using Docker Compose
       - name: Start backend service with Docker Compose
         run: docker-compose up --build -d
