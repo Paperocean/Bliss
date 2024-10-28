@@ -1,13 +1,10 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code, and run tests across different versions of Node.js
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: CI/CD for Frontend and Backend
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -16,79 +13,83 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    # Setup Node.js environment for frontend
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4.0.4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm' # Optional: caching npm dependencies
-        cache-dependency-path: ./frontend/package-lock.json
+      # Setup Node.js environment for frontend
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4.0.4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: ./frontend/package-lock.json
 
-    # Change directory to frontend and install dependencies
-    - name: Install frontend dependencies
-      run: npm install
-      working-directory: ./frontend
+      # Change directory to frontend and install dependencies
+      - name: Install frontend dependencies
+        run: npm install
+        working-directory: ./frontend
 
-    # Build the frontend project (if applicable)
-    - name: Build the frontend project
-      run: npm run build --if-present
-      working-directory: ./frontend
+      # Build the frontend project (if applicable)
+      - name: Build the frontend project
+        run: npm run build --if-present
+        working-directory: ./frontend
 
-    # Install concurrently
-    - name: Install concurrently
-      run: npm install concurrently --save-dev
-      working-directory: ./frontend
+      # Start backend and frontend services together
+      - name: Start backend and frontend
+        run: npm start
+        working-directory: ./frontend
 
-    # Start backend and frontend services together
-    - name: Start backend and frontend
-      run: npm start
-      working-directory: ./frontend
+      # Wait for services to be ready (if necessary)
+      - name: Wait for services to be ready
+        run: |
+          sleep 10  # Adjust this time as necessary
 
-    # Wait for services to be ready (if necessary)
-    - name: Wait for services to be ready
-      run: |
-        sleep 10  # Adjust this time as necessary
-
-    # Run frontend tests
-    - name: Run frontend tests
-      run: npm test
-      working-directory: ./frontend
+      # Run frontend tests
+      - name: Run frontend tests
+        run: npm test
+        working-directory: ./frontend
 
   build-backend:
     runs-on: ubuntu-latest
-    needs: build  # Ensure backend builds after frontend
+    needs: build # Ensure backend builds after frontend
 
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    # Setup Node.js environment for backend
-    - name: Setup Node.js for backend
-      uses: actions/setup-node@v4.0.4
-      with:
-        node-version: ${{ matrix.node-version }}  # Match the Node.js version from frontend
-        cache: 'npm' # Optional: caching npm dependencies
-        cache-dependency-path: ./backend/package-lock.json
+      # Setup Node.js environment for backend
+      - name: Setup Node.js for backend
+        uses: actions/setup-node@v4.0.4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: ./backend/package-lock.json
 
-    # Install backend dependencies
-    - name: Install backend dependencies
-      run: npm install
-      working-directory: ./backend
+      # Install backend dependencies
+      - name: Install backend dependencies
+        run: npm install
+        working-directory: ./backend
 
-    # Build the backend project (if applicable)
-    - name: Build the backend project
-      run: npm run build --if-present
-      working-directory: ./backend
+      # Build the backend project (if applicable)
+      - name: Build the backend project
+        run: npm run build --if-present
+        working-directory: ./backend
 
-    # Run backend tests
-    - name: Run backend tests
-      run: npm test
-      working-directory: ./backend
+      # Start the backend service using Docker Compose
+      - name: Start backend service
+        run: docker-compose up --build -d
+        working-directory: ./backend
+
+      # Wait for the backend service to be ready (if necessary)
+      - name: Wait for backend service to be ready
+        run: |
+          sleep 10  # Adjust this time as necessary
+
+      # Run backend tests
+      - name: Run backend tests
+        run: npm test
+        working-directory: ./backend

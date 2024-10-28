@@ -1,36 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
+import { useNavigate } from 'react-router-dom'; // Import hooka do nawigacji
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [name, setName] = useState(''); // nowy stan dla imienia
-    const [isRegister, setIsRegister] = useState(false); // toggle between login and register
+    const [message, setMessage] = useState(''); // Stan do wyświetlania komunikatów
+    const navigate = useNavigate(); // Hook do nawigacji
 
     useEffect(() => {
-        console.log('Welcome to the Login Page'); // Log przy każdym wejściu na stronę
-    }, []); // Pusty array oznacza, że efekt wykona się tylko przy zamontowaniu komponentu
-
+        console.log('Welcome to the Login Page');
+    }, []);
 
     const handleSubmit = async (e) => {
-        
         e.preventDefault();
-        console.log("Form submitted"); // Dodaj ten log
-        const endpoint = isRegister ? '/register' : '/login';
-
+        
+        if (!email || !password) {
+            alert("Email and password are required");
+            return;
+        }
+    
         try {
-            const testResponse = await fetch(`https://bliss-instance-1.chsq4e0qk2i3.eu-north-1.rds.amazonaws.com/test`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-    
-            const testData = await testResponse.json();
-            console.log('Test response:', testData); // Zobacz odpowiedź w konsoli
-    
-
-            const response = await fetch(process.env.DATABASE_URL + endpoint, {
+            const response = await fetch('http://localhost:5000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,37 +29,29 @@ const LoginPage = () => {
                 body: JSON.stringify({
                     email,
                     password,
-                    ...(isRegister && { name })
                 }),
             });
-
+    
             const data = await response.json();
             if (data.success) {
-                console.log(isRegister ? 'Registration successful' : 'Login successful');
+                setMessage('Login successful');
+                localStorage.setItem('token', data.token);
+                // Store user data in local storage or pass to profile
+                localStorage.setItem('user', JSON.stringify(data.user)); // Save user data
+                navigate('/profile');
             } else {
-                console.error(data.message);
+                setMessage(data.message);
             }
         } catch (error) {
             console.error('Error:', error);
+            setMessage('Login failed. Please try again.');
         }
     };
 
     return (
         <div className="login-page">
             <form className="login-form" onSubmit={handleSubmit}>
-                <h2>{isRegister ? 'Register' : 'Login'}</h2>
-                {isRegister && ( // pokaż pole name tylko podczas rejestracji
-                    <div className="form-group">
-                        <label htmlFor="name">Name:</label>
-                        <input
-                            type="text"
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                        />
-                    </div>
-                )}
+                <h2>Login</h2>
                 <div className="form-group">
                     <label htmlFor="email">Email:</label>
                     <input
@@ -89,9 +72,10 @@ const LoginPage = () => {
                         required
                     />
                 </div>
-                <button type="submit">{isRegister ? 'Register' : 'Login'}</button>
-                <p onClick={() => setIsRegister(!isRegister)}>
-                    {isRegister ? 'Already have an account? Log in' : 'Need an account? Register'}
+                <button type="submit">Login</button>
+                {message && <p>{message}</p>} {/* Wyświetl komunikat o stanie logowania */}
+                <p onClick={() => navigate('/register')}>
+                    Need an account? Register
                 </p>
             </form>
         </div>

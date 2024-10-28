@@ -15,9 +15,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
-    "start-backend": "cd ../backend && docker-compose up --build",
-    "start-frontend": "react-scripts start"
+    "start": "react-scripts start"
   },
   "eslintConfig": {
     "extends": [
