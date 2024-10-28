@@ -7,7 +7,7 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  build-frontend:
     runs-on: ubuntu-latest
 
     strategy:
@@ -15,35 +15,35 @@ jobs:
         node-version: [18.x, 20.x, 22.x]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       # Setup Node.js environment for frontend
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix.node-version }} for frontend
         uses: actions/setup-node@v4.0.4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
           cache-dependency-path: ./frontend/package-lock.json
 
-      # Change directory to frontend and install dependencies
+      # Install frontend dependencies
       - name: Install frontend dependencies
         run: npm install
         working-directory: ./frontend
 
       # Build the frontend project (if applicable)
-      - name: Build the frontend project
+      - name: Build frontend project
         run: npm run build --if-present
         working-directory: ./frontend
 
-      # Start backend and frontend services together
-      - name: Start backend and frontend
+      # Start frontend service
+      - name: Start frontend service
         run: npm start
         working-directory: ./frontend
 
-      # Wait for services to be ready (if necessary)
-      - name: Wait for services to be ready
-        run: |
-          sleep 10  # Adjust this time as necessary
+      # Wait for frontend to be ready (if necessary)
+      - name: Wait for frontend to be ready
+        run: sleep 10 # Adjust this time as necessary
 
       # Run frontend tests
       - name: Run frontend tests
@@ -52,17 +52,18 @@ jobs:
 
   build-backend:
     runs-on: ubuntu-latest
-    needs: build # Ensure backend builds after frontend
+    needs: build-frontend # Ensure backend builds after frontend
 
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       # Setup Node.js environment for backend
-      - name: Setup Node.js for backend
+      - name: Setup Node.js ${{ matrix.node-version }} for backend
         uses: actions/setup-node@v4.0.4
         with:
           node-version: ${{ matrix.node-version }}
@@ -75,19 +76,18 @@ jobs:
         working-directory: ./backend
 
       # Build the backend project (if applicable)
-      - name: Build the backend project
+      - name: Build backend project
         run: npm run build --if-present
         working-directory: ./backend
 
-      # Start the backend service using Docker Compose
-      - name: Start backend service
+      # Start backend service using Docker Compose
+      - name: Start backend service with Docker Compose
         run: docker-compose up --build -d
         working-directory: ./backend
 
-      # Wait for the backend service to be ready (if necessary)
-      - name: Wait for backend service to be ready
-        run: |
-          sleep 10  # Adjust this time as necessary
+      # Wait for backend to be ready (if necessary)
+      - name: Wait for backend to be ready
+        run: sleep 10 # Adjust this time as necessary
 
       # Run backend tests
       - name: Run backend tests
