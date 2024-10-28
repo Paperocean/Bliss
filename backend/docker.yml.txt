@@ -1,7 +1,10 @@
-name: CI with Docker Compose
+name: CI/CD for Frontend and Backend with Docker Compose
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -21,13 +24,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose-plugin
 
-      - name: Build and Start Backend with Docker Compose
+      # Build and Start Backend with Docker Compose
+      - name: Build and Start Backend
         working-directory: ./backend
-        run: |
-          docker compose up --build -d
+        run: docker compose up --build -d
 
-      - name: Install Frontend Dependencies and Start
+      # Install Frontend Dependencies and Start
+      - name: Install Frontend Dependencies
         working-directory: ./frontend
-        run: |
-          npm install
-          npm start
+        run: npm install
+
+      - name: Start Frontend
+        working-directory: ./frontend
+        run: npm start

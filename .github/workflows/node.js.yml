@@ -99,10 +99,6 @@ jobs:
         run: docker-compose up --build -d
         working-directory: ./backend
 
-      # Wait for backend to be ready (if necessary)
-      - name: Wait for backend to be ready
-        run: sleep 10 # Adjust this time as necessary
-
       # Run backend tests
       - name: Run backend tests
         run: npm test
