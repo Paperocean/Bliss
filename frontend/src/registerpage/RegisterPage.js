@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import '../App.css';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState(''); // Stan do wyświetlania komunikatów
+    const [message, setMessage] = useState(''); // State for displaying messages
+    const navigate = useNavigate(); // Hook for navigation
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -39,7 +41,10 @@ const RegisterPage = () => {
             setMessage('Registration failed. Please try again.');
         }
     };
-    
+
+    const handleLogin = () => {
+        navigate('/login'); // Navigate to the login page
+    };
 
     return (
         <div className="register-page">
@@ -76,8 +81,14 @@ const RegisterPage = () => {
                     />
                 </div>
                 <button type="submit">Register</button>
-                {message && <p>{message}</p>} {/* Wyświetl komunikat o stanie rejestracji */}
+                {message && <p>{message}</p>} {/* Display registration status message */}
             </form>
+            {/* Show login button after successful registration */}
+            {message === 'User registered successfully' && (
+                <button onClick={handleLogin} className="login-button">
+                    Login
+                </button>
+            )}
         </div>
     );
 };

@@ -5,8 +5,7 @@ import { useNavigate } from 'react-router-dom'; // Import hooka do nawigacji
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [username, setUsername] = useState('');
-    const [isRegister, setIsRegister] = useState(false);
+    const [message, setMessage] = useState(''); // Stan do wyświetlania komunikatów
     const navigate = useNavigate(); // Hook do nawigacji
 
     useEffect(() => {
@@ -15,13 +14,14 @@ const LoginPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form submitted");
-    
-        // Ustal endpoint na podstawie trybu rejestracji
-        const endpoint = isRegister ? 'http://localhost:5000/register' : 'http://localhost:5000/login';
+        
+        if (!email || !password) {
+            alert("Email and password are required");
+            return;
+        }
     
         try {
-            const response = await fetch(endpoint, {
+            const response = await fetch('http://localhost:5000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -29,37 +29,29 @@ const LoginPage = () => {
                 body: JSON.stringify({
                     email,
                     password,
-                    ...(isRegister && { username })
                 }),
             });
     
             const data = await response.json();
             if (data.success) {
-                console.log(isRegister ? 'Registration successful' : 'Login successful');
+                setMessage('Login successful');
+                localStorage.setItem('token', data.token);
+                // Store user data in local storage or pass to profile
+                localStorage.setItem('user', JSON.stringify(data.user)); // Save user data
+                navigate('/profile');
             } else {
-                console.error(data.message);
+                setMessage(data.message);
             }
         } catch (error) {
             console.error('Error:', error);
+            setMessage('Login failed. Please try again.');
         }
     };
 
     return (
         <div className="login-page">
             <form className="login-form" onSubmit={handleSubmit}>
-                <h2>{isRegister ? 'Register' : 'Login'}</h2>
-                {isRegister && (
-                    <div className="form-group">
-                        <label htmlFor="username">Username:</label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                        />
-                    </div>
-                )}
+                <h2>Login</h2>
                 <div className="form-group">
                     <label htmlFor="email">Email:</label>
                     <input
@@ -80,15 +72,11 @@ const LoginPage = () => {
                         required
                     />
                 </div>
-                <button type="submit">{isRegister ? 'Register' : 'Login'}</button>
-                <p onClick={() => setIsRegister(!isRegister)}>
-                    {isRegister ? 'Already have an account? Log in' : 'Need an account? Register'}
+                <button type="submit">Login</button>
+                {message && <p>{message}</p>} {/* Wyświetl komunikat o stanie logowania */}
+                <p onClick={() => navigate('/register')}>
+                    Need an account? Register
                 </p>
-                {!isRegister && (
-                    <button type="button" onClick={() => navigate('/register')}>
-                        Go to Registration
-                    </button>
-                )}
             </form>
         </div>
     );

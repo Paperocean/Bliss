@@ -47,24 +47,41 @@ app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Check if user exists
-    const userResult = await pool.query('SELECT * FROM users WHERE email = $1 OR username = $1', [email]);
-    if (userResult.rows.length === 0) {
-      return res.status(400).json({ success: false, message: 'Invalid email or password' });
-    }
+      // Check if user exists
+      const userResult = await pool.query('SELECT * FROM public.users WHERE email = $1 OR username = $1', [email]);
+      if (userResult.rows.length === 0) {
+          return res.status(400).json({ success: false, message: 'Invalid email or password' });
+      }
 
-    const user = userResult.rows[0];
+      const user = userResult.rows[0];
 
-    // Check if the password matches (in plaintext)
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) {
-      return res.status(400).json({ success: false, message: 'Invalid email or password' });
-    }
+      // Check if the password matches
+      const isMatch = await bcrypt.compare(password, user.password_hash);
+      if (!isMatch) {
+          return res.status(400).json({ success: false, message: 'Invalid email or password' });
+      }
 
-    res.json({ success: true, message: 'Logged in successfully', user });
+      // Return user data along with success message
+      res.json({ success: true, message: 'Logged in successfully', user });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ success: false, message: 'Login failed' });
+      console.error('Login error:', error);
+      res.status(500).json({ success: false, message: 'Login failed' });
+  }
+});
+
+// Profile endpoint
+app.get('/profile', async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const result = await pool.query('SELECT * FROM public.users WHERE id = $1', [userId]);
+    if (result.rows.length > 0) {
+      res.json({ success: true, user: result.rows[0] });
+    } else {
+      res.status(404).json({ success: false, message: 'User not found' });
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
   }
 });
 
