@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { Pool } = require('pg');
 
-// Konfiguracja połączenia z bazą danych
+// Data base connection config
 const pool = new Pool({
   user: process.env.PGUSER,
   host: process.env.PGHOST,
@@ -10,12 +10,12 @@ const pool = new Pool({
   port: process.env.PGPORT,
 });
 
-// Sprawdzanie połączenia
+// Connection check
 pool.connect((err) => {
   if (err) {
-    console.error('Błąd połączenia z bazą danych:', err);
+    console.error('Error connecting with database:', err);
   } else {
-    console.log('Połączono z bazą danych PostgreSQL');
+    console.log('Connected to PG database.');
   }
 });
 

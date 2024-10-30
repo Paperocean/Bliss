@@ -1,3 +1,4 @@
+version: '3'
 services:
   postgres:
     image: postgres
@@ -30,12 +31,12 @@ services:
       - "5000:5000"
     depends_on:
       - postgres
-
     networks:
       - app-network
     volumes:
       - .:/usr/src/app
-    command: sh -c "until pg_isready -h $PGHOST -p $PGPORT; do echo 'Waiting for PostgreSQL...'; sleep 1; done && npm start" # waiting for postgre container
+      - /usr/src/app/node_modules
+    command: sh -c "until pg_isready -h $PGHOST -p $PGPORT; do echo 'Waiting for PostgreSQL...'; sleep 1; done && npm start"
 
 volumes:
   postgres_data:
