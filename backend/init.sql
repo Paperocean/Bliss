@@ -33,10 +33,12 @@ CREATE TABLE ticket_types (
 
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
-    order_id INT REFERENCES orders(id) ON DELETE CASCADE,
-    ticket_type_id INT REFERENCES ticket_types(id) ON DELETE SET NULL,
+    user_id INT REFERENCES users(id) ON DELETE SET NULL,
+    ticket_type_id INT REFERENCES ticket_types(id) ON DELETE CASCADE,
     quantity INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE payments (
