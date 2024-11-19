@@ -1,12 +1,12 @@
 /* ------- HOME PAGE ------- */
 .container {
-    display: grid;
-    grid-template-columns: repeat(12, auto);
-    grid-template-rows: 1fr auto;
-    grid-gap: 20px;
-    row-gap: 100px;
-    min-height: 100vh; /* Set minimum height of the container */
-  }
+  display: grid;
+  grid-template-columns: repeat(12, 1fr); /* Use 1fr to equally distribute columns */
+  grid-template-rows: auto 1fr auto; /* Add an extra row for better layout control */
+  gap: 20px; /* Combine row and column gap */
+  min-height: 100vh; /* Set minimum height of the container */
+  padding: 20px; /* Add padding for better spacing */
+}
   
   .header-container {
     grid-row: 1;
@@ -38,17 +38,15 @@
     
   
     .header-title {
-      font-size: 50px;
+      font-size: 25px;
       font-style: italic;
       color: #ffffff;
       display: flex;
       align-items: center; /* Center vertically */
-      padding: 40px;
       text-shadow: 4px 4px 10px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.2);
-      margin-left: 100px;
-      transform: rotate(-5deg) translate(10px, -5px); /* Rotate and translate text */
-      position: relative; /* Enable positioning of pseudo-elements */
-      overflow: hidden; /* Hide overflow content */
+      transform: rotate(-5deg); /* Rotate and translate text */
+      position: absolute; /* Enable positioning of pseudo-elements */
+      top: 10px; /* Position near the top */
       transition: color 0.3s ease, text-shadow 0.3s ease; /* Animate colors and shadow */
     }
   
@@ -95,17 +93,27 @@
     }
   
     /* Navigation Links */
+    .nav-links {
+      display: flex;
+      justify-content: center; /* Center horizontally */
+      align-items: center; /* Center vertically */
+      position: absolute; /* Position navigation links */
+      top: 10px; /* Position near the top */
+      left: 50%; /* Center horizontally */
+      transform: translateX(-50%); /* Adjust for centering */
+    }
+
     .nav-links a {
-      font-size: 20px;
+      font-size: 15px;
       color: #ffffff; /* Text color */
       margin: 10px 30px;
       transition: color 0.3s ease, text-shadow 0.3s ease; /* Animate colors and shadow */
       text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.2);
       padding: 5px 10px; /* Added padding for better effect */
       border-radius: 10px; /* Rounded corners */
-      position: relative; /* Enable positioning of pseudo-elements */
       overflow: hidden; /* Hide overflow content */
       text-decoration: none;
+      text-transform: uppercase;
     }
   
     .nav-links a:visited {
