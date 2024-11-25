@@ -3,7 +3,7 @@ const pool = require('../config/db');
 // Getting all users
 exports.getAllUsers = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM users');
+    const result = await pool.query('SELECT * FROM public.users');
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
