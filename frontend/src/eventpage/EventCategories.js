@@ -11,7 +11,10 @@ const EventCategories = () => {
         const fetchCategories = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get('/api/categories');
+                // Wysyłanie zapytania do backendu, żeby pobrać wszystkie kategorie
+                const response = await axios.get('http://localhost:5000/api/events');
+                
+                // Jeśli zapytanie jest udane, zapisujemy kategorie w stanie
                 setCategories(response.data.categories || []);
                 setLoading(false);
             } catch (err) {
@@ -22,7 +25,7 @@ const EventCategories = () => {
         };
 
         fetchCategories();
-    }, []);
+    }, []); // Pusta tablica oznacza, że zapytanie wykona się tylko raz po załadowaniu komponentu
 
     if (loading) {
         return <p>Loading categories...</p>;
@@ -33,15 +36,15 @@ const EventCategories = () => {
     }
 
     if (categories.length === 0) {
-        return <p>No categories available.</p>;
+        return <p>No categories found.</p>;
     }
 
     return (
         <ul className="event-categories-list">
             {categories.map((category) => (
-                <li key={category.id} className="category-item">
-                    <Link to={`/events/${category.name.toLowerCase()}`}>
-                        {category.name}
+                <li key={category.category} className="category-item">
+                    <Link to={`/events/${category.category}`}>
+                        {category.category}
                     </Link>
                 </li>
             ))}

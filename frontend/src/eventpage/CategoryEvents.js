@@ -15,7 +15,7 @@ const CategoryEvents = () => {
 
         const fetchEvents = async () => {
             try {
-                const response = await axios.get(`/api/events?category=${category}`);
+                const response = await axios.get(`http://localhost:5000/api/events?category=${category}`);
                 setEvents(response.data);
             } catch (err) {
                 setError('Failed to fetch events. Please try again later.');

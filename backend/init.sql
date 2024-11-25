@@ -25,13 +25,14 @@ BEGIN
     END IF;
 END $$;
 
--- Create the 'events' table if it doesn't already exist
+-- Create the 'events' table if it doesn't already exist with a category column
 CREATE TABLE IF NOT EXISTS public.events (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     location VARCHAR(255),
     event_date DATE NOT NULL,
+    category VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

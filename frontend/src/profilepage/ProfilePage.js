@@ -10,6 +10,7 @@ const ProfilePage = () => {
         description: '',
         location: '',
         event_date: '',
+        category: '',
     }); // State for the new event form
     const [events, setEvents] = useState([]); // List of user's events
     const navigate = useNavigate();
@@ -134,6 +135,24 @@ const ProfilePage = () => {
                             onChange={handleEventInputChange}
                             required
                         />
+                    </div>
+                    <div>
+                        <label htmlFor="category">Category:</label>
+                        <select
+                            id="category"
+                            name="category"
+                            value={newEvent.category}
+                            onChange={handleEventInputChange}
+                            required
+                        >
+                            <option value="">Select a category</option>
+                            <option value="Rock">Rock</option>
+                            <option value="Pop">Pop</option>
+                            <option value="Party">Party</option>
+                            <option value="Hip-Hop">Hip-Hop</option>
+                            <option value="Rap">Rap</option>
+                            <option value="Jazz">Jazz</option>
+                        </select>
                     </div>
                     <button type="submit">Create Event</button>
                 </form>
