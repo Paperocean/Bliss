@@ -2,14 +2,12 @@
 .container {
   display: grid;
   grid-template-columns: repeat(12, 1fr); /* Use 1fr to equally distribute columns */
-  grid-template-rows: auto 1fr auto; /* Add an extra row for better layout control */
   gap: 20px; /* Combine row and column gap */
   min-height: 100vh; /* Set minimum height of the container */
   padding: 20px; /* Add padding for better spacing */
 }
   
   .header-container {
-    grid-row: 1;
     grid-column: 1 / -1;
     background: rgba(0, 0, 0, 0.5);
     padding: 20px 50px 20px 50px;
@@ -17,7 +15,7 @@
     align-items: center; /* Center vertically */
     justify-content: space-between;
     border-bottom: none; /* Usunięcie białej linii */
-    height: 200px; /* Fixed header height */
+    height: 100px;
     max-height: 200px; /* Max header height */
     overflow: hidden; /* Hide overflow content */
     flex: 0 0 auto; /* Prevent header from growing */
@@ -145,16 +143,14 @@
     /* -------- EVENTLIST ---------- */
   /* Event List Container */
   .event-list-container {
-      position: relative; /* Enable positioning of pseudo-elements */
-      grid-column: 3 / 6;
-      grid-row: 2;
+      position: relative;
       background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), rgba(46, 134, 95, 0.6) 40%, rgba(0, 0, 0, 0.8) 70%);
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 8px 30px rgba(64, 224, 208, 0.5);
-      display: grid;
-      margin: 0 auto; /* Center container on page */
       transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s; /* Combine transitions */
+      grid-column: 2/12;
+      display: flex;
     }
     
     /* Pseudo-element for fog effect */
@@ -182,11 +178,9 @@
     .event-list-title {
       font-size: 2rem; /* Increased font size */
       text-align: center;
-      margin: 20px 0; /* Top-bottom spacing */
       color: #FFD700; /* Gold text color */
-      position: relative; /* Enable positioning of pseudo-elements */
       opacity: 0; /* Start invisible */
-      transform: translateY(-30px); /* Larger offset */
+      padding: 20px;
       animation: fadeInUp 0.6s forwards, bounce 1s infinite; /* Added bounce effect */
     }
     
@@ -276,14 +270,14 @@
     /* ------- SEARCH BAR ---------- */
     /* Search Bar */
   .search-bar {
-      grid-column: 7 / 12;
+      position: absolute;
+      top: 20px; /* Position near the top */
+      right: 20px; /* Position near the right edge */
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(46, 134, 95, 0.6)); /* Gradient dopasowany do kontenera */
-      border-radius: 25px;
+      border-radius: 10px;
       padding: 10px 20px; /* Increased padding for comfort */
       display: flex;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6); /* Prominent shadow */
-      margin: auto 0;
-      margin-top: 30px;
       transition: transform 0.3s, box-shadow 0.3s; /* Hover animation */
     }
     
@@ -344,7 +338,7 @@
       display: flex;
       justify-content: center; /* Center horizontally */
       text-align: center;
-      padding: 20px; /* Add some padding */
+      padding-top: 20px; /* Add some padding */
       margin-top: auto; /* Stick to the bottom of the page */
     }
   

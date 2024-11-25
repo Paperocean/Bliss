@@ -1,48 +1,70 @@
 import React, { useEffect, useState } from 'react';
 import '../App.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const ProfilePage = () => {
     const [userData, setUserData] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
-    const [songs, setSongs] = useState([]); // To store the user's songs
-    const [newSong, setNewSong] = useState({ title: '', artist: '' }); // To track input fields for a new song
+    const [newEvent, setNewEvent] = useState({
+        name: '',
+        description: '',
+        location: '',
+        event_date: '',
+    }); // State for the new event form
+    const [events, setEvents] = useState([]); // List of user's events
     const navigate = useNavigate();
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user')); // Get user data
         if (user) {
             setUserData(user);
-            // Optionally, load user songs from an API or local storage
-            const savedSongs = JSON.parse(localStorage.getItem('songs')) || []; // For now, use localStorage
-            setSongs(savedSongs);
+            // Optionally, load user events from an API or localStorage
+            const savedEvents = JSON.parse(localStorage.getItem('events')) || [];
+            setEvents(savedEvents);
         } else {
             setErrorMessage('User not found. Please log in.');
             navigate('/login');
         }
     }, [navigate]);
 
-    // Handle the change in the song input form
-    const handleInputChange = (e) => {
+    // Handle input changes for new event form
+    const handleEventInputChange = (e) => {
         const { name, value } = e.target;
-        setNewSong((prev) => ({
+        setNewEvent((prev) => ({
             ...prev,
             [name]: value,
         }));
     };
 
-    // Handle submitting a new song
-    const handleSubmitSong = (e) => {
+    // Handle submitting a new event
+    const handleSubmitEvent = async (e) => {
         e.preventDefault();
-        if (newSong.title && newSong.artist) {
-            // Add the new song to the list
-            const updatedSongs = [...songs, newSong];
-            setSongs(updatedSongs);
-            // Save the updated songs list to localStorage
-            localStorage.setItem('songs', JSON.stringify(updatedSongs));
-            setNewSong({ title: '', artist: '' }); // Reset the form
+
+        if (newEvent.name && newEvent.event_date) {
+            try {
+                // Sending data to API to create the event
+                const response = await fetch('http://localhost:5000/api/events', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newEvent),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    setEvents((prevEvents) => [...prevEvents, data.event]); // Update the event list
+                    localStorage.setItem('events', JSON.stringify([...events, data.event])); // Save to localStorage
+                    setNewEvent({ name: '', description: '', location: '', event_date: '' }); // Reset form
+                } else {
+                    setErrorMessage('Failed to create event: ' + data.message);
+                }
+            } catch (error) {
+                setErrorMessage('Error creating event: ' + error.message);
+            }
         } else {
-            setErrorMessage('Both title and artist are required.');
+            setErrorMessage('Both name and event date are required.');
         }
     };
 
@@ -64,49 +86,74 @@ const ProfilePage = () => {
                 )}
             </section>
 
-            {/* Form for adding a song */}
-            <section className="add-song-section">
-                <h3>Add a Song</h3>
-                <form onSubmit={handleSubmitSong}>
+            <Link to="/" className="home-button">
+                    Go Home
+            </Link>
+
+            {/* Form for creating a new event */}
+            <section className="add-event-section">
+                <h3>Create New Event</h3>
+                <form onSubmit={handleSubmitEvent}>
                     <div>
-                        <label htmlFor="title">Song Title:</label>
+                        <label htmlFor="name">Event Name:</label>
                         <input
                             type="text"
-                            id="title"
-                            name="title"
-                            value={newSong.title}
-                            onChange={handleInputChange}
+                            id="name"
+                            name="name"
+                            value={newEvent.name}
+                            onChange={handleEventInputChange}
                             required
                         />
                     </div>
                     <div>
-                        <label htmlFor="artist">Artist:</label>
+                        <label htmlFor="description">Description:</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            value={newEvent.description}
+                            onChange={handleEventInputChange}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="location">Location:</label>
                         <input
                             type="text"
-                            id="artist"
-                            name="artist"
-                            value={newSong.artist}
-                            onChange={handleInputChange}
+                            id="location"
+                            name="location"
+                            value={newEvent.location}
+                            onChange={handleEventInputChange}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="event_date">Event Date:</label>
+                        <input
+                            type="date"
+                            id="event_date"
+                            name="event_date"
+                            value={newEvent.event_date}
+                            onChange={handleEventInputChange}
                             required
                         />
                     </div>
-                    <button type="submit">Add Song</button>
+                    <button type="submit">Create Event</button>
                 </form>
             </section>
 
-            {/* Display the list of songs */}
-            <section className="songs-list">
-                <h3>Your Songs</h3>
-                {songs.length > 0 ? (
+            {/* Display the list of events */}
+            <section className="events-list">
+                <h3>Your Events</h3>
+                {events.length > 0 ? (
                     <ul>
-                        {songs.map((song, index) => (
+                        {events.map((event, index) => (
                             <li key={index}>
-                                <strong>{song.title}</strong> by {song.artist}
+                                <strong>{event.name}</strong> - {event.event_date} <br />
+                                {event.description && <span>{event.description}</span>}
+                                <p>{event.location}</p>
                             </li>
                         ))}
                     </ul>
                 ) : (
-                    <p>No songs added yet.</p>
+                    <p>No events created yet.</p>
                 )}
             </section>
         </div>

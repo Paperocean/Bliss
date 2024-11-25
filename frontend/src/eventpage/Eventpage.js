@@ -23,7 +23,6 @@ const EventPage = () => {
                         <EventCategories />
                     </section>
                     <section className="category-events">
-                        <EventForm onCreate={handleCreateEvent} />
                         <Routes>
                             <Route path="/events/:category" element={<CategoryEvents events={events} />} />
                         </Routes>

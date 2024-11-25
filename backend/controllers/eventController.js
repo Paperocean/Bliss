@@ -8,7 +8,7 @@ exports.createEvent = async (req, res) => {
         const { name, description, location, event_date } = req.body;
 
         const result = await pool.query(
-            'INSERT INTO events (name, description, location, event_date) VALUES ($1, $2, $3, $4) RETURNING *',
+            'INSERT INTO public.events (name, description, location, event_date) VALUES ($1, $2, $3, $4) RETURNING *',
             [name, description, location, event_date]
         );
 

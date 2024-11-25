@@ -1,55 +1,73 @@
 .container {
-    display: grid;
-    grid-template-columns: repeat(12, auto);
-    grid-template-rows: 1fr auto;
-    grid-gap: 20px;
-    row-gap: 100px;
-    min-height: 100vh; /* Set minimum height of the container */
-  }
+  display: grid;
+  grid-template-columns: repeat(12, 1fr); /* Use 1fr to equally distribute columns */
+  grid-template-rows: auto 1fr auto; /* Add an extra row for better layout control */
+  gap: 20px; /* Combine row and column gap */
+  min-height: 100vh; /* Set minimum height of the container */
+  padding: 20px; /* Add padding for better spacing */
+}
 
+@media (max-width: 1200px) {
+  .container {
+      grid-template-columns: repeat(8, 1fr); /* Mniej kolumn na mniejszych ekranach */
+  }
+}
+
+@media (max-width: 900px) {
+  .container {
+      grid-template-columns: repeat(6, 1fr); /* Jeszcze mniej kolumn na małych ekranach */
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+      grid-template-columns: repeat(4, 1fr); /* Przejście do 4 kolumn na bardzo małych ekranach */
+  }
+}
 
   /* -------- EVENT PAGE -------  */
 /* Main Event Section */
 .event-main {
-    grid-column: 4 / 8; /* Rozciągnięcie sekcji na większość ekranu */
-    padding: 40px;
-    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), rgba(46, 134, 95, 0.6) 40%, rgba(0, 0, 0, 0.8) 70%);
-    border-radius: 10px;
-    box-shadow: 0 8px 30px rgba(64, 224, 208, 0.5); /* Turkusowy cień dla sekcji */
-    transition: transform 0.3s, box-shadow 0.3s; /* Dodano efekt cienia */
-    position: relative; /* Aby animacje działały na tle */
-  }
-  
-  /* Shadow Effect on Hover */
-  .event-main:hover {
-    box-shadow: 0 12px 50px rgba(64, 224, 208, 0.8); /* Wzmocnienie cienia na hover */
-    transform: translateY(-5px); /* Lekka animacja do góry na hover */
-  }
-  
-  /* Animated Title */
-  .animated-title {
-    font-size: 2.5rem; /* Zwiększona wielkość czcionki */
-    text-align: center;
-    margin-bottom: 20px;
-    opacity: 0;
-    transform: translateY(-30px); /* Większy efekt przesunięcia */
-    animation: fadeInUp 0.6s forwards, bounce 1s infinite; /* Dodano efekt 'bounce' */
-    color: #FFD700; /* Złoty kolor dla tytułu */
-    margin: auto 0; /* Wyśrodkowanie tytułu */
-  }
-  
-  /* Keyframes for Title Animation */
-  @keyframes fadeInUp {
-    0% {
+  padding: 40px;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), rgba(46, 134, 95, 0.6) 40%, rgba(0, 0, 0, 0.8) 70%);
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(64, 224, 208, 0.5); /* Turkusowy cień dla sekcji */
+  transition: transform 0.3s, box-shadow 0.3s; /* Dodano efekt cienia */
+  top: 30%; 
+  width: 100%;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  text-align: center; /* Wyśrodkowanie tekstu w poziomie */
+}
+
+/* Shadow Effect on Hover */
+.event-main:hover {
+  box-shadow: 0 12px 50px rgba(64, 224, 208, 0.8); /* Wzmocnienie cienia na hover */
+  transform: translateY(-5px); /* Lekka animacja do góry na hover */
+}
+
+/* Animated Title */
+.animated-title {
+  font-size: 2.5rem; /* Zwiększona wielkość czcionki */
+  color: #FFD700; /* Złoty kolor dla tytułu */
+  animation: fadeIn 2s ease-in-out;
+}
+
+/* Animacja pojawiania się tytułu */
+@keyframes fadeIn {
+  0% {
       opacity: 0;
-      transform: translateY(-30px);
-    }
-    100% {
+      transform: translateY(-20px);
+  }
+  50% {
+      opacity: 0.5;
+  }
+  100% {
       opacity: 1;
       transform: translateY(0);
-    }
   }
-  
+}
   .event-categories {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Slightly larger min width */
