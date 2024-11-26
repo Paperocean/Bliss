@@ -54,3 +54,29 @@ exports.getCategories = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
+
+exports.getEventsByCategory = async (req, res) => {
+    const { category } = req.params; // Pobranie nazwy kategorii z URL
+    try {
+        // Pobranie wydarzeń przypisanych do danej kategorii
+        const result = await pool.query('SELECT * FROM public.events WHERE category = $1', [category]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `No events found for category: ${category}`,
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            events: result.rows,
+        });
+    } catch (error) {
+        console.error('Error fetching events by category:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error',
+        });
+    }
+};
