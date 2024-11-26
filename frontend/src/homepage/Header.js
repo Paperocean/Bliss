@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import SearchBar from './SearchBar';
 
 const Header = () => {
   return (
@@ -13,6 +14,7 @@ const Header = () => {
         <Link to="/profile">Profil</Link>
         <Link to="/login">Logowanie</Link>
       </nav>
+      <SearchBar />
     </header>
   );
 };

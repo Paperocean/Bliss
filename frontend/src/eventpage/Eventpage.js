@@ -5,7 +5,6 @@ import Footer from '../homepage/Footer';
 import EventCategories from './EventCategories';
 import { Route, Routes } from 'react-router-dom';
 import CategoryEvents from './CategoryEvents';
-import EventForm from './EventForm'; // Import the EventForm component
 
 const EventPage = () => {
     const [events, setEvents] = useState([]); // State to hold created events

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import '../App.css';
 import { useNavigate, Link } from 'react-router-dom';
+import './ProfilePage.css'; // Import a custom CSS file for styling
 
 const ProfilePage = () => {
     const [userData, setUserData] = useState(null);
@@ -11,15 +11,14 @@ const ProfilePage = () => {
         location: '',
         event_date: '',
         category: '',
-    }); // State for the new event form
-    const [events, setEvents] = useState([]); // List of user's events
+    });
+    const [events, setEvents] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user')); // Get user data
+        const user = JSON.parse(localStorage.getItem('user'));
         if (user) {
             setUserData(user);
-            // Optionally, load user events from an API or localStorage
             const savedEvents = JSON.parse(localStorage.getItem('events')) || [];
             setEvents(savedEvents);
         } else {
@@ -28,22 +27,15 @@ const ProfilePage = () => {
         }
     }, [navigate]);
 
-    // Handle input changes for new event form
     const handleEventInputChange = (e) => {
         const { name, value } = e.target;
-        setNewEvent((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setNewEvent((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Handle submitting a new event
     const handleSubmitEvent = async (e) => {
         e.preventDefault();
-
         if (newEvent.name && newEvent.event_date) {
             try {
-                // Sending data to API to create the event
                 const response = await fetch('http://localhost:5000/api/events', {
                     method: 'POST',
                     headers: {
@@ -53,50 +45,53 @@ const ProfilePage = () => {
                 });
 
                 const data = await response.json();
-
                 if (data.success) {
-                    setEvents((prevEvents) => [...prevEvents, data.event]); // Update the event list
-                    localStorage.setItem('events', JSON.stringify([...events, data.event])); // Save to localStorage
-                    setNewEvent({ name: '', description: '', location: '', event_date: '' }); // Reset form
+                    const updatedEvents = [...events, data.event];
+                    setEvents(updatedEvents);
+                    localStorage.setItem('events', JSON.stringify(updatedEvents));
+                    setNewEvent({
+                        name: '',
+                        description: '',
+                        location: '',
+                        event_date: '',
+                        category: '',
+                    });
                 } else {
-                    setErrorMessage('Failed to create event: ' + data.message);
+                    setErrorMessage(`Failed to create event: ${data.message}`);
                 }
             } catch (error) {
-                setErrorMessage('Error creating event: ' + error.message);
+                setErrorMessage(`Error creating event: ${error.message}`);
             }
         } else {
-            setErrorMessage('Both name and event date are required.');
+            setErrorMessage('Event name and date are required.');
         }
     };
 
     return (
         <div className="profile-page">
             <header className="profile-header">
-                <h1>Profile Page</h1>
-            </header>
-            <section className="profile-info">
-                {errorMessage && <p>{errorMessage}</p>}
-                {userData ? (
-                    <div className="profile-details">
-                        <h2>{userData.username}</h2>
-                        <p>Email: {userData.email}</p>
-                        <p>Password: {userData.password_hash}</p>
-                    </div>
-                ) : (
-                    <p>Loading...</p>
-                )}
-            </section>
-
-            <Link to="/" className="home-button">
+                <h1>Welcome to Your Profile</h1>
+                <Link to="/" className="btn btn-primary">
                     Go Home
-            </Link>
+                </Link>
+            </header>
 
-            {/* Form for creating a new event */}
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+            {userData ? (
+                <section className="profile-info">
+                    <h2>{userData.username}</h2>
+                    <p><strong>Email:</strong> {userData.email}</p>
+                </section>
+            ) : (
+                <p>Loading user data...</p>
+            )}
+
             <section className="add-event-section">
-                <h3>Create New Event</h3>
-                <form onSubmit={handleSubmitEvent}>
-                    <div>
-                        <label htmlFor="name">Event Name:</label>
+                <h3>Create a New Event</h3>
+                <form className="event-form" onSubmit={handleSubmitEvent}>
+                    <div className="form-group">
+                        <label htmlFor="name">Event Name</label>
                         <input
                             type="text"
                             id="name"
@@ -106,8 +101,8 @@ const ProfilePage = () => {
                             required
                         />
                     </div>
-                    <div>
-                        <label htmlFor="description">Description:</label>
+                    <div className="form-group">
+                        <label htmlFor="description">Description</label>
                         <textarea
                             id="description"
                             name="description"
@@ -115,8 +110,8 @@ const ProfilePage = () => {
                             onChange={handleEventInputChange}
                         />
                     </div>
-                    <div>
-                        <label htmlFor="location">Location:</label>
+                    <div className="form-group">
+                        <label htmlFor="location">Location</label>
                         <input
                             type="text"
                             id="location"
@@ -125,8 +120,8 @@ const ProfilePage = () => {
                             onChange={handleEventInputChange}
                         />
                     </div>
-                    <div>
-                        <label htmlFor="event_date">Event Date:</label>
+                    <div className="form-group">
+                        <label htmlFor="event_date">Event Date</label>
                         <input
                             type="date"
                             id="event_date"
@@ -136,14 +131,13 @@ const ProfilePage = () => {
                             required
                         />
                     </div>
-                    <div>
-                        <label htmlFor="category">Category:</label>
+                    <div className="form-group">
+                        <label htmlFor="category">Category</label>
                         <select
                             id="category"
                             name="category"
                             value={newEvent.category}
                             onChange={handleEventInputChange}
-                            required
                         >
                             <option value="">Select a category</option>
                             <option value="Rock">Rock</option>
@@ -154,11 +148,12 @@ const ProfilePage = () => {
                             <option value="Jazz">Jazz</option>
                         </select>
                     </div>
-                    <button type="submit">Create Event</button>
+                    <button type="submit" className="btn btn-success">
+                        Create Event
+                    </button>
                 </form>
             </section>
 
-            {/* Display the list of events */}
             <section className="events-list">
                 <h3>Your Events</h3>
                 {events.length > 0 ? (

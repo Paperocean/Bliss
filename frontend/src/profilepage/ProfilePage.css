@@ -1,28 +1,72 @@
 .profile-page {
     font-family: Arial, sans-serif;
     padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.home-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.profile-header {
+    text-align: center;
     margin-bottom: 20px;
 }
 
-.home-button:hover {
-    background-color: #45a049;
+.btn {
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    display: inline-block;
+    margin-top: 10px;
 }
 
+.btn-success {
+    background-color: #28a745;
+}
+
+.error-message {
+    color: red;
+    text-align: center;
+}
+
+.add-event-section,
 .events-list {
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
-.events-list h3 {
-    color: #333;
+.event-form .form-group {
+    margin-bottom: 15px;
+}
+
+.event-form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.event-form input,
+.event-form textarea,
+.event-form select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.event-form button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .events-list ul {
@@ -31,16 +75,9 @@
 }
 
 .events-list li {
-    background-color: #f9f9f9;
     margin-bottom: 10px;
-    padding: 10px;
+    background: #fff;
+    border: 1px solid #ddd;
     border-radius: 5px;
-}
-
-.events-list li strong {
-    color: #333;
-}
-
-.events-list li p {
-    margin: 5px 0 0;
+    padding: 10px;
 }

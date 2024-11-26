@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
-import '../App.css';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import '../loginpage/LoginPage.css';
+import { useNavigate } from 'react-router-dom';
+import Header from '../homepage/Header';
+import Footer from '../homepage/Footer';
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState(''); // State for displaying messages
-    const navigate = useNavigate(); // Hook for navigation
+    const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!username || !email || !password) {
             alert("All fields are required");
             return;
         }
-    
+
         try {
             const response = await fetch('http://localhost:5000/auth/register', {
                 method: 'POST',
@@ -29,7 +31,7 @@ const RegisterPage = () => {
                     password,
                 }),
             });
-    
+
             const data = await response.json();
             if (data.success) {
                 setMessage('User registered successfully');
@@ -43,12 +45,13 @@ const RegisterPage = () => {
     };
 
     const handleLogin = () => {
-        navigate('/login'); // Navigate to the login page
+        navigate('/login');
     };
 
     return (
-        <div className="register-page">
-            <form className="register-form" onSubmit={handleSubmit}>
+        <div className="login-page">
+            <Header />
+            <form className="login-form" onSubmit={handleSubmit}>
                 <h2>Register</h2>
                 <div className="form-group">
                     <label htmlFor="username">Username:</label>
@@ -81,14 +84,14 @@ const RegisterPage = () => {
                     />
                 </div>
                 <button type="submit">Register</button>
-                {message && <p>{message}</p>} {/* Display registration status message */}
+                {message && <p>{message}</p>}
+                {message === 'User registered successfully' && (
+                    <button onClick={handleLogin} className="login-button">
+                        Login
+                    </button>
+                )}
             </form>
-            {/* Show login button after successful registration */}
-            {message === 'User registered successfully' && (
-                <button onClick={handleLogin} className="login-button">
-                    Login
-                </button>
-            )}
+            <Footer />
         </div>
     );
 };

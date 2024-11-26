@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import '../App.css';
+import './LoginPage.css';
 import { useNavigate } from 'react-router-dom'; // Import hooka do nawigacji
+import Header from '../homepage/Header';
+import Footer from '../homepage/Footer';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -49,7 +51,8 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="login-page">
+        <div className='login-page'>
+            <Header />
             <form className="login-form" onSubmit={handleSubmit}>
                 <h2>Login</h2>
                 <div className="form-group">
@@ -63,7 +66,7 @@ const LoginPage = () => {
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="password">Password:</label>
+                    <label htmlFor="password">Hasło:</label>
                     <input
                         type="password"
                         id="password"
@@ -72,12 +75,13 @@ const LoginPage = () => {
                         required
                     />
                 </div>
-                <button type="submit">Login</button>
+                <button type="submit">Zaloguj</button>
                 {message && <p>{message}</p>} {/* Wyświetl komunikat o stanie logowania */}
                 <p onClick={() => navigate('/register')}>
-                    Need an account? Register
+                    Nie posiadasz konta? Zarejestruj się
                 </p>
             </form>
+            <Footer />
         </div>
     );
 };

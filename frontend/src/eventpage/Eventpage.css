@@ -33,9 +33,9 @@
   border-radius: 10px;
   box-shadow: 0 8px 30px rgba(64, 224, 208, 0.5); /* Turkusowy cień dla sekcji */
   transition: transform 0.3s, box-shadow 0.3s; /* Dodano efekt cienia */
-  top: 30%; 
-  width: 100%;
-  position: absolute;
+  grid-column: 2/12;
+  display: flex;
+  position: relative;
   justify-content: center;
   align-items: center;
   text-align: center; /* Wyśrodkowanie tekstu w poziomie */

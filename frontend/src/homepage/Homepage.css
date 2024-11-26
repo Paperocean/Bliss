@@ -93,6 +93,7 @@
     /* Navigation Links */
     .nav-links {
       display: flex;
+      font-weight: bold;
       justify-content: center; /* Center horizontally */
       align-items: center; /* Center vertically */
       position: absolute; /* Position navigation links */
@@ -270,15 +271,15 @@
     /* ------- SEARCH BAR ---------- */
     /* Search Bar */
   .search-bar {
-      position: absolute;
-      top: 20px; /* Position near the top */
-      right: 20px; /* Position near the right edge */
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(46, 134, 95, 0.6)); /* Gradient dopasowany do kontenera */
       border-radius: 10px;
       padding: 10px 20px; /* Increased padding for comfort */
       display: flex;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6); /* Prominent shadow */
       transition: transform 0.3s, box-shadow 0.3s; /* Hover animation */
+      top: 10px; /* Position near the top */
+      right: 1%; /* Center horizontally */
+      position: absolute; /* Position search bar */
     }
     
     .search-bar:hover {
