@@ -8,6 +8,7 @@ import CartPage from './cartpage/CartPage';
 import ProfilePage from './profilepage/ProfilePage';
 import LoginPage from './loginpage/LoginPage';
 import RegisterPage from './registerpage/RegisterPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
   return (
@@ -17,7 +18,14 @@ const App = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/event" element={<EventPage />} />
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/events/:category" element={<CategoryEvents />} />

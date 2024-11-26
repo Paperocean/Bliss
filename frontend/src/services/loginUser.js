@@ -14,8 +14,7 @@ export const loginUser = async ({ email, password }) => {
             const errorData = await response.json();
             throw new Error(errorData.message || 'Login failed');
         }
-
-        // Poprawnie sparsuj odpowiedź
+        
         const data = await response.json();
         return data;
     } catch (error) {

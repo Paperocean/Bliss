@@ -5,16 +5,13 @@ const pool = require('../config/db');
 
 const router = express.Router();
 
-// Rejestracja
 router.post('/register', register);
 
-// Logowanie
 router.post('/login', login);
 
-// Pobieranie profilu użytkownika
 router.get('/profile', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.id; // Pobierz ID użytkownika z tokenu
+        const userId = req.user.id;
         console.log('Fetching profile for user ID:', userId);
 
         const user = await pool.query('SELECT * FROM public.users WHERE id = $1', [userId]);

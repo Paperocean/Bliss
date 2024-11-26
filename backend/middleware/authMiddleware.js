@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-// Middleware autoryzacji tokenu
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Pobranie tokenu z nagłówka
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
         console.error('No token provided in Authorization header.');
@@ -22,8 +21,8 @@ const authenticateToken = (req, res, next) => {
             });
         }
 
-        req.user = user; // Przypisanie danych użytkownika do żądania
-        next(); // Przejdź do kolejnego middleware
+        req.user = user; 
+        next();
     });
 };
 

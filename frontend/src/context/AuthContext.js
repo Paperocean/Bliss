@@ -17,14 +17,14 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const userData = await fetchProfile(); // Pobranie danych użytkownika
+        const userData = await fetchProfile(); 
         setUser(userData);
         setIsLoggedIn(true);
       } catch (error) {
         console.error('Error fetching profile:', error.message);
         setIsLoggedIn(false);
         setUser(null);
-        localStorage.removeItem('token'); // Usuń token, jeśli jest niepoprawny
+        localStorage.removeItem('token');
       }
     };
 

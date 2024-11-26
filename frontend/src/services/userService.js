@@ -6,7 +6,7 @@ const fetchProfile = async () => {
     const response = await fetch(`${API_URL}/auth/profile`, {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${token}`, // Przekazanie tokenu w nagłówku
+            'Authorization': `Bearer ${token}`,
         },
     });
 
@@ -15,7 +15,7 @@ const fetchProfile = async () => {
         throw new Error(data.message || 'Failed to fetch profile');
     }
 
-    return data.user; // Zwróć dane użytkownika
+    return data.user; 
 };
 
 export default fetchProfile;
