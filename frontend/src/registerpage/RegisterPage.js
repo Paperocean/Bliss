@@ -1,15 +1,25 @@
-import React, { useState } from 'react';
-import '../loginpage/LoginPage.css';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import { registerUser } from '../services/registerUser';
+
+import '../loginpage/LoginPage.css';
 import Header from '../homepage/Header';
 import Footer from '../homepage/Footer';
 
 const RegisterPage = () => {
+    const { isLoggedIn } = useContext(AuthContext);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            navigate('/');
+        }
+    }, [isLoggedIn, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,31 +30,19 @@ const RegisterPage = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username,
-                    email,
-                    password,
-                }),
-            });
-
-            const data = await response.json();
-            if (data.success) {
+            const response = await registerUser({ username, email, password });
+            if (response.success) {
                 setMessage('User registered successfully');
             } else {
-                setMessage(data.message);
+                setMessage(response.message);
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Registration error: ', error);
             setMessage('Registration failed. Please try again.');
         }
     };
 
-    const handleLogin = () => {
+    const handleLoginRedirect = () => {
         navigate('/login');
     };
 
@@ -86,8 +84,12 @@ const RegisterPage = () => {
                 <button type="submit">Register</button>
                 {message && <p>{message}</p>}
                 {message === 'User registered successfully' && (
-                    <button onClick={handleLogin} className="login-button">
-                        Login
+                    <button
+                        onClick={handleLoginRedirect}
+                        type="button"
+                        className="login-button"
+                    >
+                        Go to Login
                     </button>
                 )}
             </form>

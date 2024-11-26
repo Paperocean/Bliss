@@ -1,18 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+
 import './LoginPage.css';
-import { useNavigate } from 'react-router-dom'; // Import hooka do nawigacji
+
 import Header from '../homepage/Header';
 import Footer from '../homepage/Footer';
+import { loginUser } from '../services/loginUser';
 
 const LoginPage = () => {
+    const { isLoggedIn, login } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState(''); // Stan do wyświetlania komunikatów
-    const navigate = useNavigate(); // Hook do nawigacji
+    const [message, setMessage] = useState(''); 
+    const navigate = useNavigate(); 
 
     useEffect(() => {
-        console.log('Welcome to the Login Page');
-    }, []);
+        if (isLoggedIn) {
+            navigate('/');
+        }
+    }, [isLoggedIn, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,30 +30,17 @@ const LoginPage = () => {
         }
     
         try {
-            const response = await fetch('http://localhost:5000/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
-            });
-    
-            const data = await response.json();
-            if (data.success) {
-                setMessage('Login successful');
-                localStorage.setItem('token', data.token);
-                // Store user data in local storage or pass to profile
-                localStorage.setItem('user', JSON.stringify(data.user)); // Save user data
-                navigate('/profile');
-            } else {
-                setMessage(data.message);
-            }
+            const response = await loginUser({ email, password});
+                if (response.success) {
+                    login(response.token, response.user);
+                    setMessage('User logged in successfully');
+                    navigate('/');
+                } else {
+                    setMessage(response.message);
+                }
         } catch (error) {
-            console.error('Error:', error);
-            setMessage('Login failed. Please try again.');
+            console.error('Registration error: ', error);
+            setMessage('Logging in failed. Please try again.');
         }
     };
 

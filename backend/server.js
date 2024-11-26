@@ -9,17 +9,18 @@ const eventRoutes = require('./routes/eventRoutes');
 
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Using authorization routes
+// Routes
 app.use('/auth', authRoutes);
+app.use('/user', usersRoutes); 
+app.use('/api', eventRoutes); 
 
-// Using users routes
-app.use('/user', usersRoutes);
-
-// Using event routes
-app.use('/api', eventRoutes);
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: 'Endpoint not found' });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
