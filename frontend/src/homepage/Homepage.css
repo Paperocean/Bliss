@@ -10,8 +10,8 @@
   .header-container {
     grid-column: 1 / -1;
     background: rgba(0, 0, 0, 0.5);
-    padding: 20px;
     display: flex;
+    padding: 20px;
     align-items: center; /* Center vertically */
     justify-content: space-between;
     border-bottom: none; /* Usunięcie białej linii */
