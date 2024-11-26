@@ -168,7 +168,7 @@
   
   /* Individual Event Item */
   .event-item {
-    background: radial-gradient(square at 50% 0%, rgba(68, 29, 166, 0.1), rgba(1, 0, 4, 0.6) 40%, rgba(19, 1, 17, 0.8) 70%);
+    background: radial-gradient(square at 50% 0%, rgba(68, 29, 166, 0.1), rgba(1, 0, 4, 0.6) 40%, rgba(31, 2, 28, 0.8) 70%);
     padding: 10px;
     border-radius: 8px;
     cursor: pointer;

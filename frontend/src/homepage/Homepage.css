@@ -10,12 +10,12 @@
   .header-container {
     grid-column: 1 / -1;
     background: rgba(0, 0, 0, 0.5);
-    padding: 20px 50px 20px 50px;
+    padding: 20px;
     display: flex;
     align-items: center; /* Center vertically */
     justify-content: space-between;
     border-bottom: none; /* Usunięcie białej linii */
-    height: 100px;
+    height: 50px;
     max-height: 200px; /* Max header height */
     overflow: hidden; /* Hide overflow content */
     flex: 0 0 auto; /* Prevent header from growing */
@@ -277,8 +277,8 @@
       display: flex;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6); /* Prominent shadow */
       transition: transform 0.3s, box-shadow 0.3s; /* Hover animation */
-      top: 10px; /* Position near the top */
-      right: 1%; /* Center horizontally */
+      top: 0; /* Position near the top */
+      right: 0; /* Center horizontally */
       position: absolute; /* Position search bar */
     }
     

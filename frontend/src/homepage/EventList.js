@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import img1 from '../images/img1.jpg'; 
 import img2 from '../images/img2.jpg';
 import img3 from '../images/img3.jpg';
+import './Homepage.css';
 
 const events = [
-    { category: 'rock', img: img1, caption: 'ROCK' },
-    { category: 'party', img: img2, caption: 'PARTY' },
-    { category: 'pop', img: img3, caption: 'POP' }
+    { category: 'Rock', img: img1, caption: 'ROCK' },
+    { category: 'Party', img: img2, caption: 'PARTY' },
+    { category: 'Pop', img: img3, caption: 'POP' }
 ];
 
 const EventList = () => {
