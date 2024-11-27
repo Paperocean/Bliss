@@ -1,12 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { loginUser } from '../services/authService';
 
 import './LoginPage.css';
 
 import Header from '../homepage/Header';
 import Footer from '../homepage/Footer';
-import { loginUser } from '../services/loginUser';
 
 const LoginPage = () => {
     const { isLoggedIn, login } = useContext(AuthContext);

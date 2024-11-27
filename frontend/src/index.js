@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import { AuthProvider } from './context/AuthContext'; // Import kontekstu autoryzacji
+import { AuthProvider } from './context/AuthContext';
 
 ReactDOM.render(
   <React.StrictMode>
-    <AuthProvider> {/* Opakowanie całej aplikacji w AuthProvider */}
+    <AuthProvider> { }
       <App />
     </AuthProvider>
   </React.StrictMode>,

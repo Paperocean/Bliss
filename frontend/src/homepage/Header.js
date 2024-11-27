@@ -2,10 +2,13 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import SearchBar from './SearchBar';
 import { AuthContext } from '../context/AuthContext';
+import { CartContext } from '../context/CartContext';
 
 const Header = () => {
-    const {isLoggedIn, user, logout} = useContext(AuthContext)
+    const { isLoggedIn, user, logout } = useContext(AuthContext);
+    const { totalItems } = useContext(CartContext);
     const [shouldRender, setShouldRender] = useState(false);
+    
 
     useEffect(() => {
       setShouldRender(true);
@@ -21,7 +24,7 @@ const Header = () => {
             </h1>
             <nav className="nav-links">
                 <Link to="/event">Wydarzenia</Link>
-                <Link to="/cart">Koszyk</Link>
+                <Link to="/cart">Koszyk ({totalItems})</Link>
                 {isLoggedIn ? (
                     <>
                         <Link to="/profile">Profil</Link>

@@ -1,31 +1,47 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import './ProfilePage.css'; // Import a custom CSS file for styling
+import { AuthContext } from '../context/AuthContext';
+import { CartContext } from '../context/CartContext'; 
+import './ProfilePage.css';
 
 const ProfilePage = () => {
-    const [userData, setUserData] = useState(null);
+    const { user, isLoggedIn } = useContext(AuthContext);
+    const { addToCart } = useContext(CartContext); 
     const [errorMessage, setErrorMessage] = useState('');
     const [newEvent, setNewEvent] = useState({
         name: '',
         description: '',
         location: '',
-        event_date: '',
+        start_time: '',
+        end_time: '',
+        capacity: '',
         category: '',
     });
     const [events, setEvents] = useState([]);
+    const [categories, setCategories] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (user) {
-            setUserData(user);
-            const savedEvents = JSON.parse(localStorage.getItem('events')) || [];
-            setEvents(savedEvents);
-        } else {
-            setErrorMessage('User not found. Please log in.');
+        if (!isLoggedIn) {
             navigate('/login');
         }
-    }, [navigate]);
+    }, [isLoggedIn, navigate]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/events/categories');
+                const data = await response.json();
+                if (data.success) {
+                    setCategories(data.categories);
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleEventInputChange = (e) => {
         const { name, value } = e.target;
@@ -34,12 +50,20 @@ const ProfilePage = () => {
 
     const handleSubmitEvent = async (e) => {
         e.preventDefault();
-        if (newEvent.name && newEvent.event_date) {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            setErrorMessage('You must be logged in to create an event.');
+            return;
+        }
+
+        if (newEvent.name && newEvent.start_time && newEvent.end_time && newEvent.capacity) {
             try {
                 const response = await fetch('http://localhost:5000/api/events', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
                     },
                     body: JSON.stringify(newEvent),
                 });
@@ -48,12 +72,13 @@ const ProfilePage = () => {
                 if (data.success) {
                     const updatedEvents = [...events, data.event];
                     setEvents(updatedEvents);
-                    localStorage.setItem('events', JSON.stringify(updatedEvents));
                     setNewEvent({
                         name: '',
                         description: '',
                         location: '',
-                        event_date: '',
+                        start_time: '',
+                        end_time: '',
+                        capacity: '',
                         category: '',
                     });
                 } else {
@@ -63,8 +88,17 @@ const ProfilePage = () => {
                 setErrorMessage(`Error creating event: ${error.message}`);
             }
         } else {
-            setErrorMessage('Event name and date are required.');
+            setErrorMessage('All fields are required.');
         }
+    };
+
+    const handleAddToCart = (event) => {
+        const cartItem = {
+            id: event.event_id,
+            name: event.title,
+            price: 50,
+        };
+        addToCart(cartItem, 1);
     };
 
     return (
@@ -78,10 +112,12 @@ const ProfilePage = () => {
 
             {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-            {userData ? (
+            {user ? (
                 <section className="profile-info">
-                    <h2>{userData.username}</h2>
-                    <p><strong>Email:</strong> {userData.email}</p>
+                    <h2>{user.username}</h2>
+                    <p>
+                        <strong>Email:</strong> {user.email}
+                    </p>
                 </section>
             ) : (
                 <p>Loading user data...</p>
@@ -121,12 +157,34 @@ const ProfilePage = () => {
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="event_date">Event Date</label>
+                        <label htmlFor="start_time">Start Time</label>
                         <input
-                            type="date"
-                            id="event_date"
-                            name="event_date"
-                            value={newEvent.event_date}
+                            type="datetime-local"
+                            id="start_time"
+                            name="start_time"
+                            value={newEvent.start_time}
+                            onChange={handleEventInputChange}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="end_time">End Time</label>
+                        <input
+                            type="datetime-local"
+                            id="end_time"
+                            name="end_time"
+                            value={newEvent.end_time}
+                            onChange={handleEventInputChange}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="capacity">Capacity</label>
+                        <input
+                            type="number"
+                            id="capacity"
+                            name="capacity"
+                            value={newEvent.capacity}
                             onChange={handleEventInputChange}
                             required
                         />
@@ -140,12 +198,11 @@ const ProfilePage = () => {
                             onChange={handleEventInputChange}
                         >
                             <option value="">Select a category</option>
-                            <option value="Rock">Rock</option>
-                            <option value="Pop">Pop</option>
-                            <option value="Party">Party</option>
-                            <option value="Hip-Hop">Hip-Hop</option>
-                            <option value="Rap">Rap</option>
-                            <option value="Jazz">Jazz</option>
+                            {categories.map((cat) => (
+                                <option key={cat.category_id} value={cat.name}>
+                                    {cat.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     <button type="submit" className="btn btn-success">
@@ -158,11 +215,13 @@ const ProfilePage = () => {
                 <h3>Your Events</h3>
                 {events.length > 0 ? (
                     <ul>
-                        {events.map((event, index) => (
-                            <li key={index}>
-                                <strong>{event.name}</strong> - {event.event_date} <br />
+                        {events.map((event) => (
+                            <li key={event.event_id}>
+                                <strong>{event.title}</strong> - {event.start_time} <br />
                                 {event.description && <span>{event.description}</span>}
                                 <p>{event.location}</p>
+                                <p>Capacity: {event.capacity}</p>
+                                <button onClick={() => handleAddToCart(event)}>Add to Cart</button>
                             </li>
                         ))}
                     </ul>

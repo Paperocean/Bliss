@@ -1,70 +1,85 @@
--- This init.sql file initializes the database schema and seeds initial data for the app.
+-- This init.sql file initializes the database schema and seeds initial data for the ticket selling app.
 -- It contains SQL commands to create necessary tables and, in the future, insert initial records, enabling the database to be ready for use upon startup.
 
 -- Drop tables if they already exist to prevent errors during reinitialization
-DROP TABLE IF EXISTS public.payments CASCADE;
-DROP TABLE IF EXISTS public.orders CASCADE;
-DROP TABLE IF EXISTS public.ticket_types CASCADE;
+DROP TABLE IF EXISTS public.transactions CASCADE;
+DROP TABLE IF EXISTS public.tickets CASCADE;
 DROP TABLE IF EXISTS public.events CASCADE;
+DROP TABLE IF EXISTS public.event_categories CASCADE;
 DROP TABLE IF EXISTS public.users CASCADE;
 
--- Create the 'users' table if it doesn't already exist
-CREATE TABLE IF NOT EXISTS public.users (
-    id SERIAL PRIMARY KEY,
+CREATE TABLE public.users (
+    user_id SERIAL PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) DEFAULT 'buyer', -- 'buyer' or 'organizer'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert a default user if it doesn't exist already
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM public.users WHERE username = 'john_doe') THEN
-        INSERT INTO public.users (username, email, password_hash) 
-        VALUES ('john_doe', 'john@example.com', 'example_password');
+        INSERT INTO public.users (username, email, password_hash, role) 
+        VALUES ('john_doe', 'john@example.com', 'example_password', 'organizer');
     END IF;
 END $$;
 
--- Create the 'events' table if it doesn't already exist with a category column
-CREATE TABLE IF NOT EXISTS public.events (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+CREATE TABLE public.event_categories (
+    category_id SERIAL PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL
+);
+
+INSERT INTO public.event_categories (name)
+VALUES 
+    ('Rock'),
+    ('Pop'),
+    ('Party'),
+    ('Hip-Hop'),
+    ('Rap'),
+    ('Jazz'),
+    ('Sports'),
+    ('Theater'),
+    ('Conference')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.event_categories (name)
+VALUES ('Music'), ('Sports'), ('Theater'), ('Conference')
+ON CONFLICT DO NOTHING;
+
+CREATE TABLE public.events (
+    event_id SERIAL PRIMARY KEY,
+    organizer_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
     description TEXT,
-    location VARCHAR(255),
-    event_date DATE NOT NULL,
-    category VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    category_id INT REFERENCES event_categories(category_id) ON DELETE SET NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    capacity INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create the 'ticket_types' table if it doesn't already exist
-CREATE TABLE IF NOT EXISTS public.ticket_types (
-    id SERIAL PRIMARY KEY,
-    event_id INT REFERENCES events(id) ON DELETE CASCADE,
-    type_name VARCHAR(100) NOT NULL,
+CREATE TABLE public.tickets (
+    ticket_id SERIAL PRIMARY KEY,
+    event_id INT REFERENCES events(event_id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(user_id) ON DELETE SET NULL,
+    purchase_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     price DECIMAL(10, 2) NOT NULL,
-    quantity INT NOT NULL, -- Number of tickets available
+    status VARCHAR(20) DEFAULT 'available', -- 'available', 'sold', 'cancelled'
+    seat_label VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create the 'orders' table if it doesn't already exist
-CREATE TABLE IF NOT EXISTS public.orders (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id) ON DELETE SET NULL,
-    ticket_type_id INT REFERENCES ticket_types(id) ON DELETE CASCADE,
-    quantity INT NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create the 'payments' table if it doesn't already exist
-CREATE TABLE IF NOT EXISTS public.payments (
-    id SERIAL PRIMARY KEY,
-    order_id INT REFERENCES orders(id) ON DELETE CASCADE,
-    payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    amount DECIMAL(10, 2),
-    payment_method VARCHAR(50),
-    payment_status VARCHAR(50) DEFAULT 'Pending'
+CREATE TABLE public.transactions (
+    transaction_id SERIAL PRIMARY KEY,
+    ticket_id INT REFERENCES tickets(ticket_id) ON DELETE CASCADE,
+    buyer_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    event_id INT REFERENCES events(event_id) ON DELETE CASCADE,
+    payment_status VARCHAR(20) DEFAULT 'completed', -- 'completed', 'pending', 'failed'
+    amount DECIMAL(10, 2) NOT NULL,
+    transaction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

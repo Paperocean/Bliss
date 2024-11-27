@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import fetchProfile from '../services/userService';
+import fetchProfile from '../services/profileService';
 
 export const AuthContext = createContext();
 
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const userData = await fetchProfile(); 
+        const userData = await fetchProfile();
         setUser(userData);
         setIsLoggedIn(true);
       } catch (error) {
@@ -31,22 +31,20 @@ export const AuthProvider = ({ children }) => {
     checkLoginStatus();
   }, []);
 
-  const login = async (token, userData) => {
-    if (!token || !userData) {
-        throw new Error('Invalid login data');
+  const login = async (token) => {
+    if (!token) {
+      throw new Error('Token is required to log in.');
     }
-    localStorage.setItem('token', token); 
-    setUser(userData); 
-    setIsLoggedIn(true);
+    localStorage.setItem('token', token);
     try {
-        const fetchedUser = await fetchProfile();
-        setUser(fetchedUser);
+      const userData = await fetchProfile(); // Validate token and fetch profile
+      setUser(userData);
+      setIsLoggedIn(true);
     } catch (error) {
-        console.error('Error validating user after login:', error.message);
-        logout();
+      console.error('Error during login profile fetch:', error.message);
+      logout();
     }
-};
-
+  };
 
   const logout = () => {
     localStorage.removeItem('token');
