@@ -1,17 +1,17 @@
 const { calculateCart } = require('../../services/cartService');
 
-exports.checkout = async (req, res) => {
+exports.calculateSummary = async (req, res) => {
     try {
-        const userId = req.user.user_id;
         const { cart } = req.body;
 
         if (!Array.isArray(cart) || cart.length === 0) {
-            return res.status(400).json({ success: false, message: 'Cart cannot be empty' });
+            return res.status(400).json({ success: false, message: 'Cart cannot be empty.' });
         }
 
-        const cartSummary = await calculateCart(userId, cart);
+        const cartSummary = await calculateCart(cart);
         res.json({ success: true, cartSummary });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Server error during cart calculation' });
+        console.error('Error during checkout:', error.message);
+        res.status(500).json({ success: false, message: 'Server error during cart calculation.' });
     }
 };

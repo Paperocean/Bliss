@@ -1,9 +1,8 @@
 const express = require('express');
-const authenticateToken = require('../../middleware/authMiddleware');
-const { checkout } = require('./cartController');
+const { calculateSummary } = require('./cartController');
 
 const router = express.Router();
 
-router.post('/checkout', authenticateToken, checkout);
+router.post('/calculateSummary', calculateSummary);
 
 module.exports = router;

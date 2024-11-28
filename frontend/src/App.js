@@ -3,15 +3,15 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 
-import HomePage from './homepage/Homepage';
-import EventPage from './eventpage/Eventpage';
-import EventTestView from './eventpage/EventTestView';
-import CategoryEvents from './eventpage/CategoryEvents';
-import CartPage from './cartpage/CartPage';
-import ProfilePage from './profilepage/ProfilePage';
-import LoginPage from './loginpage/LoginPage';
-import RegisterPage from './registerpage/RegisterPage';
-import AddEventForm  from './eventpage/AddEventForm';
+import HomePage from './pages/homepage/Homepage';
+import EventPage from './pages/eventpage/Eventpage';
+import EventTestView from './pages/eventpage/EventTestView';
+import CategoryEvents from './pages/eventpage/CategoryEvents';
+import CartPage from './pages/cartpage/CartPage';
+import ProfilePage from './pages/profilepage/ProfilePage';
+import LoginPage from './pages/loginpage/LoginPage';
+import RegisterPage from './pages/registerpage/RegisterPage';
+import AddEventForm  from './pages/eventpage/AddEventForm';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {

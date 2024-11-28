@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import { CartContext } from '../context/CartContext'; 
+import { AuthContext } from '../../context/AuthContext';
+import { CartContext } from '../../context/CartContext'; 
 import './ProfilePage.css';
 
 const ProfilePage = () => {

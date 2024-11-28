@@ -15,6 +15,7 @@ app.use('/api/auth', routes.auth);
 app.use('/api/user', routes.user);
 app.use('/api/events', routes.events);
 app.use('/api/cart', routes.cart);
+app.use('/api/tickets', routes.tickets);
 
 // 404 Handler
 app.use((req, res) => res.status(404).json({ success: false, message: 'Endpoint not found' }));

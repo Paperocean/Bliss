@@ -1,12 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import SearchBar from './SearchBar';
-import { AuthContext } from '../context/AuthContext';
-import { CartContext } from '../context/CartContext';
+import { AuthContext } from '..//../context/AuthContext';
+import { CartContext } from '../../context/CartContext';
 
 const Header = () => {
     const { isLoggedIn, user, logout } = useContext(AuthContext);
-    const { totalItems } = useContext(CartContext);
+    const { cart } = useContext(CartContext);
     const [shouldRender, setShouldRender] = useState(false);
     
 
@@ -24,7 +24,7 @@ const Header = () => {
             </h1>
             <nav className="nav-links">
                 <Link to="/event">Wydarzenia</Link>
-                <Link to="/cart">Koszyk ({totalItems})</Link>
+                <Link to="/cart">Koszyk ({cart.length})</Link>
                 {isLoggedIn ? (
                     <>
                         <Link to="/profile">Profil</Link>

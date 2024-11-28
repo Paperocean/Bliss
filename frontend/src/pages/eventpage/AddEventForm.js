@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { fetchCategories, createEvent } from '../services/eventService';
+import React, { useState } from 'react';
+import { createEvent } from '../../services/eventService';
+import useCategories from '../../hooks/useCategories';
+import ErrorMessage from '../../components/ErrorMessage';
 
 const AddEventForm = () => {
-    const [categories, setCategories] = useState([]);
+    const { categories, error: categoryError } = useCategories();
     const [errorMessage, setErrorMessage] = useState('');
     const [formData, setFormData] = useState({
         title: '',
@@ -17,25 +19,6 @@ const AddEventForm = () => {
         has_numbered_seats: false,
         ticket_price: '',
     });
-
-    useEffect(() => {
-        const loadCategories = async () => {
-            try {
-                const response = await fetchCategories();
-                if (response.success) {
-                    setCategories(response.categories);
-                    setErrorMessage('');
-                } else {
-                    setErrorMessage(response.message);
-                }
-            } catch (error) {
-                console.error(error.message || 'Error fetching categories:', error);
-                setErrorMessage('Failed to load categories');
-            }
-        };
-
-        loadCategories();
-    }, []);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -80,7 +63,7 @@ const AddEventForm = () => {
 
     return (
         <form onSubmit={handleSubmit} style={{ maxWidth: '500px', margin: '0 auto' }}>
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+            <ErrorMessage message={errorMessage || categoryError} />
             <input name="title" value={formData.title} onChange={handleChange} placeholder="Event Title" required />
             <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" />
             <input name="location" value={formData.location} onChange={handleChange} placeholder="Location" required />

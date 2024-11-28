@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import { registerUser } from '../services/authService';
+import { AuthContext } from '../../context/AuthContext';
+import { registerUser } from '../../services/authService';
 
 import '../loginpage/LoginPage.css';
 import Header from '../homepage/Header';

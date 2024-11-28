@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; 
-import img1 from '../images/img1.jpg'; 
-import img2 from '../images/img2.jpg';
-import img3 from '../images/img3.jpg';
+import img1 from '../../images/img1.jpg'; 
+import img2 from '../../images/img2.jpg';
+import img3 from '../../images/img3.jpg';
 import './Homepage.css';
 
 const events = [
@@ -12,10 +12,10 @@ const events = [
 ];
 
 const EventList = () => {
-    const [selectedEvent, setSelectedEvent] = useState(null); // State for the selected event
+    const [selectedEvent, setSelectedEvent] = useState(null); 
 
     const handleEventClick = (category) => {
-        setSelectedEvent(category); // Set the selected event category
+        setSelectedEvent(category); 
     };
 
     return (
@@ -26,8 +26,8 @@ const EventList = () => {
                     <Link 
                         key={event.category} 
                         to={`/events/${event.category}`} 
-                        className={`transform transition-transform hover:scale-105 event ${selectedEvent === event.category ? 'selected' : ''}`} // Add selected class if it's the active event
-                        onClick={() => handleEventClick(event.category)} // Handle click to set selected event
+                        className={`transform transition-transform hover:scale-105 event ${selectedEvent === event.category ? 'selected' : ''}`} 
+                        onClick={() => handleEventClick(event.category)} 
                     >
                         <img 
                             alt={`Event ${event.caption}`} 
