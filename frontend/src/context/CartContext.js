@@ -12,19 +12,16 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
 
-    const addToCart = (ticket_id, quantity = 1) => {
+    const addToCart = (ticket_id) => {
         setCart((prevCart) => {
             const existingItem = prevCart.find((item) => item.ticket_id === ticket_id);
 
             if (existingItem) {
-                return prevCart.map((item) =>
-                    item.ticket_id === ticket_id
-                        ? { ...item, quantity: item.quantity + quantity }
-                        : item
-                );
+                alert('This item is already in your cart.');
+                return prevCart; 
             }
 
-            return [...prevCart, { ticket_id, quantity }];
+            return [...prevCart, { ticket_id }];
         });
     };
 

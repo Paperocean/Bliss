@@ -1,42 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import useAvailableSeats from '../../hooks/useAvailableSeats';
+import useEvents from '../../hooks/useEvents';
+import useCart from '../../hooks/useCart';
 import ErrorMessage from '../../components/ErrorMessage';
-import { fetchEvents } from '../../services/eventService';
 
 const EventTestView = () => {
-    const [events, setEvents] = useState([]); 
-    const [selectedEvent, setSelectedEvent] = useState(null); 
-    const { seats, error, loading } = useAvailableSeats(selectedEvent?.event_id);
-    const [selectedSeat, setSelectedSeat] = useState(null);
-    const [fetchError, setFetchError] = useState(null); 
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    
+    const { events, loading: eventsLoading, error: eventsError } = useEvents();
+    const { seats, error: seatsError, loading: seatsLoading } = useAvailableSeats(selectedEvent?.event_id);
+    const { addSeatToCart, error: cartError } = useCart(); 
 
-    useEffect(() => {
-        const loadEvents = async () => {
-            try {
-                const response = await fetchEvents();
-                setEvents(response.events || []);
-            } catch (err) {
-                console.error('Error fetching events:', err.message);
-                setFetchError('Failed to load events. Please try again later.');
-            }
-        };
-
-        loadEvents();
-    }, []);
-
-    const handleAddToCart = () => {
-        if (!selectedSeat) {
-            alert('Please select a seat before adding to cart.');
-            return;
-        }
-        console.log('Adding seat to cart:', selectedSeat);
+    const handleAddToCart = (seat) => {
+        addSeatToCart(seat); 
     };
 
     return (
         <div>
             <h1>Available Events</h1>
-            {fetchError && <ErrorMessage message={fetchError} />}
-            {!selectedEvent ? (
+            {(eventsError || seatsError || cartError) && (
+                <ErrorMessage message={eventsError || seatsError || cartError} />
+            )}
+            {eventsLoading ? (
+                <p>Loading events...</p>
+            ) : !selectedEvent ? (
                 <div>
                     <h2>Select an Event</h2>
                     {events.length === 0 ? (
@@ -56,7 +43,7 @@ const EventTestView = () => {
             ) : (
                 <div>
                     <h2>Select a Seat for {selectedEvent.title}</h2>
-                    {loading ? (
+                    {seatsLoading ? (
                         <p>Loading seats...</p>
                     ) : seats.length === 0 ? (
                         <p>No seats available.</p>
@@ -64,13 +51,14 @@ const EventTestView = () => {
                         <ul>
                             {seats.map((seat) => (
                                 <li key={seat.ticket_id}>
-                                    {seat.seat_label} - ${seat.price}{' '}
-                                    <button onClick={() => setSelectedSeat(seat)}>Select</button>
+                                    <span>
+                                        {seat.seat_label} - ${seat.price}
+                                    </span>
+                                    <button onClick={() => handleAddToCart(seat)}>Add to Cart</button>
                                 </li>
                             ))}
                         </ul>
                     )}
-                    <button onClick={handleAddToCart}>Add to Cart</button>
                     <button onClick={() => setSelectedEvent(null)}>Cancel</button>
                 </div>
             )}

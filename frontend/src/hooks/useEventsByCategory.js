@@ -3,16 +3,14 @@ import { fetchEventsByCategory } from '../services/eventService';
 
 const useEventsByCategory = (category) => {
     const [events, setEvents] = useState([]);
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const loadEvents = async () => {
             try {
-                setLoading(true);
                 const response = await fetchEventsByCategory(category);
                 setEvents(response.events || []);
-                setError('');
             } catch (err) {
                 console.error('Error fetching events by category:', err.message);
                 setError('Failed to load events. Please try again later.');
@@ -24,7 +22,7 @@ const useEventsByCategory = (category) => {
         loadEvents();
     }, [category]);
 
-    return { events, error, loading };
+    return { events, loading, error };
 };
 
 export default useEventsByCategory;

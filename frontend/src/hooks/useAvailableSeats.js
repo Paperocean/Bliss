@@ -4,17 +4,14 @@ import { fetchAvailableSeats } from '../services/ticketService';
 const useAvailableSeats = (eventId) => {
     const [seats, setSeats] = useState([]);
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!eventId) return;
-
         const loadSeats = async () => {
             try {
-                setLoading(true);
                 const response = await fetchAvailableSeats(eventId);
                 setSeats(response || []);
-                setError('');
             } catch (err) {
                 console.error('Error fetching available seats:', err.message);
                 setError('Failed to load seats. Please try again later.');
@@ -26,7 +23,7 @@ const useAvailableSeats = (eventId) => {
         loadSeats();
     }, [eventId]);
 
-    return { seats, error, loading };
+    return { seats, loading, error };
 };
 
 export default useAvailableSeats;
