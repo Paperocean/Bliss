@@ -1,20 +1,14 @@
 const db = require('../config/db');
 
-exports.generateTickets = async (eventId, rows, seatsPerRow, hasNumberedSeats, ticketPrice) => {
+exports.generateTickets = async (eventId, seatPrices) => {
     try {
-        const tickets = [];
-
-        if (hasNumberedSeats) {
-            for (let row = 1; row <= rows; row++) {
-                for (let seat = 1; seat <= seatsPerRow; seat++) {
-                    tickets.push([eventId, null, ticketPrice, 'available', `Row ${row} Seat ${seat}`]);
-                }
-            }
-        } else {
-            for (let i = 0; i < rows * seatsPerRow; i++) {
-                tickets.push([eventId, null, ticketPrice, 'available', null]);
-            }
-        }
+        const tickets = Object.entries(seatPrices).map(([seatLabel, { price }]) => [
+            eventId,
+            null,
+            price,
+            'available',
+            seatLabel,
+        ]);
 
         const ticketValues = tickets.map(
             (ticket) => `(${ticket.map((value) => (value ? `'${value}'` : 'NULL')).join(', ')})`
@@ -30,3 +24,4 @@ exports.generateTickets = async (eventId, rows, seatsPerRow, hasNumberedSeats, t
         throw new Error('Failed to generate tickets');
     }
 };
+

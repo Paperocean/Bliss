@@ -10,11 +10,8 @@ exports.createEvent = async (req, res) => {
             start_time,
             end_time,
             capacity,
-            category_id, 
-            rows,
-            seats_per_row,
-            has_numbered_seats,
-            ticket_price,
+            category_id,
+            seat_prices, 
         } = req.body;
 
         const categoryResult = await db.query('SELECT * FROM event_categories WHERE category_id = $1', [category_id]);
@@ -32,7 +29,7 @@ exports.createEvent = async (req, res) => {
 
         const event = eventResult.rows[0];
 
-        await generateTickets(event.event_id, rows, seats_per_row, has_numbered_seats, ticket_price);
+        await generateTickets(event.event_id, seat_prices);
 
         res.status(201).json({ success: true, event });
     } catch (error) {

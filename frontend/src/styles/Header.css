@@ -1,0 +1,90 @@
+.header {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  padding: 0 10%; 
+  height: 5vw;
+  background-color: #161616;
+  box-sizing: border-box; 
+}
+
+.logo-section {
+  flex-shrink: 0; 
+  color: #f8f8f8;
+  font-size: 1.5rem; 
+  text-decoration: none; 
+}
+
+.logo {
+  width: 125px; 
+  max-width: 150px; 
+  height: auto; 
+  fill: #f8f8f8;
+}
+
+.icons-section {
+  flex-shrink: 0; 
+  display: flex; 
+  gap: 30px; 
+  align-items: center; 
+  color: #f8f8f8;
+  font-size: 2rem; 
+}
+
+.header-icon {
+  font-size: 2rem; 
+  line-height: 1; 
+  vertical-align: middle;
+  cursor: pointer; 
+  transition: transform 0.3s, color 0.3s; 
+}
+
+.header-icon:hover {
+  transform: scale(1.2); 
+  color: #2c7871;
+}
+
+.cart-icon {
+  position: relative; 
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  text-decoration: none; 
+  color: inherit; 
+}
+
+.cart-icon:hover {
+  color: #2c7871; 
+}
+
+.cart-count {
+  position: absolute;
+  top: -7px; 
+  right: -10px; 
+  background: #13403b; 
+  color: #f8f8f8; 
+  border-radius: 50%; 
+  padding: 5px 8px; 
+  font-size: 0.8rem; 
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none; 
+  pointer-events: none; 
+}
+
+.profile-icon {
+  text-decoration: none;
+  color: inherit; 
+  display: inline-flex; 
+  align-items: center; 
+}
+
+.profile-icon:hover {
+  color: #2c7871;
+}
+
+.cart-icon-container {
+  position: relative; 
+}

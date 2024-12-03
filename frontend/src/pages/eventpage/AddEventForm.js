@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { createEvent } from '../../services/eventService';
 import useCategories from '../../hooks/useCategories';
 import ErrorMessage from '../../components/ErrorMessage';
+import useSeatPricing from '../../hooks/useSeatPricing';
+
+import SeatGrid from '../../components/SeatPricing';
 
 const AddEventForm = () => {
     const { categories, error: categoryError } = useCategories();
-    const [errorMessage, setErrorMessage] = useState('');
+    const [showSeatGrid, setShowSeatGrid] = useState(false);
+
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -17,8 +21,17 @@ const AddEventForm = () => {
         rows: '',
         seats_per_row: '',
         has_numbered_seats: false,
-        ticket_price: '',
     });
+
+    const {
+        seatPrices,
+        currentSeatPrice,
+        errorMessage,
+        setCurrentSeatPrice,
+        handleSeatClick,
+        resetSeatPricing,
+        setErrorMessage,
+    } = useSeatPricing();
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -26,18 +39,39 @@ const AddEventForm = () => {
             ...prev,
             [name]: type === 'checkbox' ? checked : value,
         }));
+
+        if (name === 'has_numbered_seats' && !checked) {
+            setShowSeatGrid(false);
+            resetSeatPricing();
+        }
+    };
+
+    const handleGenerateGrid = () => {
+        if (formData.rows && formData.seats_per_row) {
+            setShowSeatGrid(true);
+        } else {
+            setErrorMessage('Please provide both number of rows and seats per row.');
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         if (!formData.category_id) {
             setErrorMessage('Please select a valid category.');
             return;
         }
-    
+
+        if (Object.keys(seatPrices).length === 0) {
+            setErrorMessage('Please set prices for all seats.');
+            return;
+        }
+
         try {
-            const response = await createEvent(formData);
+            const response = await createEvent({
+                ...formData,
+                seat_prices: seatPrices,
+            });
             if (response.success) {
                 console.log('Event created: ', response.event);
                 setFormData({
@@ -51,15 +85,14 @@ const AddEventForm = () => {
                     rows: '',
                     seats_per_row: '',
                     has_numbered_seats: false,
-                    ticket_price: '',
                 });
+                resetSeatPricing();
             }
         } catch (error) {
             console.error('Error creating event:', error.message);
             setErrorMessage(error.message || 'Failed to create event');
         }
     };
-    
 
     return (
         <form onSubmit={handleSubmit} style={{ maxWidth: '500px', margin: '0 auto' }}>
@@ -78,15 +111,6 @@ const AddEventForm = () => {
                     </option>
                 ))}
             </select>
-            <input name="rows" type="number" value={formData.rows} onChange={handleChange} placeholder="Rows" required />
-            <input
-                name="seats_per_row"
-                type="number"
-                value={formData.seats_per_row}
-                onChange={handleChange}
-                placeholder="Seats per Row"
-                required
-            />
             <label>
                 Numbered Seats:
                 <input
@@ -96,7 +120,39 @@ const AddEventForm = () => {
                     onChange={handleChange}
                 />
             </label>
-            <input name="ticket_price" type="number" value={formData.ticket_price} onChange={handleChange} placeholder="Ticket Price" required />
+            {formData.has_numbered_seats && (
+                <>
+                    <input
+                        name="rows"
+                        type="number"
+                        value={formData.rows}
+                        onChange={handleChange}
+                        placeholder="Number of Rows"
+                        required
+                    />
+                    <input
+                        name="seats_per_row"
+                        type="number"
+                        value={formData.seats_per_row}
+                        onChange={handleChange}
+                        placeholder="Seats per Row"
+                        required
+                    />
+                    <button type="button" onClick={handleGenerateGrid}>
+                        Generate Seat Grid
+                    </button>
+                </>
+            )}
+            {showSeatGrid && (
+                <SeatGrid
+                    rows={formData.rows}
+                    seatsPerRow={formData.seats_per_row}
+                    seatPrices={seatPrices}
+                    handleSeatClick={handleSeatClick}
+                    currentSeatPrice={currentSeatPrice}
+                    setCurrentSeatPrice={setCurrentSeatPrice} 
+                />
+            )}
             <button type="submit">Create Event</button>
         </form>
     );

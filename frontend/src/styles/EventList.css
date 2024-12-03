@@ -1,0 +1,11 @@
+.event-list-window {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    overflow-y: auto; 
+    max-height: calc(100vh - 15vw); 
+    border-radius: 16px;
+    box-sizing: border-box;
+    scrollbar-color: #13403b transparent;  
+  }
+  
