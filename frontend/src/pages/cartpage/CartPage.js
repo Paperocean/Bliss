@@ -1,46 +1,58 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { CartContext } from '../../context/CartContext';
-import { fetchEventByTicket } from '../../services/ticketService';
+import apiRequest from '../../utils/apiRequest';
 
 const CartPage = () => {
-    const { cart, removeFromCart } = useContext(CartContext);
-    const [eventDetails, setEventDetails] = useState({}); 
+    const { cart, removeFromCart, clearCart } = useContext(CartContext);
+    const [cartSummary, setCartSummary] = useState(null);
 
-    useEffect(() => {
-        const loadEventDetails = async () => {
-            const details = {};
-            for (const item of cart) {
-                if (!eventDetails[item.ticket_id]) {
-                    const data = await fetchEventByTicket(item.ticket_id);
-                    details[item.ticket_id] = data;
-                }
+    const handleCheckout = async () => {
+        if (cart.length === 0) {
+            alert('Your cart is empty!');
+            return;
+        }
+
+        alert('Proceeding to checkout...');
+
+        try {
+            const response = await apiRequest('/cart/calculateSummary', 'POST', { cart }, true);
+            
+            if (response.success) {
+                setCartSummary(response.cartSummary);
+                alert(`Total amount: $${response.cartSummary.totalAmount}`);
+                clearCart();  // Clear the cart after successful payment
+            } else {
+                alert(response.message); // Błąd z backendu
             }
-            setEventDetails((prevDetails) => ({ ...prevDetails, ...details }));
-        };
-        
-        loadEventDetails();
-        // eslint-disable-next-line
-    }, [cart]);
+        } catch (error) {
+            console.error('Error calculating cart summary:', error.message);
+            alert('Error calculating cart summary');
+        }
+    };
 
     return (
         <div>
-            <h1>Your Shopping Cart</h1>
+            <h1>Your Cart</h1>
             {cart.length === 0 ? (
                 <p>Your cart is empty.</p>
             ) : (
                 <ul>
-                    {cart.map((item) => {
-                        const event = eventDetails[item.ticket_id];
-                        return (
-                            <li key={item.ticket_id}>
-                                <h3>{event ? event.title : 'Loading...'}</h3>
-                                <p>Seat: {event ? event.seat_label : 'Loading...'}</p>
-                                <p>Price: {event ? `$${event.price}` : 'Loading...'}</p>
-                                <button onClick={() => removeFromCart(item.ticket_id)}>Remove</button>
-                            </li>
-                        );
-                    })}
+                    {cart.map((item) => (
+                        <li key={item.ticketId}>
+                            <span>{item.label} - ${item.price}</span>
+                            <button onClick={() => removeFromCart(item.ticketId)}>Remove</button>
+                        </li>
+                    ))}
                 </ul>
+            )}
+            <button onClick={clearCart}>Clear Cart</button>
+            <button onClick={handleCheckout}>Proceed to Checkout</button>
+
+            {cartSummary && (
+                <div>
+                    <h2>Cart Summary</h2>
+                    <p>Total Amount: ${cartSummary.totalAmount}</p>
+                </div>
             )}
         </div>
     );

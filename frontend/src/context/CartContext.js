@@ -12,25 +12,25 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
 
-    const addToCart = (ticket_id) => {
-        setCart((prevCart) => {
-            const existingItem = prevCart.find((item) => item.ticket_id === ticket_id);
-
-            if (existingItem) {
-                alert('This item is already in your cart.');
-                return prevCart; 
-            }
-
-            return [...prevCart, { ticket_id }];
-        });
+    const addToCart = (ticketId, price, label) => {
+        const exists = cart.find(item => item.ticketId === ticketId);
+        if (exists) {
+            alert(`Item ${label} is already in the cart.`);
+            return;
+        }
+        setCart([...cart, { ticketId, price, label }]);
     };
 
-    const removeFromCart = (ticket_id) => {
-        setCart((prevCart) => prevCart.filter((item) => item.ticket_id !== ticket_id));
+    const removeFromCart = (ticketId) => {
+        setCart(cart.filter(item => item.ticketId !== ticketId));
+    };
+
+    const clearCart = () => {
+        setCart([]);
     };
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart }}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
             {children}
         </CartContext.Provider>
     );
