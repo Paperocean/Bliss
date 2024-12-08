@@ -7,17 +7,22 @@ const useCart = () => {
 
     const addSeatToCart = (seat) => {
         try {
-            if (!seat) {
-                throw new Error('No seat selected.');
+            if (!seat || !seat.ticket_id || typeof seat.price !== 'number') {
+                throw new Error('Invalid seat data. Make sure ticket_id and price are provided.');
             }
-
+    
             const isSeatInCart = cart.some((item) => item.ticket_id === seat.ticket_id);
-
+    
             if (isSeatInCart) {
                 throw new Error(`Seat ${seat.seat_label} is already in your cart.`);
             }
-
-            addToCart(seat.ticket_id);
+    
+            addToCart({ 
+                ticket_id: seat.ticket_id, 
+                seat_label: seat.seat_label, 
+                price: seat.price 
+            });
+    
             setError(null); 
         } catch (err) {
             setError(err.message); 

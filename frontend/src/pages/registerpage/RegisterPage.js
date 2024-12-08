@@ -1,14 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { registerUser } from '../../services/authService';
+import { registerUser, loginUser } from '../../services/authService';
 
 import '../loginpage/LoginPage.css';
 import Header from '../homepage/Header';
 import Footer from '../homepage/Footer';
 
 const RegisterPage = () => {
-    const { isLoggedIn } = useContext(AuthContext);
+    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -44,6 +44,42 @@ const RegisterPage = () => {
 
     const handleLoginRedirect = () => {
         navigate('/login');
+    };
+
+    // Testowa funkcja do rejestracji i logowania
+    const handleTestRegisterLogin = async () => {
+        const testUser = {
+            username: 'testuser',
+            email: 'testuser@example.com',
+            password: 'password123',
+        };
+
+        try {
+            // Rejestracja użytkownika
+            const registerResponse = await registerUser(testUser);
+            if (registerResponse.success) {
+                setMessage('Test user registered successfully');
+
+                // Logowanie po rejestracji
+                const loginResponse = await loginUser({
+                    email: testUser.email,
+                    password: testUser.password,
+                });
+
+                if (loginResponse.success) {
+                    setIsLoggedIn(true);
+                    setMessage('Logged in successfully');
+                    navigate('/'); // Przekierowanie do strony głównej po zalogowaniu
+                } else {
+                    setMessage('Login failed after registration');
+                }
+            } else {
+                setMessage(registerResponse.message);
+            }
+        } catch (error) {
+            console.error('Test registration and login error:', error);
+            setMessage('Test registration and login failed.');
+        }
     };
 
     return (
@@ -93,6 +129,12 @@ const RegisterPage = () => {
                     </button>
                 )}
             </form>
+
+            {/* Dodanie przycisku do testowego rejestrowania i logowania */}
+            <button onClick={handleTestRegisterLogin} className="test-button">
+                Test Register and Login
+            </button>
+
             <Footer />
         </div>
     );

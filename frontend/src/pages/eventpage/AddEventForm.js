@@ -59,7 +59,26 @@ const AddEventForm = () => {
             setErrorMessage(error.message || 'Failed to create event');
         }
     };
-    
+
+    // Funkcja do testowego wypełnienia formularza
+    const handleTest = () => {
+        setFormData({
+            title: 'Sample Event',
+            description: 'This is a sample event for testing purposes.',
+            location: 'Sample Location',
+            start_time: '2024-12-01T10:00',
+            end_time: '2024-12-01T12:00',
+            capacity: 5,
+            category_id: 1, // Zakładając, że mamy dostępne kategorie
+            rows: 1,
+            seats_per_row: 5,
+            has_numbered_seats: true,
+            ticket_price: 20,
+        });
+        
+        // Wywołanie submit po ustawieniu danych
+        handleSubmit(new Event('submit'));
+    };
 
     return (
         <form onSubmit={handleSubmit} style={{ maxWidth: '500px', margin: '0 auto' }}>
@@ -98,6 +117,15 @@ const AddEventForm = () => {
             </label>
             <input name="ticket_price" type="number" value={formData.ticket_price} onChange={handleChange} placeholder="Ticket Price" required />
             <button type="submit">Create Event</button>
+            
+            {/* Dodanie przycisku Test, który wypełni formularz przykładowymi danymi */}
+            <button type="button" onClick={handleTest} style={{ marginTop: '10px' }}>
+                Test Create Event
+            </button>
+
+            <button type="button" onClick={() => window.location.href = '/event-test'} style={{ marginTop: '10px' }}>
+                Go to Event Test View
+            </button>
         </form>
     );
 };

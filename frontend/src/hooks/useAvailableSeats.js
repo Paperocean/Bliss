@@ -11,7 +11,14 @@ const useAvailableSeats = (eventId) => {
         const loadSeats = async () => {
             try {
                 const response = await fetchAvailableSeats(eventId);
-                setSeats(response || []);
+                console.log('Fetched seats:', response);
+
+                const seatsWithNumericPrice = response.map(seat => ({
+                    ...seat,
+                    price: parseFloat(seat.price), // Konwertuje string na liczbę
+                }));
+
+                setSeats(seatsWithNumericPrice  || []);
             } catch (err) {
                 console.error('Error fetching available seats:', err.message);
                 setError('Failed to load seats. Please try again later.');

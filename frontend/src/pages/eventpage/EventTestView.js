@@ -6,18 +6,32 @@ import ErrorMessage from '../../components/ErrorMessage';
 
 const EventTestView = () => {
     const [selectedEvent, setSelectedEvent] = useState(null);
-    
     const { events, loading: eventsLoading, error: eventsError } = useEvents();
     const { seats, error: seatsError, loading: seatsLoading } = useAvailableSeats(selectedEvent?.event_id);
     const { addSeatToCart, error: cartError } = useCart(); 
 
     const handleAddToCart = (seat) => {
-        addSeatToCart(seat); 
+        console.log('Seat being added:', seat);
+
+        const seatWithNumericPrice = {
+            ...seat,
+            price: parseFloat(seat.price),
+        };
+
+        if (!seatWithNumericPrice || !seatWithNumericPrice.ticket_id || typeof seatWithNumericPrice.price !== 'number') {
+            console.error('Invalid seat data:', seatWithNumericPrice);
+            return alert('Cannot add seat to cart. Missing required information.');
+        }
+    
+        addSeatToCart(seatWithNumericPrice);
     };
 
     return (
         <div>
             <h1>Available Events</h1>
+
+            <button onClick={() => window.location.href = '/cart'}>Go to Cart</button>
+
             {(eventsError || seatsError || cartError) && (
                 <ErrorMessage message={eventsError || seatsError || cartError} />
             )}
