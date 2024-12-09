@@ -1,53 +1,60 @@
 import React, { useState } from 'react';
-import SearchBar from '../components/SearchBar';
-import EventList from '../components/EventList';
-import useEvents from '../hooks/useEvents';
-import useCategories from '../hooks/useCategories';
-import ErrorMessage from '../components/ErrorMessage'; 
-import '../styles/EventList.css';
-import '../styles/Select.css';
+import useEvents from 'hooks/useEvents';
+import useCategories from 'hooks/useCategories';
 
-function Home() {
-  const { events, loading: eventsLoading, error: eventsError } = useEvents(); 
-  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories(); // Fetch categories
+import SearchBar from 'components/props/SearchBar/SearchBar';
+import Select from 'components/props/Select/Select';
+import EventList from 'components/EventList/EventList';
+import ErrorMessage from 'components/ErrorMessage';
+import ContentWrapper from 'components/ContentWrapper/ContentWrapper';
+
+const Home = () => {
+  const { events, loading: eventsLoading, error: eventsError } = useEvents();
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
   const [selectedCategory, setSelectedCategory] = useState('');
+
+  const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
 
   const filteredEvents = selectedCategory
     ? events.filter((event) => event.category === selectedCategory)
     : events;
 
   return (
-    <div className="content-section">
+    <ContentWrapper>
+      {/* Search and Filter Row */}
       <div className="search-and-filter-row">
-        <SearchBar />
+        <SearchBar
+          placeholder="Szukaj wydarzenia..."
+          value=""
+          onChange={() => {}}
+        />
         {categoriesLoading ? (
-          <p>Ładowanie kategorii...</p>
+          <p>Loading categories...</p>
         ) : categoriesError ? (
           <ErrorMessage message={categoriesError} />
         ) : (
-          <select
-            className="select"
+          <Select
+            options={categories.map((category) => ({
+              value: category.name,
+              label: category.name,
+            }))}
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value="">Wszystkie kategorie</option>
-            {categories.map((category) => (
-              <option key={category.name} value={category.name}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+            onChange={handleCategoryChange}
+            placeholder="Wszystkie kategorie"
+          />
         )}
       </div>
 
-      {eventsError && <ErrorMessage message={eventsError} />}
-      {eventsLoading ? (
-        <p>Ładowanie wydarzeń...</p>
+      {/* Event List */}
+      {eventsError ? (
+        <ErrorMessage message={eventsError} />
+      ) : eventsLoading ? (
+        <p>Loading events...</p>
       ) : (
         <EventList events={filteredEvents} />
       )}
-    </div>
+    </ContentWrapper>
   );
-}
+};
 
 export default Home;

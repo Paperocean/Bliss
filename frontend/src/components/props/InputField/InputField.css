@@ -1,0 +1,32 @@
+@import 'styles/variables.css';
+
+.input-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small); /* Small gap between label and input */
+  width: 100%; /* Full width for container */
+}
+
+.input-label {
+  font-size: var(--font-size-base); /* Base font size */
+  color: var(--color-text); /* Label text color */
+}
+
+.input-field {
+  padding: var(--spacing-small); /* Inner padding */
+  font-size: var(--font-size-base); /* Font size for input text */
+  border: 1px solid var(--color-primary); /* Border with primary color */
+  border-radius: var(--border-radius); /* Rounded corners */
+  background-color: var(--color-secondary-light); /* Light background */
+  color: var(--color-text); /* Input text color */
+  outline: none;
+  transition: border-color 0.3s ease; /* Smooth transition for focus effect */
+}
+
+.input-field:focus {
+  border-color: var(--color-hover); /* Change border color on focus */
+}
+
+.input-field::placeholder {
+  color: var(--color-placeholder); /* Placeholder text color */
+}

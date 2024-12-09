@@ -1,8 +1,11 @@
 import React from 'react';
-import '../styles/EventBlock.css';
-import basicCover from '../assets/basic_cover.webp';
+import { Link } from 'react-router-dom'
+import './EventBlock.css';
+import basicCover from 'assets/basic_cover.webp';
 
-function EventBlock({ event, index }) {
+function EventBlock({ event }) {
+  const MAX_DESC_LENGTH = 1000; 
+  const isLongDescription = event.description.length > MAX_DESC_LENGTH;
 
   return (
     <div className="event-block">
@@ -15,7 +18,12 @@ function EventBlock({ event, index }) {
       </div>
       <div className="event-details">
         <div className="event-title">{event.title}</div>
-        <div className="event-desc">{event.description}</div>
+        <div className="event-desc">
+          {isLongDescription
+            ? `${event.description.substring(0, MAX_DESC_LENGTH)}`
+            : event.description}
+          {isLongDescription && <Link to={`event/${event.id}`}>...</Link>}
+        </div>
         <div className="event-footer">
           <div className="event-category category-badge">
             {event.category || 'General'}

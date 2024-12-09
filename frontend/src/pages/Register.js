@@ -4,13 +4,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { registerUser } from '../services/authService';
 
-import InputText from '../components/InputText';
-import Button from '../components/Button';
+import InputField from '../components/props/InputField/InputField';
+import Button from '../components/props/Button/Button';
 import ErrorMessage from '../components/ErrorMessage';
+import ContentWrapper from '../components/ContentWrapper/ContentWrapper';
 
 import '../styles/Form.css';
 
-function Register() {
+const Register = () => {
   const { isLoggedIn } = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -20,87 +21,86 @@ function Register() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigate('/');
+      navigate('/'); 
     }
   }, [isLoggedIn, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const trimmedUsername = username.trim();
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
-  
+
     if (!trimmedUsername || !trimmedEmail || !trimmedPassword) {
-      setErrorMessage("Nazwa użytkownika, e-mail i hasło są wymagane do zalogowania.")
+      setErrorMessage('Nazwa użytkownika, e-mail i hasło są wymagane do rejestracji.');
       return;
     }
-  
+
     try {
       const response = await registerUser({
         username: trimmedUsername,
         email: trimmedEmail,
         password: trimmedPassword,
       });
-  
+
       if (response.success) {
         setErrorMessage('Użytkownik został poprawnie zarejestrowany.');
+        navigate('/login');
       } else {
         setErrorMessage(response.message);
       }
     } catch (error) {
-      console.error('Registration error: ', error);
+      console.error('Registration error:', error);
       setErrorMessage('Rejestracja nie powiodła się. Spróbuj ponownie.');
     }
   };
-  
 
   return (
-      <div className="content-section">
-        <form className="form" onSubmit={handleSubmit}>
-          <h1>Rejestracja</h1>
-          <div className="form-group">
-            <InputText
-              label="Nazwa użytkownika:"
-              type="text"
-              id="username"
-              name="username"
-              placeholder="Wprowadź nazwę użytkownika..."
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <InputText
-              label="E-mail:"
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Wprowadź e-mail..."
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <InputText
-              label="Hasło:"
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Wprowadź hasło..."
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <Button onClick={handleSubmit}>Zarejestruj się</Button>
-          <ErrorMessage message={errorMessage} />
-          <p1>
-            Masz już konto? <Link to="/login">Zaloguj się</Link>
-          </p1>
-        </form>
-      </div>
+    <ContentWrapper>
+      <form className="form" onSubmit={handleSubmit}>
+        <h1 className="form-title">Rejestracja</h1>
+
+        <div className="form-group">
+          <InputField
+            label="Nazwa użytkownika:"
+            type="text"
+            placeholder="Wprowadź nazwę użytkownika..."
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <InputField
+            label="E-mail:"
+            type="email"
+            placeholder="Wprowadź e-mail..."
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <InputField
+            label="Hasło:"
+            type="password"
+            placeholder="Wprowadź hasło..."
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <Button type="submit">Zarejestruj się</Button>
+
+        {errorMessage && <ErrorMessage message={errorMessage} />}
+
+        <p className="form-footer">
+          Masz już konto? <Link to="/login">Zaloguj się</Link>
+        </p>
+      </form>
+    </ContentWrapper>
   );
-}
+};
 
 export default Register;

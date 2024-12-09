@@ -4,7 +4,7 @@ import useCategories from '../../hooks/useCategories';
 import ErrorMessage from '../../components/ErrorMessage';
 import useSeatPricing from '../../hooks/useSeatPricing';
 
-import SeatGrid from '../../components/SeatPricing';
+import SeatGrid from '../../components/SeatPricing/SeatPricing';
 
 const AddEventForm = () => {
     const { categories, error: categoryError } = useCategories();

@@ -1,16 +1,17 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom';
 
-import { AuthContext } from '../context/AuthContext'; 
-import { loginUser } from '../services/authService'; 
+import { AuthContext } from '../context/AuthContext';
+import { loginUser } from '../services/authService';
 
-import InputText from '../components/InputText';
-import Button from '../components/Button';
+import InputText from '../components/props/InputField/InputField';
+import Button from '../components/props/Button/Button';
 import ErrorMessage from '../components/ErrorMessage';
+import ContentWrapper from '../components/ContentWrapper/ContentWrapper';
 
-import '../styles/Form.css';
+import 'styles/Form.css';
 
-function Login() {
+const Login = () => {
   const { isLoggedIn, login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,7 +28,7 @@ function Login() {
     e.preventDefault();
 
     if (!email || !password) {
-      setErrorMessage("E-mail i hasło są wymagane do zalogowania.")
+      setErrorMessage('E-mail i hasło są wymagane do zalogowania.');
       return;
     }
 
@@ -35,51 +36,51 @@ function Login() {
       const response = await loginUser({ email, password });
       if (response.success) {
         login(response.token, response.user);
-        setErrorMessage('Logowanie powiodło się.');
-        navigate('/');
+        navigate('/'); 
       } else {
         setErrorMessage(response.message);
       }
     } catch (error) {
-      console.error('Login error: ', error);
+      console.error('Login error:', error);
       setErrorMessage('Logowanie nie powiodło się. Spróbój ponownie.');
     }
   };
 
   return (
-      <div className="content-section">
-        <form className="form" onSubmit={handleSubmit}>
-          <h1>Logowanie</h1>
-          <div className="form-group">
-            <InputText
-              label="E-mail:"
-              type="email"
-              id="username"
-              name="username"
-              placeholder="Wprowadź e-mail..."
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <InputText
-              label="Hasło:"
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Wprowadź hasło..."
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <Button type="submit">Zaloguj się</Button>
-          <ErrorMessage message={errorMessage} />
-          <p1>
-            Nie masz konta? <Link to="/register">Zarejestruj się</Link>
-          </p1>
-        </form>
-      </div>
+    <ContentWrapper>
+      <form className="form" onSubmit={handleSubmit}>
+        <h1 className="form-title">Logowanie</h1>
+
+        <div className="form-group">
+          <InputText
+            label="E-mail:"
+            type="email"
+            placeholder="Wprowadź e-mail..."
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <InputText
+            label="Hasło:"
+            type="password"
+            placeholder="Wprowadź hasło..."
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <Button type="submit">Zaloguj się</Button>
+
+        {errorMessage && <ErrorMessage message={errorMessage} />}
+
+        <p className="form-footer">
+          Nie masz konta? <Link to="/register">Zarejestruj się</Link>
+        </p>
+      </form>
+    </ContentWrapper>
   );
-}
+};
 
 export default Login;

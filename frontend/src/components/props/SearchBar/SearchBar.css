@@ -1,0 +1,62 @@
+@import 'styles/variables.css';
+
+.search-bar {
+  background: var(--color-secondary-light);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--border-radius-medium);
+  padding: var(--spacing-small);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+  transition: transform 0.3s, box-shadow 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.search-bar:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px var(--color-text);
+}
+
+.search-bar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  padding: var(--spacing-small);
+  flex-grow: 1;
+}
+
+.search-bar input::placeholder {
+  color: var(--color-placeholder);
+}
+
+.search-bar button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  box-sizing: content-box;
+  transition: background 0.3s, transform 0.3s;
+}
+
+
+.search-bar button:hover {
+  background: var(--color-hover);
+  transform: scale(1.1);
+}
+
+.search-bar svg {
+  width: 60%;
+  height: auto;
+  fill: var(--color-text);
+}

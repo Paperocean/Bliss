@@ -1,6 +1,6 @@
 import React from 'react';
-import EventBlock from './EventBlock';
-import '../styles/EventList.css';
+import EventBlock from '../EventBlock/EventBlock';
+import './EventList.css';
 
 function EventList({ events }) {
   return (

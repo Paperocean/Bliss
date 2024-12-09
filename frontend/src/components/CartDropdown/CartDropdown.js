@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { CartContext } from '../context/CartContext';
-import { fetchEventByTicket } from '../services/ticketService';
+import { CartContext } from 'context/CartContext';
+import { fetchEventByTicket } from 'services/ticketService';
 import { Link } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa'; 
-import '../styles/CartDropdown.css';
+import './CartDropdown.css';
 
 const CartDropdown = ({ isVisible, toggleVisibility }) => {
     const { cart, removeFromCart } = useContext(CartContext);
