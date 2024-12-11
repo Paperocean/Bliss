@@ -1,5 +1,6 @@
 const express = require('express');
 const { getAvailableSeats, fetchEventByTicket } = require('./ticketController');
+const authenticateToken = require('../../middleware/authMiddleware');
 
 const router = express.Router();
 

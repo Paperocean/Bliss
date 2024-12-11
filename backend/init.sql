@@ -21,7 +21,7 @@ CREATE TABLE public.users (
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM public.users WHERE username = 'john_doe') THEN
-        INSERT INTO public.users (username, email, password_hash, role) 
+        INSERT INTO public.users (username, email, password_hash, role)
         VALUES ('john_doe', 'john@example.com', 'example_password', 'organizer');
     END IF;
 END $$;
@@ -32,7 +32,7 @@ CREATE TABLE public.event_categories (
 );
 
 INSERT INTO public.event_categories (name)
-VALUES 
+VALUES
     ('Rock'),
     ('Pop'),
     ('Party'),
@@ -66,7 +66,7 @@ CREATE TABLE public.tickets (
     ticket_id SERIAL PRIMARY KEY,
     event_id INT REFERENCES events(event_id) ON DELETE CASCADE,
     user_id INT REFERENCES users(user_id) ON DELETE SET NULL,
-    purchase_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    purchase_time TIMESTAMP,
     price DECIMAL(10, 2) NOT NULL,
     status VARCHAR(20) DEFAULT 'available', -- 'available', 'sold', 'cancelled'
     seat_label VARCHAR(50),
