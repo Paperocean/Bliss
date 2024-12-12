@@ -9,7 +9,7 @@ const useSeatPricing = () => {
     const price =
       priceOverride !== null ? priceOverride : parseFloat(currentSeatPrice);
     if (isNaN(price) || price < 0) {
-      setErrorMessage('Please enter a valid non-negative price.');
+      setErrorMessage('Wprowadź nieujemną liczbę (cenę).');
       return;
     }
     setSeatPrices((prev) => ({

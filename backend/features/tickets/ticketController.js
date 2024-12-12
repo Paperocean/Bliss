@@ -13,14 +13,14 @@ exports.getAvailableSeats = async (req, res) => {
     console.log('Fetched seats: ', result.rows);
     res.status(200).json({ success: true, seats: result.rows });
   } catch (error) {
-    console.error('Error fetching available seats:', error.message);
+    console.error('Error getting available seats:', error.message);
     res
       .status(500)
-      .json({ success: false, message: 'Failed to fetch available seats' });
+      .json({ success: false, message: 'Failed to get available seats' });
   }
 };
 
-exports.fetchEventByTicket = async (req, res) => {
+exports.getEventByTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
 
@@ -41,9 +41,9 @@ exports.fetchEventByTicket = async (req, res) => {
 
     res.status(200).json({ success: true, event: result.rows[0] });
   } catch (error) {
-    console.error('Error fetching event by ticket:', error.message);
+    console.error('Error getting event by ticket:', error.message);
     res
       .status(500)
-      .json({ success: false, message: 'Failed to fetch event details.' });
+      .json({ success: false, message: 'Failed to get event details.' });
   }
 };

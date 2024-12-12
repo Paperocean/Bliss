@@ -1,54 +1,23 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { CartContext } from 'context/CartContext';
-import { fetchEventByTicket } from 'services/ticketService';
-import { calculateCart } from 'services/cartService';
 import { Link } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
+import useCartTotal from 'hooks/cartHooks/useCartTotal';
+import useEventDetails from 'hooks/eventHooks/useEventDetails';
 import './CartDropdown.css';
 
 const CartDropdown = ({ isVisible, toggleVisibility }) => {
   const { cart, removeFromCart } = useContext(CartContext);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [eventDetails, setEventDetails] = useState({});
-
-  useEffect(() => {
-    const fetchTotalPrice = async () => {
-      console.log(cart);
-      if (cart.length === 0) {
-        setTotalPrice(0);
-        return;
-      }
-
-      const { totalPrice } = await calculateCart(cart).catch(() => ({
-        totalPrice: 0,
-      }));
-      const parsedPrice = parseFloat(totalPrice);
-      setTotalPrice(!isNaN(parsedPrice) ? parsedPrice : 0);
-    };
-
-    fetchTotalPrice();
-  }, [cart]);
-
-  useEffect(() => {
-    const loadEventDetails = async () => {
-      const details = {};
-      for (const item of cart) {
-        if (!eventDetails[item.ticket_id]) {
-          const data = await fetchEventByTicket(item.ticket_id).catch(
-            () => null
-          );
-          if (data) {
-            details[item.ticket_id] = data;
-          }
-        }
-      }
-      setEventDetails((prevDetails) => ({ ...prevDetails, ...details }));
-    };
-
-    if (cart.length > 0) {
-      loadEventDetails();
-    }
-  }, [cart]);
+  const {
+    totalPrice,
+    loading: totalLoading,
+    error: totalError,
+  } = useCartTotal(cart);
+  const {
+    eventDetails,
+    loading: eventLoading,
+    error: eventError,
+  } = useEventDetails(cart);
 
   return (
     <div className={`cart-dropdown ${isVisible ? 'visible' : ''}`}>
@@ -63,6 +32,7 @@ const CartDropdown = ({ isVisible, toggleVisibility }) => {
         <p className="empty-cart-message">Twój koszyk jest pusty.</p>
       ) : (
         <div className="cart-items">
+          {eventError && <p className="error-message">{eventError}</p>}
           {cart.map((item) => {
             const event = eventDetails[item.ticket_id];
             return (
@@ -70,19 +40,27 @@ const CartDropdown = ({ isVisible, toggleVisibility }) => {
                 <div className="ticket-details-row">
                   <span className="label">Wydarzenie:</span>
                   <span className="value">
-                    {event ? event.title : 'Loading...'}
+                    {eventLoading
+                      ? 'Ładowanie...'
+                      : event?.title || 'Brak danych'}
                   </span>
                 </div>
                 <div className="ticket-details-row">
                   <span className="label">Miejsce:</span>
                   <span className="value">
-                    {event ? event.seat_label : 'Loading...'}
+                    {eventLoading
+                      ? 'Ładowanie...'
+                      : event?.seat_label || 'Brak danych'}
                   </span>
                 </div>
                 <div className="ticket-details-row">
                   <span className="label">Cena:</span>
                   <span className="value">
-                    {event ? `${event.price} zł` : 'Loading...'}
+                    {eventLoading
+                      ? 'Ładowanie...'
+                      : event
+                      ? `${event.price} zł`
+                      : 'Brak danych'}
                   </span>
                 </div>
                 <button
@@ -97,8 +75,10 @@ const CartDropdown = ({ isVisible, toggleVisibility }) => {
         </div>
       )}
       <div className="cart-footer">
+        {totalError && <p className="error-message">{totalError}</p>}
         <p>
-          Łącznie: <b>{totalPrice.toFixed(2)} zł</b>
+          Łącznie:{' '}
+          <b>{totalLoading ? 'Ładowanie...' : `${totalPrice.toFixed(2)} zł`}</b>
         </p>
         <Link to="/cart" className="view-cart-btn" onClick={toggleVisibility}>
           Dokonaj zakupu

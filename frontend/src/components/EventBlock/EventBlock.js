@@ -1,10 +1,24 @@
 import React from 'react';
-import { Link } from 'react-router-dom'
-import './EventBlock.css';
+import { Link } from 'react-router-dom';
+
+import Button from 'components/props/Button/Button';
+
 import basicCover from 'assets/basic_cover.webp';
+import './EventBlock.css';
+
+const formatDate = (isoString) => {
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  };
+  return new Date(isoString).toLocaleDateString('pl-PL', options);
+};
 
 function EventBlock({ event }) {
-  const MAX_DESC_LENGTH = 1000; 
+  const MAX_DESC_LENGTH = 1000;
   const isLongDescription = event.description.length > MAX_DESC_LENGTH;
 
   return (
@@ -17,7 +31,13 @@ function EventBlock({ event }) {
         />
       </div>
       <div className="event-details">
-        <div className="event-title">{event.title}</div>
+        <div className="event-header">
+          <div className="event-title">{event.title}</div>
+          <div className="event-loc-date">
+            {event.location},<br />
+            {formatDate(event.start_time)}
+          </div>
+        </div>
         <div className="event-desc">
           {isLongDescription
             ? `${event.description.substring(0, MAX_DESC_LENGTH)}`
@@ -28,7 +48,7 @@ function EventBlock({ event }) {
           <div className="event-category category-badge">
             {event.category || 'General'}
           </div>
-          <div className="buy-ticket-btn">Buy Ticket</div>
+          <Button>Kup bilet</Button>
         </div>
       </div>
     </div>

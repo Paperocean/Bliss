@@ -1,0 +1,21 @@
+@import 'styles/variables.css';
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  table-layout: auto;
+  background-color: #1d1d1d;
+  border-radius: var(--border-radius-medium);
+}
+
+.custom-table thead tr {
+  color: var(--color-text);
+  text-align: left;
+  font-weight: bold;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 12px 15px;
+}

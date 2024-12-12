@@ -18,14 +18,6 @@ CREATE TABLE public.users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM public.users WHERE username = 'john_doe') THEN
-        INSERT INTO public.users (username, email, password_hash, role)
-        VALUES ('john_doe', 'john@example.com', 'example_password', 'organizer');
-    END IF;
-END $$;
-
 CREATE TABLE public.event_categories (
     category_id SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL
@@ -35,13 +27,13 @@ INSERT INTO public.event_categories (name)
 VALUES
     ('Rock'),
     ('Pop'),
-    ('Party'),
+    ('Impreza'),
     ('Hip-Hop'),
     ('Rap'),
     ('Jazz'),
-    ('Sports'),
-    ('Theater'),
-    ('Conference')
+    ('Sport'),
+    ('Teatr'),
+    ('Konferencja')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO public.event_categories (name)

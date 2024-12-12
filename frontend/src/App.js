@@ -7,14 +7,13 @@ import Layout from './Layout/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import './styles/App.css';
 
-const Home = lazy(() => import('./pages/Home'));
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-const AddEvent = lazy(() => import('./pages/AddEvent'));
-const Cart = lazy(() => import('./pages/Cart'));
-const EventTestView = lazy(() => import('./pages/eventpage/EventTestView'));
-const ProfilePage = lazy(() => import('./pages/profilepage/ProfilePage'));
-const Profile = lazy(() => import('./pages/Profile'));
+const Home = lazy(() => import('./pages/Home/Home'));
+const Login = lazy(() => import('./pages/Login/Login'));
+const Register = lazy(() => import('./pages/Register/Register'));
+const AddEvent = lazy(() => import('./pages/AddEvent/AddEvent'));
+const Cart = lazy(() => import('./pages/Cart/Cart'));
+const Event = lazy(() => import('./pages/Event/Event'));
+const Profile = lazy(() => import('./pages/Profile/Profile'));
 
 const App = () => {
   return (
@@ -36,7 +35,7 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/add-event" element={<AddEvent />} />
-                <Route path="/test-event" element={<EventTestView />} />
+                <Route path="/event" element={<Event />} />
                 <Route path="/cart" element={<Cart />} />
               </Routes>
             </Suspense>

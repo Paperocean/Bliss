@@ -1,5 +1,3 @@
-// backend/features/events/services/ticketService.js
-
 const db = require('../config/db');
 
 exports.generateTickets = async (
@@ -13,57 +11,37 @@ exports.generateTickets = async (
     const tickets = [];
 
     if (hasNumberedSeats) {
-      const rows = rowsOrCapacity; // Represents number of rows
-      const seatsPerRowVal = seatsPerRow; // Number of seats per row
+      const rows = rowsOrCapacity;
+      const seatsPerRowVal = seatsPerRow;
 
-      // Generate seat labels and create tickets with individual prices
       for (let row = 1; row <= rows; row++) {
-        const rowLabel = String.fromCharCode(64 + row); // 'A', 'B', etc.
+        const rowLabel = String.fromCharCode(64 + row);
         for (let seat = 1; seat <= seatsPerRowVal; seat++) {
-          const seatId = `${rowLabel}${seat}`; // e.g., 'A1', 'B2'
+          const seatId = `${rowLabel}${seat}`;
           const price = priceInfo[seatId];
 
-          // Price validation should have been done in the controller
-          // Here, we can assume price is valid
-
-          tickets.push([
-            eventId,
-            null, // user_id initially null
-            price,
-            'available',
-            seatId, // seat_label
-          ]);
+          tickets.push([eventId, null, price, 'available', seatId]);
         }
       }
     } else {
-      const capacity = rowsOrCapacity; // Represents capacity
-      const price = priceInfo.price; // Uniform price for all tickets
-
-      // Price validation should have been done in the controller
-      // Here, we can assume price is valid
+      const capacity = rowsOrCapacity;
+      const price = priceInfo.price;
 
       for (let i = 0; i < capacity; i++) {
-        tickets.push([
-          eventId,
-          null, // user_id initially null
-          price,
-          'available',
-          'N/A', // seat_label
-        ]);
+        tickets.push([eventId, null, price, 'available', 'N/A']);
       }
     }
 
-    // Prepare bulk insertion with parameterized queries
     const values = [];
     const placeholders = tickets
       .map((_, idx) => {
         const baseIdx = idx * 5;
         values.push(
-          tickets[idx][0], // event_id
-          tickets[idx][1], // user_id
-          tickets[idx][2], // price
-          tickets[idx][3], // status
-          tickets[idx][4] // seat_label
+          tickets[idx][0],
+          tickets[idx][1],
+          tickets[idx][2],
+          tickets[idx][3],
+          tickets[idx][4]
         );
         return `($${baseIdx + 1}, $${baseIdx + 2}, $${baseIdx + 3}, $${
           baseIdx + 4

@@ -1,10 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { FaShoppingCart, FaUserCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import logo from '../../assets/logo.svg';
+
 import { CartContext } from '../../context/CartContext';
 import { AuthContext } from '../../context/AuthContext';
+
 import CartDropdown from '../CartDropdown/CartDropdown';
+import logo from '../../assets/logo.svg';
+
 import './Header.css';
 
 const Header = () => {
@@ -16,7 +19,6 @@ const Header = () => {
   const toggleCartDropdown = () => {
     setIsCartDropdownVisible((prev) => {
       const newState = !prev;
-      console.log('Cart Dropdown Visibility Changed:', newState);
       return newState;
     });
   };

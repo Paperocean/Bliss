@@ -1,5 +1,5 @@
 import apiRequest from '../utils/apiRequest';
 
-export const purchase = async (cart) => {
+export const purchaseRequest = async (cart) => {
   return apiRequest('/transaction/purchase', 'POST', { cart }, true);
 };

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { fetchProfile } from '../services/userService';
+import { getProfileRequest } from '../services/userService';
 
 export const AuthContext = createContext();
 
@@ -20,11 +20,11 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const userData = await fetchProfile();
+        const userData = await getProfileRequest();
         setUser(userData);
         setIsLoggedIn(true);
       } catch (error) {
-        console.error('Error fetching profile:', error.message);
+        console.error('Error geting profile:', error.message);
         logout();
       } finally {
         setLoading(false);
@@ -36,17 +36,17 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (token) => {
     if (!token) {
-      throw new Error('Token is required to log in.');
+      throw new Error('Token jest wymagany do zalogowania.');
     }
 
     localStorage.setItem('token', token);
 
     try {
-      const userData = await fetchProfile();
+      const userData = await getProfileRequest();
       setUser(userData);
       setIsLoggedIn(true);
     } catch (error) {
-      console.error('Error during login profile fetch:', error.message);
+      console.error('Error during login profile get:', error.message);
       logout();
     }
   };
