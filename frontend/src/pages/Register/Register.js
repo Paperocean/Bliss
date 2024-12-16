@@ -8,6 +8,7 @@ import InputField from 'components/props/InputField/InputField';
 import Button from 'components/props/Button/Button';
 import ErrorMessage from 'components/props/ErrorMessage/ErrorMessage';
 import ContentWrapper from 'components/ContentWrapper/ContentWrapper';
+import Select from 'components/props/Select/Select'; 
 
 import 'styles/Form.css';
 
@@ -16,6 +17,7 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('buyer');
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
@@ -31,6 +33,7 @@ const Register = () => {
     const trimmedUsername = username.trim();
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
+    const trimmedRole = role.trim();
 
     if (!trimmedUsername || !trimmedEmail || !trimmedPassword) {
       setErrorMessage(
@@ -44,6 +47,7 @@ const Register = () => {
         username: trimmedUsername,
         email: trimmedEmail,
         password: trimmedPassword,
+        role: trimmedRole,
       });
 
       if (response.success) {
@@ -91,6 +95,23 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+        </div>
+
+        <div className='form-group'>
+          <label htmlFor='role'>Rola:</label>
+          <Select
+            options={
+              [
+                { value: 'buyer', label: 'Kupujący' },
+                { value: 'organizer', label: 'Organizator' },
+              ]
+            }
+            id='role'
+            name='role'
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+          >
+          </Select>
         </div>
 
         <Button type="submit">Zarejestruj się</Button>

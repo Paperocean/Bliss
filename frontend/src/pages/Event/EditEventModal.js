@@ -14,7 +14,7 @@ import Modal from 'components/props/Modal/Modal';
 
 import 'styles/Form.css';
 
-const AddEvent = ({ isOpen, onClose }) => {
+const EditEventModal = ({ isOpen, onClose, eventId }) => {
   const { categories, error: categoryError } = useCategories();
 
   const [formData, setFormData] = useState({
@@ -171,7 +171,7 @@ const AddEvent = ({ isOpen, onClose }) => {
           label="Nazwa wydarzenia"
           name="title"
           id="title"
-          placeholder="Wprowadź nazwę wydarzenia"
+          placeholder={"Wprowadź nazwę wydarzenia"}
           value={formData.title}
           onChange={handleChange}
           required
@@ -319,4 +319,4 @@ const AddEvent = ({ isOpen, onClose }) => {
   );
 };
 
-export default AddEvent;
+export default EditEventModal;

@@ -3,6 +3,7 @@ const {
   getUserProfile,
   getUserTickets,
   changePassword,
+  getOrganizerEvents,
 } = require('./userController');
 const authenticateToken = require('../../middleware/authMiddleware');
 

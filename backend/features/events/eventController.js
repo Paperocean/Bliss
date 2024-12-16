@@ -169,3 +169,89 @@ exports.createEvent = async (req, res) => {
       .json({ success: false, message: 'Server error while creating event.' });
   }
 };
+
+exports.getOrganizerEvents = async (req, res) => {
+  try{
+    const organizer_id = req.user.user_id;
+    const events = await db.query(
+      `SELECT * FROM events WHERE organizer_id = $1 ORDER BY created_at DESC`,
+      [organizer_id]
+    );
+    res.status(200).json({ success: true, events: events.rows });
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      res
+        .status(500)
+        .json({ success: false, message: 'Server error while fetching events.' });
+    }
+};
+
+// Edycja wydarzenia
+exports.editEvent = async (req, res) => {
+  try {
+      const { title, description, location, start_time, end_time, capacity } = req.body;
+      const { eventId } = req.params;
+
+      const result = await db.query(
+          `UPDATE events
+           SET title = $1, description = $2, location = $3, start_time = $4, end_time = $5, capacity = $6
+           WHERE event_id = $7 RETURNING *`,
+          [title, description, location, start_time, end_time, capacity, eventId]
+      );
+
+      res.json({ success: true, event: result.rows[0] });
+  } catch (error) {
+      console.error('Error editing event:', error.message);
+      res.status(500).json({ success: false, message: 'Failed to edit event.' });
+  }
+};
+
+// Generowanie raportu sprzedaży
+exports.getEventReport = async (req, res) => {
+  try {
+      const { eventId } = req.params;
+
+      const report = await db.query(
+          `SELECT COUNT(*) AS tickets_sold, SUM(price) AS total_revenue
+           FROM tickets WHERE event_id = $1 AND status = 'sold'`,
+          [eventId]
+      );
+
+      const details = await db.query(
+          `SELECT seat_label, price FROM tickets
+           WHERE event_id = $1 AND status = 'sold'`,
+          [eventId]
+      );
+
+      res.json({
+          success: true,
+          report: {
+              tickets_sold: report.rows[0].tickets_sold,
+              total_revenue: report.rows[0].total_revenue,
+              sold_tickets_details: details.rows,
+          },
+      });
+  } catch (error) {
+      console.error('Error generating report:', error.message);
+      res.status(500).json({ success: false, message: 'Failed to generate report.' });
+  }
+};
+
+// Aktualizacja eventu (np. dodanie opisu)
+exports.updateEvent = async (req, res) => {
+  try {
+      const { description } = req.body;
+      const { eventId } = req.params;
+
+      const result = await db.query(
+          `UPDATE events SET description = $1, updated_at = CURRENT_TIMESTAMP
+           WHERE event_id = $2 RETURNING *`,
+          [description, eventId]
+      );
+
+      res.json({ success: true, event: result.rows[0] });
+  } catch (error) {
+      console.error('Error updating event:', error.message);
+      res.status(500).json({ success: false, message: 'Failed to update event.' });
+  }
+};

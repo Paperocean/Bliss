@@ -1,5 +1,5 @@
 const express = require('express');
-const { createEvent, getCategories, getEvents } = require('./eventController');
+const { createEvent, getCategories, getEvents, getOrganizerEvents, editEvent } = require('./eventController');
 const authenticateToken = require('../../middleware/authMiddleware');
 
 const router = express.Router();
@@ -186,5 +186,11 @@ router.get('/', getEvents);
  *         description: Server error while fetching categories
  */
 router.get('/categories', getCategories);
+
+// Pobieranie wydarzeń organizatora
+router.get(`/:organizerId`, authenticateToken, getOrganizerEvents);
+
+// Edycja wydarzenia
+router.put('/edit/:eventId', authenticateToken, editEvent);
 
 module.exports = router;

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'context/AuthContext';
 import useUserProfile from 'hooks/userHooks/useUserProfile';
 import useUserTickets from 'hooks/userHooks/useUserTickets';
+import useOrganizerEvents from 'hooks/eventHooks/useOrganizerEvents';
 
 import ContentWrapper from 'components/ContentWrapper/ContentWrapper';
 import List from 'components/props/List/List';
@@ -11,6 +12,8 @@ import Table from 'components/props/Table/Table';
 import Button from 'components/props/Button/Button';
 import ErrorMessage from 'components/props/ErrorMessage/ErrorMessage';
 import ChangePasswordModal from './ChangePasswordModal';
+import AddEvent from 'pages/AddEvent/AddEvent';
+import EventList from 'components/EventList/EventList';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -27,13 +30,19 @@ const Profile = () => {
   } = useUserTickets();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddEventOpen, setIsAddEventOpen] = useState(false);
+  const { events, loading: eventsLoading, error: eventsError } = useOrganizerEvents();
+  
+  const filteredEvents = profile?.role === 'organizer'
+    ? events.filter((event) => event.organizer_id === profile.user_id)
+    : events;
 
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/');
     }
   }, [isLoggedIn, navigate]);
-
+  
   const columnsUserInfo = [
     {
       header: 'E-mail',
@@ -42,6 +51,10 @@ const Profile = () => {
     {
       header: 'Nazwa użytkownika',
       accessor: (row) => row.username || 'N/A',
+    },
+    {
+      header: 'Rola',
+      accessor: (row) => row.role === 'organizer' ? 'Organizator' : 'Kupujący',
     },
   ];
 
@@ -79,11 +92,31 @@ const Profile = () => {
         )}
       </div>
       <Button onClick={logout}>Wyloguj</Button>{' '}
-      <Button onClick={() => setIsModalOpen(true)}>Zmień hasło</Button>
+      <Button onClick={() => setIsModalOpen(true)}>Zmień hasło</Button>{' '}
       <ChangePasswordModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+      {profile?.role === 'organizer' &&(
+        <div>
+          <h1>Twoje wydarzenia</h1>
+          <Button onClick={() => setIsAddEventOpen(true)}>Dodaj wydarzenie</Button>
+          <AddEvent 
+            isOpen={isAddEventOpen} 
+            onClose={() => setIsAddEventOpen(false)} 
+          />
+          
+
+          {/* Event List */}
+          {eventsError ? (
+            <ErrorMessage message={eventsError} />
+          ) : eventsLoading ? (
+            <p>Ładowanie wydarzeń...</p>
+          ) : (
+            <EventList events={filteredEvents} role={profile.role} />
+          )}
+        </div>
+      )}
       <div>
         <h1>Twoje bilety</h1>
         {ticketsError && <ErrorMessage message={ticketsError} />}
