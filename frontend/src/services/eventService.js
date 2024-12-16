@@ -1,17 +1,17 @@
-import apiRequest from "../utils/apiRequest";
+import apiRequest from '../utils/apiRequest';
 
-export const createEvent = async (eventData) => {
-    return apiRequest('/events', 'POST', eventData);
+export const createEventRequest = async (eventData) => {
+  return apiRequest('/events', 'POST', eventData, true);
 };
 
-export const fetchEvents = async () => {
-    return apiRequest('/events');
+export const getEventsRequest = async () => {
+  return apiRequest('/events');
 };
 
-export const fetchCategories = async () => {
-    return apiRequest('/events/categories');
+export const getCategoriesRequest = async () => {
+  return apiRequest('/events/categories');
 };
 
-export const fetchEventsByCategory = async (category) => {
-    return apiRequest(`/events/category/${category}`);
-}
+export const getEventsByCategoryRequest = async (category) => {
+  return apiRequest(`/events/category/${category}`);
+};

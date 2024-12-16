@@ -1,47 +1,57 @@
-const { calculateCart, applyDiscountCode, finalizePurchase } = require('../../services/cartService');
+const db = require('../../config/db');
 
-exports.checkout = async (req, res) => {
-    try {
-        const { cart, discountCode } = req.body;
+exports.calculateCart = async (req, res) => {
+  try {
+    const { cart } = req.body;
 
-        if (!Array.isArray(cart) || cart.length === 0) {
-            return res.status(400).json({ success: false, message: 'Cart cannot be empty.' });
-        }
-
-        const totalAmount = await calculateCart(cart, discountCode);
-
-        const purchaseResult = await finalizePurchase(cart);
-
-        if (purchaseResult.success) {
-            return res.json({
-                success: true,
-                message: 'Purchase successful, tickets marked as sold.',
-                totalAmount: totalAmount,
-                cartSummary: {
-                    totalAmount: totalAmount,
-                    soldTickets: cart.map(item => item.ticket_id)
-                }
-            });
-        } else {
-            return res.status(400).json({
-                success: false,
-                message: 'Failed to finalize the purchase. Some tickets are no longer available.'
-            });
-        }
-    } catch (error) {
-        console.error('Error during checkout:', error.message);
-        res.status(500).json({ success: false, message: 'Server error during cart calculation.' });
+    if (!cart || !Array.isArray(cart) || cart.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid cart data. Please provide a valid cart.',
+      });
     }
-};
 
-exports.applyDiscount = async (req, res) => {
-    try {
-        const { cart, discountCode } = req.body;
-        const updatedCart = await applyDiscountCode(cart, discountCode);
+    const ticketIds = cart.map((item) => item.ticket_id);
 
-        res.json({ success: true, cartSummary: updatedCart });
-    } catch (error) {
-        console.error('Error applying discount:', error.message);
-        res.status(500).json({ success: false, message: 'Error applying discount.' });
+    const ticketQuery = `
+      SELECT t.ticket_id, t.price, t.status, e.title, t.seat_label
+      FROM tickets t
+      JOIN events e ON t.event_id = e.event_id
+      WHERE t.ticket_id = ANY($1) AND t.status = 'available';
+    `;
+
+    const { rows: ticketDetails } = await db.query(ticketQuery, [ticketIds]);
+
+    let totalPrice = 0;
+    const ticketInfoMap = {};
+
+    ticketDetails.forEach((ticket) => {
+      totalPrice += parseFloat(ticket.price);
+      ticketInfoMap[ticket.ticket_id] = ticket;
+    });
+
+    const invalidTickets = cart.filter(
+      (item) => !ticketInfoMap[item.ticket_id]
+    );
+    if (invalidTickets.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `The following tickets are invalid or unavailable: ${invalidTickets
+          .map((item) => item.ticket_id)
+          .join(', ')}`,
+      });
     }
+
+    res.status(200).json({
+      success: true,
+      totalPrice,
+      tickets: ticketInfoMap,
+    });
+  } catch (error) {
+    console.error('Error calculating cart:', error.message);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'An error occurred while calculating the cart.',
+    });
+  }
 };

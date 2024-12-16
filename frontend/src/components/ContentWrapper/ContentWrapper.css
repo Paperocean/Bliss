@@ -1,0 +1,26 @@
+@import 'styles/variables.css';
+
+.content-section {
+  display: inline-block;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: var(--spacing-medium);
+  background: var(--color-secondary);
+  border-radius: var(--border-radius-medium);
+  padding: var(--spacing-large);
+  box-sizing: border-box;
+  width: auto;
+  min-width: 70%;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .content-section {
+    padding: var(--spacing-medium);
+    width: auto;
+  }
+
+  .subsections {
+    grid-template-columns: 1fr 2fr;
+  }
+}

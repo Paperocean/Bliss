@@ -1,0 +1,38 @@
+@import 'styles/variables.css';
+
+.button {
+  padding: var(--spacing-small) var(--spacing-medium);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.button-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  border: 1px solid var(--color-primary);
+}
+
+.button-primary:hover {
+  background-color: var(--color-hover);
+}
+
+.button-secondary {
+  background-color: #444;
+  color: var(--color-text);
+}
+
+.button-danger {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.button:disabled {
+  background-color: var(--color-secondary);
+  cursor: not-allowed;
+}

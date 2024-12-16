@@ -1,0 +1,16 @@
+.search-and-filter-row {
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+  gap: var(--spacing-medium);
+  align-items: center;
+  width: 100%;
+}
+
+.search-bar {
+  width: 100%;
+}
+
+.select {
+  width: 100%;
+  height: 100%;
+}

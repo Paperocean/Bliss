@@ -1,0 +1,67 @@
+@import 'styles/variables.css';
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--spacing-large);
+  height: 60px;
+  background-color: var(--color-secondary);
+  box-sizing: border-box;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo {
+  width: 125px;
+  height: auto;
+}
+
+.icons-section {
+  display: flex;
+  gap: var(--spacing-medium);
+  align-items: center;
+}
+
+.header-icon {
+  font-size: 2rem;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 0.3s, color 0.3s;
+}
+
+.header-icon:hover {
+  transform: scale(1.2);
+  color: var(--color-hover);
+}
+
+.cart-icon-container {
+  position: relative;
+}
+
+.cart-icon {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cart-count {
+  position: absolute;
+  top: -7px;
+  right: -10px;
+  background: var(--color-primary);
+  color: var(--color-text);
+  border-radius: 50%;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  pointer-events: none;
+}

@@ -1,0 +1,6 @@
+@import 'styles/variables.css';
+
+.error-message {
+  color: #e74c3c;
+  text-align: center;
+}

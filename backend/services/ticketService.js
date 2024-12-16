@@ -1,32 +1,62 @@
 const db = require('../config/db');
 
-exports.generateTickets = async (eventId, rows, seatsPerRow, hasNumberedSeats, ticketPrice) => {
-    try {
-        const tickets = [];
+exports.generateTickets = async (
+  eventId,
+  rowsOrCapacity,
+  seatsPerRow,
+  hasNumberedSeats,
+  priceInfo
+) => {
+  try {
+    const tickets = [];
 
-        if (hasNumberedSeats) {
-            for (let row = 1; row <= rows; row++) {
-                for (let seat = 1; seat <= seatsPerRow; seat++) {
-                    tickets.push([eventId, null, ticketPrice, 'available', `Row ${row} Seat ${seat}`]);
-                }
-            }
-        } else {
-            for (let i = 0; i < rows * seatsPerRow; i++) {
-                tickets.push([eventId, null, ticketPrice, 'available', null]);
-            }
+    if (hasNumberedSeats) {
+      const rows = rowsOrCapacity;
+      const seatsPerRowVal = seatsPerRow;
+
+      for (let row = 1; row <= rows; row++) {
+        const rowLabel = String.fromCharCode(64 + row);
+        for (let seat = 1; seat <= seatsPerRowVal; seat++) {
+          const seatId = `${rowLabel}${seat}`;
+          const price = priceInfo[seatId];
+
+          tickets.push([eventId, null, price, 'available', seatId]);
         }
+      }
+    } else {
+      const capacity = rowsOrCapacity;
+      const price = priceInfo.price;
 
-        const ticketValues = tickets.map(
-            (ticket) => `(${ticket.map((value) => (value ? `'${value}'` : 'NULL')).join(', ')})`
-        ).join(', ');
-
-        const query = `
-            INSERT INTO tickets (event_id, user_id, price, status, seat_label) 
-            VALUES ${ticketValues};
-        `;
-        await db.query(query);
-    } catch (error) {
-        console.error('Error generating tickets:', error);
-        throw new Error('Failed to generate tickets');
+      for (let i = 0; i < capacity; i++) {
+        tickets.push([eventId, null, price, 'available', 'N/A']);
+      }
     }
+
+    const values = [];
+    const placeholders = tickets
+      .map((_, idx) => {
+        const baseIdx = idx * 5;
+        values.push(
+          tickets[idx][0],
+          tickets[idx][1],
+          tickets[idx][2],
+          tickets[idx][3],
+          tickets[idx][4]
+        );
+        return `($${baseIdx + 1}, $${baseIdx + 2}, $${baseIdx + 3}, $${
+          baseIdx + 4
+        }, $${baseIdx + 5})`;
+      })
+      .join(', ');
+
+    const query = `
+      INSERT INTO tickets (event_id, user_id, price, status, seat_label)
+      VALUES ${placeholders};
+    `;
+
+    await db.query(query, values);
+  } catch (error) {
+    console.error('Error generating tickets:', error);
+    throw new Error('Failed to generate tickets.');
+  }
 };

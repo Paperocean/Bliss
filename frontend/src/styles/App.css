@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+@import './variables.css';
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background-color: var(--color-secondary);
+}
+
+.container {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-large);
+  gap: var(--spacing-large);
+  background: linear-gradient(
+      to top,
+      var(--color-primary) 5%,
+      var(--color-secondary) 90%
+    ),
+    url('../assets/noise_texture.png');
+  background-repeat: no-repeat, repeat;
+  background-size: cover, 200px 200px;
+  background-blend-mode: overlay;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--color-text);
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #aaaaaa;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+a svg {
+  color: inherit;
+}
