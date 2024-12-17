@@ -112,7 +112,7 @@ exports.createEvent = async (req, res) => {
 
     const categoryResult = await db.query(
       'SELECT * FROM event_categories WHERE category_id = $1',
-      [category_id]
+      [parseFloat(category_id)]
     );
     if (categoryResult.rows.length === 0) {
       return res
@@ -134,7 +134,7 @@ exports.createEvent = async (req, res) => {
         organizer_id,
         description,
         location,
-        category_id,
+        parseFloat(category_id),
         start_time,
         end_time,
         calculatedCapacity,
@@ -189,14 +189,14 @@ exports.getOrganizerEvents = async (req, res) => {
 // Edycja wydarzenia
 exports.editEvent = async (req, res) => {
   try {
-      const { title, description, location, start_time, end_time, capacity } = req.body;
+      const { title, description, location, start_time, end_time, category_id } = req.body;
       const { eventId } = req.params;
 
       const result = await db.query(
           `UPDATE events
-           SET title = $1, description = $2, location = $3, start_time = $4, end_time = $5, capacity = $6
+           SET title = $1, description = $2, location = $3, start_time = $4, end_time = $5, category_id = $6
            WHERE event_id = $7 RETURNING *`,
-          [title, description, location, start_time, end_time, capacity, eventId]
+          [title, description, location, start_time, end_time, category_id, eventId]
       );
 
       res.json({ success: true, event: result.rows[0] });

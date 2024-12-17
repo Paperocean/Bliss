@@ -41,42 +41,45 @@ const Profile = () => {
     if (!isLoggedIn) {
       navigate('/');
     }
-  }, [isLoggedIn, navigate]);
+    if (profileError?.message?.includes('token')) {
+      logout();
+    }
+  }, [isLoggedIn, navigate, profileError, logout]);
   
   const columnsUserInfo = [
     {
       header: 'E-mail',
-      accessor: (row) => row.email || 'N/A',
+      accessor: (row) => row?.email || 'N/A',
     },
     {
       header: 'Nazwa użytkownika',
-      accessor: (row) => row.username || 'N/A',
+      accessor: (row) => row?.username || 'N/A',
     },
     {
       header: 'Rola',
-      accessor: (row) => row.role === 'organizer' ? 'Organizator' : 'Kupujący',
+      accessor: (row) => row?.role === 'organizer' ? 'Organizator' : 'Kupujący',
     },
   ];
 
   const columnsTickets = [
     {
       header: 'Wydarzenie',
-      accessor: (row) => row.event_name || 'N/A',
+      accessor: (row) => row?.event_name || 'N/A',
     },
     {
       header: 'Miejsce',
-      accessor: (row) => row.seat_label || 'N/A',
+      accessor: (row) => row?.seat_label || 'N/A',
     },
     {
       header: 'Cena',
-      accessor: (row) => `${row.price} zł`,
+      accessor: (row) => `${row?.price} zł`,
     },
     {
       header: 'Data zakupu',
-      accessor: (row) => new Date(row.purchase_time).toLocaleString(),
+      accessor: (row) => row?.purchase_time ? new Date(row.purchase_time).toLocaleString() : 'N/A',
     },
     {
-      render: (row) => <Button>Pobierz</Button>,
+      render: () => <Button>Pobierz</Button>,
     },
   ];
 
@@ -113,7 +116,7 @@ const Profile = () => {
           ) : eventsLoading ? (
             <p>Ładowanie wydarzeń...</p>
           ) : (
-            <EventList events={filteredEvents} role={profile.role} />
+            <EventList events={filteredEvents} role={profile?.role} />
           )}
         </div>
       )}
@@ -123,7 +126,7 @@ const Profile = () => {
         {ticketsLoading ? (
           <p>Ładowanie biletów...</p>
         ) : (
-          <Table columns={columnsTickets} data={tickets} />
+          <Table columns={columnsTickets} data={tickets || []} />
         )}
       </div>
       <div>

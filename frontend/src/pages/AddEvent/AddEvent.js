@@ -12,7 +12,7 @@ import ErrorMessage from 'components/props/ErrorMessage/ErrorMessage';
 import ContentWrapper from 'components/ContentWrapper/ContentWrapper';
 import Modal from 'components/props/Modal/Modal';
 
-import 'styles/Form.css';
+import '../../styles/Form.css';
 
 const AddEvent = ({ isOpen, onClose }) => {
   const { categories, error: categoryError } = useCategories();

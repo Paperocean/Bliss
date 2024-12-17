@@ -53,8 +53,8 @@ function EventBlock({ event }) {
           <Button onClick={() => setIsModalOpen(true)}>Edytuj wydarzenie</Button>{' '}
           <EditEventModal
             isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)
-            }
+            onClose={() => setIsModalOpen(false)}
+            eventId={event.id}
           />
         </div>
       </div>
