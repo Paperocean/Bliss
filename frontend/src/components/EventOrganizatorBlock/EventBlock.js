@@ -19,6 +19,8 @@ const formatDate = (isoString) => {
 };
 
 function EventBlock({ event }) {
+  console.log('Rendering EventBlock with event:', event);
+
   const MAX_DESC_LENGTH = 1000;
   const isLongDescription = event.description.length > MAX_DESC_LENGTH;
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -54,7 +56,7 @@ function EventBlock({ event }) {
           <EditEventModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-            eventId={event.id}
+            eventId={parseInt(event.event_id, 10)}
           />
         </div>
       </div>

@@ -100,6 +100,7 @@ const Profile = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+      
       {profile?.role === 'organizer' &&(
         <div>
           <h1>Twoje wydarzenia</h1>
@@ -108,8 +109,6 @@ const Profile = () => {
             isOpen={isAddEventOpen} 
             onClose={() => setIsAddEventOpen(false)} 
           />
-          
-
           {/* Event List */}
           {eventsError ? (
             <ErrorMessage message={eventsError} />
@@ -120,6 +119,7 @@ const Profile = () => {
           )}
         </div>
       )}
+
       <div>
         <h1>Twoje bilety</h1>
         {ticketsError && <ErrorMessage message={ticketsError} />}
