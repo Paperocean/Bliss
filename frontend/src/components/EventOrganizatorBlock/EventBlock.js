@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import Button from 'components/props/Button/Button';
 import EditEventModal from 'pages/Event/EditEventModal';
+import RaportEventModal from 'pages/Event/ReportEventModal';
 
 import basicCover from 'assets/basic_cover.webp';
 import './EventBlock.css';
@@ -18,12 +19,13 @@ const formatDate = (isoString) => {
   return new Date(isoString).toLocaleDateString('pl-PL', options);
 };
 
-function EventBlock({ event }) {
+function EventBlock({ event, refetch }) {
   console.log('Rendering EventBlock with event:', event);
 
   const MAX_DESC_LENGTH = 1000;
   const isLongDescription = event.description.length > MAX_DESC_LENGTH;
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isReportModalOpen, setReportModalOpen] = useState(false);
 
   return (
     <div className="event-block">
@@ -52,12 +54,29 @@ function EventBlock({ event }) {
           <div className="event-category category-badge">
             {event.category || 'General'}
           </div>
-          <Button onClick={() => setIsModalOpen(true)}>Edytuj wydarzenie</Button>{' '}
-          <EditEventModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            eventId={parseInt(event.event_id, 10)}
-          />
+          <Button onClick={() => setIsEditModalOpen(true)}>Edytuj wydarzenie</Button>{' '}
+          {isEditModalOpen && (
+            <EditEventModal 
+              isOpen={isEditModalOpen} 
+              onClose={() => {
+                setIsEditModalOpen(false);
+                refetch();
+              }}
+              eventId={parseInt(event.event_id, 10)} 
+            />
+          )}
+          <Button onClick={() => setReportModalOpen(true)}>Raport</Button>
+          {isReportModalOpen && (
+            <RaportEventModal
+              isOpen={isReportModalOpen}
+              onClose={() => 
+              {
+                setReportModalOpen(false);
+                refetch();
+              }}
+              eventId={parseInt(event.event_id, 10)}
+            />
+          )}
         </div>
       </div>
     </div>

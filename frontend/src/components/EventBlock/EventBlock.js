@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 
 import Button from 'components/props/Button/Button';
-
+import BuyTicketModal from '../../pages/Cart/BuyTicketModal';
 import basicCover from 'assets/basic_cover.webp';
 import './EventBlock.css';
 
@@ -18,6 +18,7 @@ const formatDate = (isoString) => {
 };
 
 function EventBlock({ event }) {
+  const [isBuyModalOpen, setBuyModalOpen] = useState(false);
   const MAX_DESC_LENGTH = 1000;
   const isLongDescription = event.description.length > MAX_DESC_LENGTH;
 
@@ -48,7 +49,13 @@ function EventBlock({ event }) {
           <div className="event-category category-badge">
             {event.category || 'General'}
           </div>
-          <Button>Kup bilet</Button>
+          <Button onClick={() => setBuyModalOpen(true)}>Kup bilet</Button>
+          <BuyTicketModal 
+            isOpen={isBuyModalOpen} 
+            onClose={() => setBuyModalOpen(false)} 
+            eventId={event.event_id}
+            hasNumberedSeats={event.has_numbered_seats}
+          />
         </div>
       </div>
     </div>

@@ -21,7 +21,7 @@ const App = () => {
       <CartProvider>
         <Router>
           <Layout>
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<div>Ładowanie...</div>}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route

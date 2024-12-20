@@ -1,5 +1,5 @@
 const express = require('express');
-const { createEvent, getCategories, getEvents, getOrganizerEvents, editEvent } = require('./eventController');
+const { createEvent, getCategories, getEvents, getOrganizerEvents, editEvent, getEventReport, buyTicket, createEventWithTickets } = require('./eventController');
 const authenticateToken = require('../../middleware/authMiddleware');
 
 const router = express.Router();
@@ -192,5 +192,12 @@ router.get(`/:organizerId`, authenticateToken, getOrganizerEvents);
 
 // Edycja wydarzenia
 router.put('/edit/:eventId', authenticateToken, editEvent);
+
+// Generowanie raportu
+router.get('/report/:eventId', authenticateToken, getEventReport);
+
+router.post('/:eventId/buy', authenticateToken, buyTicket);
+
+router.post('/tickets', authenticateToken, createEventWithTickets);
 
 module.exports = router;

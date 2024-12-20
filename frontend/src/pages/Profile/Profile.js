@@ -31,20 +31,36 @@ const Profile = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
-  const { events, loading: eventsLoading, error: eventsError } = useOrganizerEvents();
+  const { events, loading: eventsLoading, error: eventsError, refetch } = useOrganizerEvents();
   
   const filteredEvents = profile?.role === 'organizer'
     ? events.filter((event) => event.organizer_id === profile.user_id)
     : events;
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/');
-    }
-    if (profileError?.message?.includes('token')) {
-      logout();
-    }
-  }, [isLoggedIn, navigate, profileError, logout]);
+    useEffect(() => {
+      if (!isLoggedIn) {
+        navigate('/');
+      }
+  
+      // Jeśli profil zawiera błąd związany z tokenem (np. nieważny, uszkodzony), to wyloguj
+      if (profileError?.message?.includes('token')) {
+        logout();
+        return;
+      }
+  
+      // Jeśli zwrócono błąd wskazujący, że użytkownika nie znaleziono lub brak profilu
+      if (profileError?.message?.includes('not found') || profileError?.message?.includes('nie znaleziono') || profileError?.message?.includes('nie udało')) {
+        logout();
+        return;
+      }
+  
+      // Jeśli załadowano profil (profileLoading == false), ale profil jest pusty lub null, wyloguj
+      if (!profileLoading && (!profile || Object.keys(profile).length === 0)) {
+        logout();
+        return;
+      }
+  
+    }, [isLoggedIn, navigate, profileError, logout, profile, profileLoading]);
   
   const columnsUserInfo = [
     {
@@ -107,7 +123,10 @@ const Profile = () => {
           <Button onClick={() => setIsAddEventOpen(true)}>Dodaj wydarzenie</Button>
           <AddEvent 
             isOpen={isAddEventOpen} 
-            onClose={() => setIsAddEventOpen(false)} 
+            onClose={() => {
+              setIsAddEventOpen(false);
+              refetch();
+            }}
           />
           {/* Event List */}
           {eventsError ? (
@@ -115,7 +134,7 @@ const Profile = () => {
           ) : eventsLoading ? (
             <p>Ładowanie wydarzeń...</p>
           ) : (
-            <EventList events={filteredEvents} role={profile?.role} />
+            <EventList events={filteredEvents} role={profile?.role} refetch={refetch} />
           )}
         </div>
       )}

@@ -34,3 +34,16 @@ export const getEventReport = async (eventId) => {
 export const updateEvent = async (eventId, updateData) => {
   return await apiRequest(`/events/update/${eventId}`, 'PUT', updateData, true);
 };
+
+export const buyTicketRequest = async (payload) => {
+  // {
+  //   event_id: ...,
+  //   selected_seats: ['A1', 'A2'] // dla numerowanych
+  //   quantity: 2 // dla nienumerowanych
+  // }
+  return await apiRequest(`/api/events/${payload.event_id}/buy`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+};

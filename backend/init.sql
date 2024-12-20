@@ -50,6 +50,10 @@ CREATE TABLE public.events (
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
     capacity INT NOT NULL,
+    has_numbered_seats BOOLEAN DEFAULT FALSE,
+    rows INT,
+    seats_per_row INT,
+    image VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

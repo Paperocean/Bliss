@@ -164,9 +164,9 @@ const EditEventModal = ({ isOpen, onClose, eventId }) => {
 
         <Button type="submit">Zapisz zmiany</Button>
 
-        {/* Sekcja podglądu biletu */}
+        {/* Sekcja podglądu wydarzenia */}
         <h3 style={{ textAlign: 'center', marginTop: '1rem', width: '100%' }}>
-            Podgląd biletu
+            Podgląd wydarzenia
         </h3>
           <EventBlock
             event={{

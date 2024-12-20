@@ -209,31 +209,51 @@ exports.editEvent = async (req, res) => {
 // Generowanie raportu sprzedaży
 exports.getEventReport = async (req, res) => {
   try {
-      const { eventId } = req.params;
+    const { eventId } = req.params;
 
-      const report = await db.query(
-          `SELECT COUNT(*) AS tickets_sold, SUM(price) AS total_revenue
-           FROM tickets WHERE event_id = $1 AND status = 'sold'`,
-          [eventId]
-      );
+    const query = `
+      SELECT 
+        e.event_id,
+        e.title,
+        e.start_time,
+        e.location,
+        COUNT(t.ticket_id) FILTER (WHERE t.status = 'sold') AS tickets_sold,
+        COALESCE(SUM(t.price) FILTER (WHERE t.status = 'sold'), 0) AS total_revenue,
+        COALESCE(JSON_AGG(
+          JSON_BUILD_OBJECT('seat_label', t.seat_label, 'price', t.price)
+        ) FILTER (WHERE t.status = 'sold'), '[]'::json) AS sold_tickets_details
+      FROM events e
+      LEFT JOIN tickets t ON e.event_id = t.event_id
+      WHERE e.event_id = $1
+      GROUP BY e.event_id;
+    `;
 
-      const details = await db.query(
-          `SELECT seat_label, price FROM tickets
-           WHERE event_id = $1 AND status = 'sold'`,
-          [eventId]
-      );
+    const { rows } = await db.query(query, [eventId]);
 
-      res.json({
-          success: true,
-          report: {
-              tickets_sold: report.rows[0].tickets_sold,
-              total_revenue: report.rows[0].total_revenue,
-              sold_tickets_details: details.rows,
-          },
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found or no sold tickets.'
       });
+    }
+
+    const eventData = rows[0];
+
+    res.json({
+      success: true,
+      report: {
+        event_id: eventData.event_id,
+        title: eventData.title,
+        start_time: eventData.start_time,
+        location: eventData.location,
+        tickets_sold: eventData.tickets_sold,
+        total_revenue: eventData.total_revenue,
+        sold_tickets_details: eventData.sold_tickets_details,
+      },
+    });
   } catch (error) {
-      console.error('Error generating report:', error.message);
-      res.status(500).json({ success: false, message: 'Failed to generate report.' });
+    console.error('Error generating report:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to generate report.' });
   }
 };
 
@@ -253,5 +273,140 @@ exports.updateEvent = async (req, res) => {
   } catch (error) {
       console.error('Error updating event:', error.message);
       res.status(500).json({ success: false, message: 'Failed to update event.' });
+  }
+};
+
+exports.buyTicket = async (req, res) => {
+  const { eventId } = req.params;
+  const { selected_seats, quantity } = req.body;
+  const userId = req.user?.user_id;
+
+  if (!userId) {
+    return res.status(401).json({ success: false, message: 'Unauthorized. Please log in.' });
+  }
+
+  try {
+    // Pobierz szczegóły wydarzenia, aby sprawdzić czy ma numerowane miejsca
+    const eventResult = await db.query(
+      `SELECT event_id, capacity FROM events WHERE event_id = $1`,
+      [eventId]
+    );
+
+    if (eventResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Event not found.' });
+    }
+
+    let purchasedTickets = [];
+
+    if (Array.isArray(selected_seats) && selected_seats.length > 0) {
+      // Wydarzenie z numerowanymi miejscami (selected_seats przekazane)
+      const updateQuery = `
+        UPDATE tickets
+        SET status = 'sold', user_id = $1, purchase_time = NOW()
+        WHERE event_id = $2
+        AND seat_label = ANY($3)
+        AND status = 'available'
+        RETURNING *;
+      `;
+      const updateResult = await db.query(updateQuery, [userId, eventId, selected_seats]);
+
+      if (updateResult.rows.length < selected_seats.length) {
+        return res.status(400).json({
+          success: false,
+          message: 'Some of the selected seats are no longer available.',
+          purchased: updateResult.rows,
+        });
+      }
+
+      purchasedTickets = updateResult.rows;
+    } else if (quantity && quantity > 0) {
+      // Wydarzenie bez numerowanych miejsc (kupujemy "quantity" biletów)
+      const updateQuery = `
+        UPDATE tickets
+        SET status = 'sold', user_id = $1, purchase_time = NOW()
+        WHERE event_id = $2
+        AND status = 'available'
+        LIMIT $3
+        RETURNING *;
+      `;
+      const updateResult = await db.query(updateQuery, [userId, eventId, quantity]);
+
+      if (updateResult.rows.length < quantity) {
+        return res.status(400).json({
+          success: false,
+          message: 'Not enough tickets available.',
+          purchased: updateResult.rows,
+        });
+      }
+
+      purchasedTickets = updateResult.rows;
+    } else {
+      return res.status(400).json({ success: false, message: 'No seats or quantity specified.' });
+    }
+
+    // Tutaj dodajemy rekordy do tabeli transactions
+    // Dla każdego zakupionego biletu tworzymy wpis w transactions
+    const transactionValues = purchasedTickets.map(ticket => {
+      return `(${ticket.ticket_id}, ${userId}, ${eventId}, 'completed', ${ticket.price})`;
+    }).join(', ');
+
+    const transactionQuery = `
+      INSERT INTO transactions (ticket_id, buyer_id, event_id, payment_status, amount)
+      VALUES ${transactionValues}
+      RETURNING *;
+    `;
+
+    const transactionResult = await db.query(transactionQuery);
+
+    return res.json({
+      success: true,
+      message: 'Tickets purchased successfully.',
+      tickets: purchasedTickets,
+      transactions: transactionResult.rows
+    });
+  } catch (error) {
+    console.error('Error buying tickets:', error.message);
+    return res.status(500).json({ success: false, message: 'Failed to purchase tickets.' });
+  }
+};
+
+exports.createEventWithTickets = async (req, res) => {
+  try {
+    const {
+      organizer_id, title, description, location,
+      start_time, end_time, capacity,
+      category_id, has_numbered_seats, rows, seats_per_row, priceInfo
+    } = req.body;
+
+    // Najpierw utwórz wydarzenie w bazie
+    const eventResult = await createEvent({
+      organizer_id,
+      title,
+      description,
+      location,
+      start_time,
+      end_time,
+      capacity,
+      category_id,
+      has_numbered_seats,
+      rows,
+      seats_per_row
+    });
+
+    const eventId = eventResult.event_id;
+
+    // Następnie wygeneruj bilety
+    await ticketService.generateTickets(
+      eventId,
+      has_numbered_seats ? rows : capacity,
+      has_numbered_seats ? seats_per_row : null,
+      has_numbered_seats,
+      priceInfo
+    );
+
+    res.json({ success: true, event: eventResult });
+  } catch (error) {
+    console.error('Error creating event with tickets:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to create event and generate tickets.' });
   }
 };

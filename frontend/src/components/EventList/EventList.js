@@ -3,7 +3,7 @@ import EventBlock from '../EventBlock/EventBlock';
 import EventBlockOrganizer from 'components/EventOrganizatorBlock/EventBlock';
 import './EventList.css';
 
-function EventList({ events, role }) {
+function EventList({ events, role, refetch }) {
   return (
     <div className="event-list-window">
       {events.length === 0 ? (
@@ -12,7 +12,7 @@ function EventList({ events, role }) {
 
         role === 'organizer' ? (
           events.map((event) => 
-          <EventBlockOrganizer key={event.event_id} event={event} />
+          <EventBlockOrganizer key={event.event_id} event={event} refetch={refetch} />
         )
         ) : (
           events.map((event) => (
