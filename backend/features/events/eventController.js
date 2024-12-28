@@ -23,6 +23,56 @@ exports.getEvents = async (req, res) => {
   }
 };
 
+exports.getEvent = async (req, res) => {
+  try {
+    const { event_id } = req.params;
+
+    const query = `
+      SELECT 
+        e.event_id,
+        e.title,
+        e.description,
+        e.location,
+        ec.name AS category_name,
+        e.start_time,
+        e.end_time,
+        e.capacity,
+        e.has_numbered_seats,
+        e.rows,
+        e.seats_per_row,
+        e.image,
+        e.created_at,
+        e.updated_at
+      FROM 
+        events e
+      LEFT JOIN 
+        event_categories ec ON e.category_id = ec.category_id
+      WHERE 
+        e.event_id = $1;
+    `;
+
+    const result = await db.query(query, [event_id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Event with ID ${event_id} not found.`,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error getting event: ', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while getting the event.',
+    });
+  }
+};
+
 exports.getCategories = async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM event_categories');

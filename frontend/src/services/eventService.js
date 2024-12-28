@@ -4,6 +4,10 @@ export const createEventRequest = async (eventData) => {
   return apiRequest('/events', 'POST', eventData, true);
 };
 
+export const getEventRequest = async (eventId) => {
+  return apiRequest(`/events/get/${eventId}`);
+};
+
 export const getEventsRequest = async () => {
   return apiRequest('/events');
 };
