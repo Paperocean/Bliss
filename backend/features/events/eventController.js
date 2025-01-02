@@ -28,7 +28,7 @@ exports.getEvent = async (req, res) => {
     const { event_id } = req.params;
 
     const query = `
-      SELECT 
+      SELECT
         e.event_id,
         e.title,
         e.description,
@@ -43,11 +43,11 @@ exports.getEvent = async (req, res) => {
         e.image,
         e.created_at,
         e.updated_at
-      FROM 
+      FROM
         events e
-      LEFT JOIN 
+      LEFT JOIN
         event_categories ec ON e.category_id = ec.category_id
-      WHERE 
+      WHERE
         e.event_id = $1;
     `;
 
@@ -176,8 +176,8 @@ exports.createEvent = async (req, res) => {
 
     const eventResult = await db.query(
       `INSERT INTO events
-           (title, organizer_id, description, location, category_id, start_time, end_time, capacity, created_at, updated_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+           (title, organizer_id, description, location,  category_id, start_time, end_time, capacity, has_numbered_seats, rows, seats_per_row, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
            RETURNING *`,
       [
         title,
@@ -188,6 +188,9 @@ exports.createEvent = async (req, res) => {
         start_time,
         end_time,
         calculatedCapacity,
+        has_numbered_seats,
+        has_numbered_seats ? rows : null,
+        has_numbered_seats ? seats_per_row : null,
       ]
     );
 
@@ -221,38 +224,39 @@ exports.createEvent = async (req, res) => {
 };
 
 exports.getOrganizerEvents = async (req, res) => {
-  try{
+  try {
     const organizer_id = req.user.user_id;
     const events = await db.query(
       `SELECT * FROM events WHERE organizer_id = $1 ORDER BY created_at DESC`,
       [organizer_id]
     );
     res.status(200).json({ success: true, events: events.rows });
-    } catch (error) {
-      console.error('Error fetching events:', error);
-      res
-        .status(500)
-        .json({ success: false, message: 'Server error while fetching events.' });
-    }
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res
+      .status(500)
+      .json({ success: false, message: 'Server error while fetching events.' });
+  }
 };
 
 // Edycja wydarzenia
 exports.editEvent = async (req, res) => {
   try {
-      const { title, description, location, start_time, end_time, category_id } = req.body;
-      const { eventId } = req.params;
+    const { title, description, location, start_time, end_time, category_id } =
+      req.body;
+    const { eventId } = req.params;
 
-      const result = await db.query(
-          `UPDATE events
+    const result = await db.query(
+      `UPDATE events
            SET title = $1, description = $2, location = $3, start_time = $4, end_time = $5, category_id = $6
            WHERE event_id = $7 RETURNING *`,
-          [title, description, location, start_time, end_time, category_id, eventId]
-      );
+      [title, description, location, start_time, end_time, category_id, eventId]
+    );
 
-      res.json({ success: true, event: result.rows[0] });
+    res.json({ success: true, event: result.rows[0] });
   } catch (error) {
-      console.error('Error editing event:', error.message);
-      res.status(500).json({ success: false, message: 'Failed to edit event.' });
+    console.error('Error editing event:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to edit event.' });
   }
 };
 
@@ -262,7 +266,7 @@ exports.getEventReport = async (req, res) => {
     const { eventId } = req.params;
 
     const query = `
-      SELECT 
+      SELECT
         e.event_id,
         e.title,
         e.start_time,
@@ -283,7 +287,7 @@ exports.getEventReport = async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'Event not found or no sold tickets.'
+        message: 'Event not found or no sold tickets.',
       });
     }
 
@@ -303,26 +307,30 @@ exports.getEventReport = async (req, res) => {
     });
   } catch (error) {
     console.error('Error generating report:', error.message);
-    res.status(500).json({ success: false, message: 'Failed to generate report.' });
+    res
+      .status(500)
+      .json({ success: false, message: 'Failed to generate report.' });
   }
 };
 
 // Aktualizacja eventu (np. dodanie opisu)
 exports.updateEvent = async (req, res) => {
   try {
-      const { description } = req.body;
-      const { eventId } = req.params;
+    const { description } = req.body;
+    const { eventId } = req.params;
 
-      const result = await db.query(
-          `UPDATE events SET description = $1, updated_at = CURRENT_TIMESTAMP
+    const result = await db.query(
+      `UPDATE events SET description = $1, updated_at = CURRENT_TIMESTAMP
            WHERE event_id = $2 RETURNING *`,
-          [description, eventId]
-      );
+      [description, eventId]
+    );
 
-      res.json({ success: true, event: result.rows[0] });
+    res.json({ success: true, event: result.rows[0] });
   } catch (error) {
-      console.error('Error updating event:', error.message);
-      res.status(500).json({ success: false, message: 'Failed to update event.' });
+    console.error('Error updating event:', error.message);
+    res
+      .status(500)
+      .json({ success: false, message: 'Failed to update event.' });
   }
 };
 
@@ -332,7 +340,9 @@ exports.buyTicket = async (req, res) => {
   const userId = req.user?.user_id;
 
   if (!userId) {
-    return res.status(401).json({ success: false, message: 'Unauthorized. Please log in.' });
+    return res
+      .status(401)
+      .json({ success: false, message: 'Unauthorized. Please log in.' });
   }
 
   try {
@@ -343,7 +353,9 @@ exports.buyTicket = async (req, res) => {
     );
 
     if (eventResult.rows.length === 0) {
-      return res.status(404).json({ success: false, message: 'Event not found.' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Event not found.' });
     }
 
     let purchasedTickets = [];
@@ -358,7 +370,11 @@ exports.buyTicket = async (req, res) => {
         AND status = 'available'
         RETURNING *;
       `;
-      const updateResult = await db.query(updateQuery, [userId, eventId, selected_seats]);
+      const updateResult = await db.query(updateQuery, [
+        userId,
+        eventId,
+        selected_seats,
+      ]);
 
       if (updateResult.rows.length < selected_seats.length) {
         return res.status(400).json({
@@ -379,7 +395,11 @@ exports.buyTicket = async (req, res) => {
         LIMIT $3
         RETURNING *;
       `;
-      const updateResult = await db.query(updateQuery, [userId, eventId, quantity]);
+      const updateResult = await db.query(updateQuery, [
+        userId,
+        eventId,
+        quantity,
+      ]);
 
       if (updateResult.rows.length < quantity) {
         return res.status(400).json({
@@ -391,14 +411,18 @@ exports.buyTicket = async (req, res) => {
 
       purchasedTickets = updateResult.rows;
     } else {
-      return res.status(400).json({ success: false, message: 'No seats or quantity specified.' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'No seats or quantity specified.' });
     }
 
     // Tutaj dodajemy rekordy do tabeli transactions
     // Dla każdego zakupionego biletu tworzymy wpis w transactions
-    const transactionValues = purchasedTickets.map(ticket => {
-      return `(${ticket.ticket_id}, ${userId}, ${eventId}, 'completed', ${ticket.price})`;
-    }).join(', ');
+    const transactionValues = purchasedTickets
+      .map((ticket) => {
+        return `(${ticket.ticket_id}, ${userId}, ${eventId}, 'completed', ${ticket.price})`;
+      })
+      .join(', ');
 
     const transactionQuery = `
       INSERT INTO transactions (ticket_id, buyer_id, event_id, payment_status, amount)
@@ -412,20 +436,31 @@ exports.buyTicket = async (req, res) => {
       success: true,
       message: 'Tickets purchased successfully.',
       tickets: purchasedTickets,
-      transactions: transactionResult.rows
+      transactions: transactionResult.rows,
     });
   } catch (error) {
     console.error('Error buying tickets:', error.message);
-    return res.status(500).json({ success: false, message: 'Failed to purchase tickets.' });
+    return res
+      .status(500)
+      .json({ success: false, message: 'Failed to purchase tickets.' });
   }
 };
 
 exports.createEventWithTickets = async (req, res) => {
   try {
     const {
-      organizer_id, title, description, location,
-      start_time, end_time, capacity,
-      category_id, has_numbered_seats, rows, seats_per_row, priceInfo
+      organizer_id,
+      title,
+      description,
+      location,
+      start_time,
+      end_time,
+      capacity,
+      category_id,
+      has_numbered_seats,
+      rows,
+      seats_per_row,
+      priceInfo,
     } = req.body;
 
     // Najpierw utwórz wydarzenie w bazie
@@ -440,7 +475,7 @@ exports.createEventWithTickets = async (req, res) => {
       category_id,
       has_numbered_seats,
       rows,
-      seats_per_row
+      seats_per_row,
     });
 
     const eventId = eventResult.event_id;
@@ -457,6 +492,9 @@ exports.createEventWithTickets = async (req, res) => {
     res.json({ success: true, event: eventResult });
   } catch (error) {
     console.error('Error creating event with tickets:', error.message);
-    res.status(500).json({ success: false, message: 'Failed to create event and generate tickets.' });
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create event and generate tickets.',
+    });
   }
 };
