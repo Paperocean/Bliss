@@ -54,29 +54,32 @@ function EventBlock({ event, refetch }) {
           <div className="event-category category-badge">
             {event.category || 'General'}
           </div>
-          <Button onClick={() => setIsEditModalOpen(true)}>Edytuj wydarzenie</Button>{' '}
-          {isEditModalOpen && (
-            <EditEventModal 
-              isOpen={isEditModalOpen} 
-              onClose={() => {
-                setIsEditModalOpen(false);
-                refetch();
-              }}
-              eventId={parseInt(event.event_id, 10)} 
-            />
-          )}
-          <Button onClick={() => setReportModalOpen(true)}>Raport</Button>
-          {isReportModalOpen && (
-            <RaportEventModal
-              isOpen={isReportModalOpen}
-              onClose={() => 
-              {
-                setReportModalOpen(false);
-                refetch();
-              }}
-              eventId={parseInt(event.event_id, 10)}
-            />
-          )}
+          <div className="event-buttons">
+            <Button onClick={() => setIsEditModalOpen(true)}>
+              Edytuj wydarzenie
+            </Button>{' '}
+            {isEditModalOpen && (
+              <EditEventModal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                  setIsEditModalOpen(false);
+                  refetch();
+                }}
+                eventId={parseInt(event.event_id, 10)}
+              />
+            )}
+            <Button onClick={() => setReportModalOpen(true)}>Raport</Button>
+            {isReportModalOpen && (
+              <RaportEventModal
+                isOpen={isReportModalOpen}
+                onClose={() => {
+                  setReportModalOpen(false);
+                  refetch();
+                }}
+                eventId={parseInt(event.event_id, 10)}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

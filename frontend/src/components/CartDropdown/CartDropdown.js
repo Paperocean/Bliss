@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { CartContext } from 'context/CartContext';
 import { Link } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
 import useCartTotal from 'hooks/cartHooks/useCartTotal';
 import useEventDetails from 'hooks/eventHooks/useEventDetails';
+import { purchaseRequest } from 'services/transactionService';
 import './CartDropdown.css';
 
 const CartDropdown = ({ isVisible, toggleVisibility }) => {
@@ -18,6 +19,31 @@ const CartDropdown = ({ isVisible, toggleVisibility }) => {
     loading: eventLoading,
     error: eventError,
   } = useEventDetails(cart);
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handlePurchase = async () => {
+    setLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      const response = await purchaseRequest(cart);
+
+      if (response.success) {
+        setSuccessMessage('Zakup zakończony sukcesem!');
+        cart.forEach((item) => removeFromCart(item.ticket_id));
+      } else {
+        setErrorMessage('Zakup nie powiódł się.');
+      }
+    } catch (error) {
+      console.error('Błąd podczas zakupu:', error.message);
+      setErrorMessage('Wystąpił błąd podczas przetwarzania zakupu.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={`cart-dropdown ${isVisible ? 'visible' : ''}`}>
@@ -75,13 +101,18 @@ const CartDropdown = ({ isVisible, toggleVisibility }) => {
         </div>
       )}
       <div className="cart-footer">
-        {totalError && <p className="error-message">{totalError}</p>}
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+        {successMessage && <p className="success-message">{successMessage}</p>}
         <p>
           Łącznie:{' '}
           <b>{totalLoading ? 'Ładowanie...' : `${totalPrice.toFixed(2)} zł`}</b>
         </p>
-        <Link to="/cart" className="view-cart-btn" onClick={toggleVisibility}>
-          Dokonaj zakupu
+        <Link
+          className="view-cart-btn"
+          onClick={handlePurchase}
+          disabled={loading}
+        >
+          {loading ? 'Przetwarzanie...' : 'Dokonaj zakupu'}
         </Link>
       </div>
     </div>

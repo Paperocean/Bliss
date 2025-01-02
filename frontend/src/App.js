@@ -11,7 +11,6 @@ const Home = lazy(() => import('./pages/Home/Home'));
 const Login = lazy(() => import('./pages/Login/Login'));
 const Register = lazy(() => import('./pages/Register/Register'));
 const AddEvent = lazy(() => import('./pages/AddEvent/AddEvent'));
-const Cart = lazy(() => import('./pages/Cart/Cart'));
 const Event = lazy(() => import('./pages/Event/Event'));
 const Profile = lazy(() => import('./pages/Profile/Profile'));
 
@@ -36,7 +35,6 @@ const App = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/add-event" element={<AddEvent />} />
                 <Route path="/event/:event_id" element={<Event />} />
-                <Route path="/cart" element={<Cart />} />
               </Routes>
             </Suspense>
           </Layout>

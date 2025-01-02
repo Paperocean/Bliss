@@ -71,6 +71,13 @@
   padding: 0.5rem;
 }
 
+.event-buttons {
+  display: flex;
+  gap: 1rem; /* Odstęp między przyciskami */
+  align-items: center; /* Wyrównanie pionowe (jeśli przyciski mają różne rozmiary) */
+  justify-content: flex-end; /* przyciski przy prawej krawędzi */
+}
+
 .category-badge {
   padding: 0.5rem 1rem;
   border-radius: 16px;

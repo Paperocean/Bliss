@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Button from 'components/props/Button/Button';
-import BuyTicketModal from '../../pages/Cart/BuyTicketModal';
 import basicCover from 'assets/basic_cover.webp';
 import './EventBlock.css';
 

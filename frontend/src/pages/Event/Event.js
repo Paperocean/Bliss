@@ -13,6 +13,17 @@ import ContentWrapper from 'components/ContentWrapper/ContentWrapper';
 
 import SeatMapUser from 'components/SeatMap/SeatMapUser';
 
+const formatDate = (isoString) => {
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  };
+  return new Date(isoString).toLocaleDateString('pl-PL', options);
+};
+
 function EventPage() {
   const { event_id } = useParams();
   const { cart } = useCart();
@@ -85,8 +96,11 @@ function EventPage() {
             </div>
             <h1 className="event-title">{event.title}</h1>
             <div className="event-loc-date">
-              <b>{event.location}</b>,{' '}
-              {new Date(event.start_time).toLocaleString('pl-PL')}
+              {event.location},<br />
+              {'od '}
+              {formatDate(event.start_time)}
+              {' do '}
+              {formatDate(event.end_time)}
             </div>
             <div className="category-badge">
               {event.category_name || 'General'}
