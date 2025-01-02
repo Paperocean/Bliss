@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Button from 'components/props/Button/Button';
 import EditEventModal from 'pages/Event/EditEventModal';
 import RaportEventModal from 'pages/Event/ReportEventModal';
+import useCategories from 'hooks/eventHooks/useCategories';
 
 import basicCover from 'assets/basic_cover.webp';
 import './EventBlock.css';
@@ -26,6 +27,10 @@ function EventBlock({ event, refetch }) {
   const isLongDescription = event.description.length > MAX_DESC_LENGTH;
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReportModalOpen, setReportModalOpen] = useState(false);
+  const { categories } = useCategories();
+
+  const eventCategory = categories.find(cat => cat.category_id === event.category_id);
+  const categoryName = eventCategory ? eventCategory.name : 'General';
 
   return (
     <div className="event-block">
@@ -52,7 +57,7 @@ function EventBlock({ event, refetch }) {
         </div>
         <div className="event-footer">
           <div className="event-category category-badge">
-            {event.category || 'General'}
+            {categoryName || 'General'}
           </div>
           <Button onClick={() => setIsEditModalOpen(true)}>Edytuj wydarzenie</Button>{' '}
           {isEditModalOpen && (

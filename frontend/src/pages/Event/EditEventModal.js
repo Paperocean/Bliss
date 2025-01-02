@@ -50,8 +50,7 @@ const EditEventModal = ({ isOpen, onClose, eventId }) => {
     }
   }, [isOpen, currentEvent, eventId, onClose]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (value, name) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -159,12 +158,13 @@ const EditEventModal = ({ isOpen, onClose, eventId }) => {
           />
 
           <Select
-            label="Kategoria wydarzenia"
-            name="category"
+            name="category_id"
+            id="category"
             value={formData.category_id}
-            onChange={handleChange}
+            onChange={(e) => handleChange(e.target.value, 'category_id')}
+            placeholder="Wybierz kategorię"
             options={categories.map((cat) => ({
-              value: String(cat.id),
+              value: cat.category_id,
               label: cat.name,
             }))}
             required
