@@ -1,30 +1,60 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import useEvent from 'hooks/eventHooks/useEvent';
 import useAvailableSeats from 'hooks/eventHooks/useAvailableSeats';
+import useCart from 'hooks/cartHooks/useCart';
 
 import basicCover from 'assets/basic_cover.webp';
 import './Event.css';
 
+import ErrorMessage from 'components/props/ErrorMessage/ErrorMessage';
 import Button from 'components/props/Button/Button';
 import ContentWrapper from 'components/ContentWrapper/ContentWrapper';
 
-const formatDate = (isoString) => {
-  const options = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  };
-  return new Date(isoString).toLocaleDateString('pl-PL', options);
-};
+import SeatMapUser from 'components/SeatMap/SeatMapUser';
 
 function EventPage() {
   const { event_id } = useParams();
-  const { event, loading: eventLoading, error: eventError } = useEvent(event_id);
-  const { seats, loading: seatsLoading, error: seatsError } = useAvailableSeats(event_id);
-  const cheapestPrice = seats.length > 0 ? Math.min(...seats.map((seat) => seat.price)) : null;
+  const { cart } = useCart();
+
+  const {
+    event,
+    loading: eventLoading,
+    error: eventError,
+  } = useEvent(event_id);
+
+  const {
+    seats,
+    loading: seatsLoading,
+    error: seatsError,
+  } = useAvailableSeats(event_id);
+
+  const { addSeatToCart, error: cartError } = useCart();
+
+  const handleSeatSelect = (seatData) => {
+    console.log('Selected seat:', seatData);
+    addSeatToCart(seatData);
+  };
+
+  const handleBuyNonNumbered = () => {
+    if (!seats || seats.length === 0) {
+      alert('Brak dostępnych miejsc dla tego wydarzenia.');
+      return;
+    }
+
+    const seatsNotInCart = seats.filter(
+      (seat) => !cart.some((item) => item.ticket_id === seat.ticket_id)
+    );
+
+    if (seatsNotInCart.length === 0) {
+      alert('Brak wolnych miejsc.');
+      return;
+    }
+
+    const nextSeat = seatsNotInCart[0];
+
+    addSeatToCart(nextSeat);
+  };
 
   if (eventLoading || seatsLoading) {
     return <div className="loading">Ładowanie...</div>;
@@ -34,42 +64,61 @@ function EventPage() {
     return <div className="error">{eventError || seatsError}</div>;
   }
 
+  const { rows, seats_per_row, has_numbered_seats, title } = event;
+
+  const cheapestPrice =
+    seats.length > 0
+      ? Math.min(...seats.map((seat) => parseFloat(seat.price)))
+      : null;
+
   return (
     <ContentWrapper>
       <div className="event-page">
         <div className="event-main-content">
-          {/* Left Column */}
           <div className="event-left-column">
             <div className="event-image">
               <img
                 src={event.image || basicCover}
-                alt={`Event: ${event.title}`}
+                alt={`Event: ${title}`}
                 className="event-img"
               />
             </div>
-            <div className="event-footer">
-              <Button>
-                {cheapestPrice !== null ? `Kup bilet od ${cheapestPrice.toFixed(2)} zł` : 'Kup bilet'}
-              </Button>            
+            <h1 className="event-title">{event.title}</h1>
+            <div className="event-loc-date">
+              <b>{event.location}</b>,{' '}
+              {new Date(event.start_time).toLocaleString('pl-PL')}
+            </div>
+            <div className="category-badge">
+              {event.category_name || 'General'}
             </div>
           </div>
 
-          {/* Right Column */}
           <div className="event-right-column">
-            <h1 className="event-title">{event.title}</h1>
-            <div className="category-badge">{event.category_name || 'General'}</div>
-            <div className="event-loc-date">
-              {event.location}
-              <br />
-              {formatDate(event.start_time)}
-            </div>
-              <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sit amet ligula convallis, eleifend nisi vitae, sodales quam. Donec aliquet cursus massa id elementum. Donec molestie, orci vel bibendum egestas, libero mauris sodales justo, quis bibendum mi metus ornare metus. Aenean hendrerit tellus et gravida efficitur. Fusce quis tincidunt mi. In volutpat porta orci, pretium placerat lacus malesuada a. Vestibulum pharetra tincidunt eros, id molestie ipsum blandit at. Cras porttitor elementum maximus. Praesent iaculis libero eget laoreet auctor.
+            <h2>Opis wydarzenia</h2>
+            <p>{event.description}</p>
 
-Etiam sed dapibus ante. Morbi malesuada placerat semper. Nam in nisl ut magna volutpat porttitor nec vel dolor. Nullam sit amet imperdiet augue, laoreet feugiat ligula. Fusce ac posuere sapien, in congue mauris. Fusce vulputate tortor ullamcorper orci porta, posuere suscipit tortor finibus. Duis sit amet efficitur nisl. Proin dapibus, magna mollis pellentesque interdum, lectus risus tempus tortor, at hendrerit diam dolor et leo. Nam eu tincidunt ligula. Vivamus sollicitudin, justo id cursus gravida, tellus est lacinia ante, eget mattis risus magna non justo. Proin suscipit ex sit amet augue pellentesque, vitae lobortis dolor aliquet. Nullam et vehicula justo. Nullam nec felis id est commodo imperdiet vitae vel mi.
+            {has_numbered_seats && rows && seats_per_row ? (
+              <>
+                <h2>Wybierz miejsce</h2>
+                <p>
+                  Ceny biletów zaczynają się już od <b>{cheapestPrice} zł</b>.
+                  Kliknij miejsce na mapce, aby dodać do koszyka.
+                </p>
+                <SeatMapUser
+                  event={event}
+                  seats={seats}
+                  onSeatSelect={handleSeatSelect}
+                />
+              </>
+            ) : (
+              <Button onClick={handleBuyNonNumbered}>
+                {cheapestPrice !== null
+                  ? `Dodaj do koszyka bilet za ${cheapestPrice.toFixed(2)} zł`
+                  : ``}
+              </Button>
+            )}
 
-Nulla non magna vitae felis sollicitudin ullamcorper. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut ac tincidunt sem. Nunc at posuere orci. Quisque eget augue eget lectus vulputate porta a sit amet magna. Proin eget lorem velit. Curabitur rutrum eu dui tincidunt ultricies. Praesent dictum sapien id nibh maximus, ut dignissim libero hendrerit. Nam a eros semper, feugiat elit vel, vulputate diam. In nec risus ut risus pretium ullamcorper. Sed dignissim diam non quam rutrum dictum. In vel tempus ex. Aliquam quis massa finibus, maximus odio ac, suscipit nisl. Nunc dictum quis ligula vel vulputate. In interdum metus id elit mollis tempus.
-              </p>
+            {cartError && <ErrorMessage>{cartError}</ErrorMessage>}
           </div>
         </div>
       </div>

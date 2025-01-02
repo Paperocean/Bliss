@@ -32,14 +32,20 @@ const EditEventModal = ({ isOpen, onClose, eventId }) => {
   useEffect(() => {
     console.log('EditEventModal Props:', { isOpen, onClose, eventId });
     if (isOpen && currentEvent) {
-      console.log('Current Event:', currentEvent); 
+      console.log('Current Event:', currentEvent);
       setFormData({
         title: currentEvent.title || '',
         description: currentEvent.description || '',
         location: currentEvent.location || '',
-        start_time: currentEvent.start_time ? currentEvent.start_time.slice(0, 16) : '',
-        end_time: currentEvent.end_time ? currentEvent.end_time.slice(0, 16) : '',
-        category_id: currentEvent.category_id ? parseInt(currentEvent.category_id, 10) : '',
+        start_time: currentEvent.start_time
+          ? currentEvent.start_time.slice(0, 16)
+          : '',
+        end_time: currentEvent.end_time
+          ? currentEvent.end_time.slice(0, 16)
+          : '',
+        category_id: currentEvent.category_id
+          ? parseInt(currentEvent.category_id, 10)
+          : '',
       });
     }
   }, [isOpen, currentEvent, eventId, onClose]);
@@ -55,7 +61,7 @@ const EditEventModal = ({ isOpen, onClose, eventId }) => {
   const handleSubmitEventForm = async (e) => {
     e.preventDefault();
     setErrorMessage(''); // Wyczyść poprzednie błędy
-  
+
     console.log('Form Data przed przesłaniem:', formData);
 
     try {
@@ -68,13 +74,13 @@ const EditEventModal = ({ isOpen, onClose, eventId }) => {
         end_time: formData.end_time,
         category_id: parseInt(formData.category_id, 10), // Konwersja na liczby
       };
-  
+
       // Wysłanie żądania do API
       const response = await editEvent(eventId, eventPayload);
-  
+
       if (response.success) {
         console.log('Wydarzenie zostało zaktualizowane:', response.event);
-  
+
         // Reset formularza
         setFormData({
           title: '',
@@ -84,7 +90,7 @@ const EditEventModal = ({ isOpen, onClose, eventId }) => {
           end_time: '',
           category_id: '',
         });
-  
+
         // Zamknięcie modala
         onClose();
       } else {
@@ -93,96 +99,82 @@ const EditEventModal = ({ isOpen, onClose, eventId }) => {
     } catch (error) {
       console.log(currentEvent.category_id);
       console.error('Błąd podczas aktualizacji wydarzenia:', error);
-      setErrorMessage(error.message || 'Nie udało się zaktualizować wydarzenia.');
+      setErrorMessage(
+        error.message || 'Nie udało się zaktualizować wydarzenia.'
+      );
     }
   };
 
   return (
     <ContentWrapper>
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <form onSubmit={handleSubmitEventForm} className="form">
-        <ErrorMessage message={errorMessage || categoryError} />
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <form onSubmit={handleSubmitEventForm} className="form">
+          <ErrorMessage message={errorMessage || categoryError} />
 
-        <InputText
-          label="Nazwa wydarzenia"
-          name="title"
-          placeholder="Wprowadź nazwę wydarzenia"
-          value={formData.title}
-          onChange={handleChange}
-          required
-        />
-
-        <InputText
-          label="Opis wydarzenia"
-          name="description"
-          type="textarea"
-          placeholder="Wprowadź opis wydarzenia"
-          value={formData.description}
-          onChange={handleChange}
-          rows={3}
-          required
-        />
-
-        <InputText
-          label="Lokalizacja"
-          name="location"
-          placeholder="Wprowadź lokalizację wydarzenia"
-          value={formData.location}
-          onChange={handleChange}
-          required
-        />
-
-        <InputText
-          label="Data i godzina rozpoczęcia"
-          name="start_time"
-          type="datetime-local"
-          value={formData.start_time}
-          onChange={handleChange}
-          required
-        />
-
-        <InputText
-          label="Data i godzina końca"
-          name="end_time"
-          type="datetime-local"
-          value={formData.end_time}
-          onChange={handleChange}
-          required
-        />
-
-        <Select
-          label="Kategoria wydarzenia"
-          name="category"
-          value={formData.category_id}
-          onChange={handleChange}
-          options={categories.map((cat) => ({
-            value: String(cat.id),
-            label: cat.name,
-          }))}
-          required
-        />
-
-        <Button type="submit">Zapisz zmiany</Button>
-
-        {/* Sekcja podglądu wydarzenia */}
-        <h3 style={{ textAlign: 'center', marginTop: '1rem', width: '100%' }}>
-            Podgląd wydarzenia
-        </h3>
-          <EventBlock
-            event={{
-              title: formData.title || 'Nazwa wydarzenia',
-              description: formData.description || 'Opis wydarzenia',
-              location: formData.location || 'Nowa lokalizacja',
-              start_time: formData.start_time || new Date().toISOString(),
-              end_time: formData.end_time || new Date().toISOString(),
-              category: categories.find(cat => String(cat.id) === formData.category_id)?.name || 'General',
-              image: currentEvent?.image,
-            }}
+          <InputText
+            label="Nazwa wydarzenia"
+            name="title"
+            placeholder="Wprowadź nazwę wydarzenia"
+            value={formData.title}
+            onChange={handleChange}
+            required
           />
-      </form>
-     </Modal>
+
+          <InputText
+            label="Opis wydarzenia"
+            name="description"
+            type="textarea"
+            placeholder="Wprowadź opis wydarzenia"
+            value={formData.description}
+            onChange={handleChange}
+            rows={3}
+            required
+          />
+
+          <InputText
+            label="Lokalizacja"
+            name="location"
+            placeholder="Wprowadź lokalizację wydarzenia"
+            value={formData.location}
+            onChange={handleChange}
+            required
+          />
+
+          <InputText
+            label="Data i godzina rozpoczęcia"
+            name="start_time"
+            type="datetime-local"
+            value={formData.start_time}
+            onChange={handleChange}
+            required
+          />
+
+          <InputText
+            label="Data i godzina końca"
+            name="end_time"
+            type="datetime-local"
+            value={formData.end_time}
+            onChange={handleChange}
+            required
+          />
+
+          <Select
+            label="Kategoria wydarzenia"
+            name="category"
+            value={formData.category_id}
+            onChange={handleChange}
+            options={categories.map((cat) => ({
+              value: String(cat.id),
+              label: cat.name,
+            }))}
+            required
+          />
+
+          <Button type="submit">Zapisz zmiany</Button>
+        </form>
+      </Modal>
     </ContentWrapper>
-);
+  );
 };
 
 export default EditEventModal;

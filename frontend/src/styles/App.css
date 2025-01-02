@@ -9,6 +9,8 @@ html {
   font-family: var(--font-family);
   color: var(--color-text);
   background-color: var(--color-secondary);
+  overflow-y: hidden;
+  scrollbar-color: #13403b transparent;
 }
 
 .container {

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Button from 'components/props/Button/Button';
@@ -43,19 +43,16 @@ function EventBlock({ event }) {
           {isLongDescription
             ? `${event.description.substring(0, MAX_DESC_LENGTH)}`
             : event.description}
-          {isLongDescription && <Link to={`event/${event.id}`}>...</Link>}
+          {isLongDescription && <Link to={`event/${event.event_id}`}>...</Link>}
         </div>
         <div className="event-footer">
           <div className="event-category category-badge">
             {event.category || 'General'}
           </div>
-          <Button onClick={() => setBuyModalOpen(true)}>Kup bilet</Button>
-          <BuyTicketModal 
-            isOpen={isBuyModalOpen} 
-            onClose={() => setBuyModalOpen(false)} 
-            eventId={event.event_id}
-            hasNumberedSeats={event.has_numbered_seats}
-          />
+          <Link to={`event/${event.event_id}`}>
+            {' '}
+            <Button>Kup bilet</Button>{' '}
+          </Link>
         </div>
       </div>
     </div>

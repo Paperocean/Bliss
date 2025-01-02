@@ -12,6 +12,8 @@
   width: auto;
   min-width: 70%;
   margin: 0 auto;
+  overflow-y: auto;
+  max-height: 85vh;
 }
 
 @media (min-width: 768px) {

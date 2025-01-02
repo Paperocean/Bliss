@@ -17,7 +17,7 @@
   align-items: center;
   overflow: hidden;
   position: relative;
-  border: 1px solid var(--color-primary-light); 
+  border: 1px solid var(--color-primary-light);
   background-color: var(--color-off-black);
 }
 
@@ -55,7 +55,6 @@
   overflow: auto;
   box-sizing: border-box;
 }
-
 
 .bulk-selection-controls {
   display: flex;
@@ -147,8 +146,14 @@
 }
 
 .seat-selected {
-  background-color: var(--color-hover);
-  color: var(--color-text);
+  outline: 2px solid var(--color-text);
+}
+
+.seat-unavailable {
+  background-color: #666 !important;
+  color: #999 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
 }
 
 .seat_id {
