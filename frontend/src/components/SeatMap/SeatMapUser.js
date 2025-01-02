@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import useCart from 'hooks/cartHooks/useCart';
 import './SeatMap.css';
 
 const SeatMapUser = ({ event, seats }) => {
   const { cart, addSeatToCart, removeSeatFromCart } = useCart();
+
+  const [isPanning, setIsPanning] = useState(false);
 
   const seatMap = new Map();
   seats.forEach((s) => {
@@ -41,15 +43,16 @@ const SeatMapUser = ({ event, seats }) => {
     String.fromCharCode(65 + i)
   );
 
-  const handleSeatClick = (seatLabel) => {
+  const handleSeatDoubleClick = (seatLabel) => {
+    if (isPanning) return;
+
     const seatData = seatMap.get(seatLabel);
-    if (!seatData) {
-      return;
-    }
+    if (!seatData) return;
 
-    const isInCart = cart.some((item) => item.ticket_id === seatData.ticket_id);
-
-    if (isInCart) {
+    const isInCartItem = cart.some(
+      (item) => item.ticket_id === seatData.ticket_id
+    );
+    if (isInCartItem) {
       removeSeatFromCart(seatData.ticket_id);
     } else {
       addSeatToCart(seatData);
@@ -71,10 +74,13 @@ const SeatMapUser = ({ event, seats }) => {
         centerOnInit={false}
         limitToBounds={false}
         wheel={{ step: 50 }}
+        doubleClick={{ disabled: true }}
         panning={{
           velocityDisabled: true,
           padding: { top: 100, left: 100, right: 100, bottom: 100 },
         }}
+        onPanningStart={() => setIsPanning(true)}
+        onPanningStop={() => setIsPanning(false)}
       >
         <TransformComponent>
           <div className="seat-grid-container">
@@ -100,7 +106,9 @@ const SeatMapUser = ({ event, seats }) => {
                         cursor: isAvailable ? 'pointer' : 'not-allowed',
                         opacity: isAvailable ? 1 : 0.5,
                       }}
-                      onClick={() => handleSeatClick(seatLabel)}
+                      onDoubleClick={() =>
+                        isAvailable && handleSeatDoubleClick(seatLabel)
+                      }
                     >
                       <div className="seat_id">{seatLabel}</div>
                       {isAvailable && (

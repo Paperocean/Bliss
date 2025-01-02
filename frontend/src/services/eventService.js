@@ -8,8 +8,17 @@ export const getEventRequest = async (eventId) => {
   return apiRequest(`/events/get/${eventId}`);
 };
 
-export const getEventsRequest = async () => {
-  return apiRequest('/events');
+export const getEventsRequest = async (
+  page = 1,
+  limit = 10,
+  search = '',
+  category = ''
+) => {
+  return apiRequest(
+    `/events?page=${page}&limit=${limit}&search=${encodeURIComponent(
+      search
+    )}&category=${encodeURIComponent(category)}`
+  );
 };
 
 export const getCategoriesRequest = async () => {

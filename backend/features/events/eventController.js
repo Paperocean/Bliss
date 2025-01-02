@@ -3,23 +3,63 @@ const { generateTickets } = require('../../services/ticketService');
 
 exports.getEvents = async (req, res) => {
   try {
-    const result = await db.query(`
-            SELECT
-                e.event_id, e.title, e.description, e.location, e.start_time, e.end_time,
-                c.name AS category,
-                COUNT(t.ticket_id) FILTER (WHERE t.status = 'available') AS available_tickets
-            FROM events e
-            LEFT JOIN tickets t ON e.event_id = t.event_id
-            LEFT JOIN event_categories c ON e.category_id = c.category_id
-            GROUP BY e.event_id, c.name
-        `);
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const offset = (page - 1) * limit;
+    const search = req.query.search || '';
+    const category = req.query.category || '';
 
-    res.status(200).json({ success: true, events: result.rows });
+    const eventsQuery = `
+      SELECT
+          e.event_id, e.title, e.description, e.location, e.start_time, e.end_time,
+          c.name AS category,
+          COUNT(t.ticket_id) FILTER (WHERE t.status = 'available') AS available_tickets
+      FROM events e
+      LEFT JOIN tickets t ON e.event_id = t.event_id
+      LEFT JOIN event_categories c ON e.category_id = c.category_id
+      WHERE
+          (e.title ILIKE $1 OR e.location ILIKE $1)
+          AND ($2 = '' OR c.name = $2) -- Filtr kategorii, jeśli ustawiony
+      GROUP BY e.event_id, c.name
+      ORDER BY e.start_time DESC
+      LIMIT $3 OFFSET $4
+    `;
+
+    const countQuery = `
+      SELECT COUNT(*) AS total
+      FROM events e
+      LEFT JOIN event_categories c ON e.category_id = c.category_id
+      WHERE
+          (e.title ILIKE $1 OR e.location ILIKE $1)
+          AND ($2 = '' OR c.name = $2)
+    `;
+
+    const searchPattern = `%${search}%`;
+
+    const [eventsResult, countResult] = await Promise.all([
+      db.query(eventsQuery, [searchPattern, category, limit, offset]),
+      db.query(countQuery, [searchPattern, category]),
+    ]);
+
+    const total = parseInt(countResult.rows[0].total, 10);
+    const totalPages = Math.ceil(total / limit);
+
+    res.status(200).json({
+      success: true,
+      events: eventsResult.rows,
+      meta: {
+        total,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
+    });
   } catch (error) {
     console.error('Error fetching events:', error.message);
-    res
-      .status(500)
-      .json({ success: false, message: 'Server error while fetching events' });
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching events',
+    });
   }
 };
 
