@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getUsersTicketsRequest } from 'services/userService';
 import { getEventByTicketRequest } from 'services/ticketService';
+import QRCode from 'qrcode';
+import { generateSecureHash } from 'utils/ticketHashing';
 
 const useUserTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -19,9 +21,21 @@ const useUserTickets = () => {
             response.tickets.map(async (ticket) => {
               try {
                 const event = await getEventByTicketRequest(ticket.ticket_id);
-                return { ...ticket, event_name: event.title };
+                const secureHash = generateSecureHash(ticket.ticket_id);
+                const qrCode = await QRCode.toDataURL(secureHash);
+                return {
+                  ...ticket,
+                  event_name: event.title,
+                  location: event.location,
+                  start_time: event.start_time,
+                  qr_code: qrCode,
+                };
               } catch {
-                return { ...ticket, event_name: 'Nieznane wydarzenie' };
+                return {
+                  ...ticket,
+                  event_name: 'Nieznane wydarzenie',
+                  qr_code: null,
+                };
               }
             })
           );

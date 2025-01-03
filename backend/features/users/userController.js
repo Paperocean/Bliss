@@ -51,6 +51,33 @@ exports.getUserTickets = async (req, res) => {
   }
 };
 
+exports.getUserTransactions = async (req, res) => {
+  try {
+    const user_id = req.user.user_id;
+    const result = await db.query(
+      `SELECT
+          transaction_id,
+          transaction_time,
+          payment_status,
+          amount
+        FROM public.transactions
+        WHERE buyer_id = $1
+        ORDER BY transaction_time DESC`,
+      [user_id]
+    );
+    res.status(200).json({ success: true, transactions: result.rows });
+  } catch (error) {
+    console.error(
+      'Błąd podczas pobierania transakcji użytkownika: ',
+      error.message
+    );
+    res.status(500).json({
+      success: false,
+      message: 'Nie udało się pobrać transakcji użytkownika.',
+    });
+  }
+};
+
 exports.changePassword = async (req, res) => {
   try {
     const userId = req.user.user_id;

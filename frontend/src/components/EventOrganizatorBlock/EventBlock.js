@@ -21,15 +21,15 @@ const formatDate = (isoString) => {
 };
 
 function EventBlock({ event, refetch }) {
-  console.log('Rendering EventBlock with event:', event);
-
   const MAX_DESC_LENGTH = 1000;
   const isLongDescription = event.description.length > MAX_DESC_LENGTH;
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isReportModalOpen, setReportModalOpen] = useState(false);
   const { categories } = useCategories();
 
-  const eventCategory = categories.find(cat => cat.category_id === event.category_id);
+  const eventCategory = categories.find(
+    (cat) => cat.category_id === event.category_id
+  );
   const categoryName = eventCategory ? eventCategory.name : 'General';
 
   return (
