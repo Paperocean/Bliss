@@ -8,7 +8,7 @@ import InputField from 'components/props/InputField/InputField';
 import Button from 'components/props/Button/Button';
 import ErrorMessage from 'components/props/ErrorMessage/ErrorMessage';
 import ContentWrapper from 'components/ContentWrapper/ContentWrapper';
-import Select from 'components/props/Select/Select'; 
+import Select from 'components/props/Select/Select';
 
 import 'styles/Form.css';
 
@@ -62,6 +62,10 @@ const Register = () => {
     }
   };
 
+  useEffect(() => {
+    document.title = 'Rejestracja';
+  }, []);
+
   return (
     <ContentWrapper>
       <form className="form" onSubmit={handleSubmit}>
@@ -97,21 +101,18 @@ const Register = () => {
           />
         </div>
 
-        <div className='form-group'>
-          <label htmlFor='role'>Rola:</label>
+        <div className="form-group">
+          <label htmlFor="role">Rola:</label>
           <Select
-            options={
-              [
-                { value: 'buyer', label: 'Kupujący' },
-                { value: 'organizer', label: 'Organizator' },
-              ]
-            }
-            id='role'
-            name='role'
+            options={[
+              { value: 'buyer', label: 'Kupujący' },
+              { value: 'organizer', label: 'Organizator' },
+            ]}
+            id="role"
+            name="role"
             value={role}
             onChange={(e) => setRole(e.target.value)}
-          >
-          </Select>
+          ></Select>
         </div>
 
         <Button type="submit">Zarejestruj się</Button>

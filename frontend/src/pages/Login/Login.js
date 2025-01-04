@@ -46,6 +46,9 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+    document.title = 'Logowanie';
+  }, []);
   return (
     <ContentWrapper>
       <form className="form" onSubmit={handleSubmit}>

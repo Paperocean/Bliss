@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import useEvent from 'hooks/eventHooks/useEvent';
 import useAvailableSeats from 'hooks/eventHooks/useAvailableSeats';
@@ -39,6 +39,14 @@ function EventPage() {
     loading: seatsLoading,
     error: seatsError,
   } = useAvailableSeats(event_id);
+
+  useEffect(() => {
+    if (event?.title) {
+      document.title = `${event.title}`;
+    } else {
+      document.title = 'Ładowanie wydarzenia...';
+    }
+  }, [event]);
 
   const { addSeatToCart, error: cartError } = useCart();
 

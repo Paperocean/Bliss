@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useEvents from 'hooks/eventHooks/useEvents';
 import useCategories from 'hooks/eventHooks/useCategories';
 
@@ -49,6 +49,9 @@ const Home = () => {
     }
   };
 
+  useEffect(() => {
+    document.title = 'Bliss';
+  }, []);
   return (
     <ContentWrapper>
       {/* Search and Filter Row */}

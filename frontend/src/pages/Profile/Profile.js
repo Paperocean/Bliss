@@ -167,6 +167,10 @@ const Profile = () => {
     },
   ];
 
+  useEffect(() => {
+    document.title = 'Profil';
+  }, []);
+
   return (
     <ContentWrapper>
       <div>
