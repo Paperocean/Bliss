@@ -9,3 +9,7 @@ export const getAvailableSeatsRequest = async (eventId) => {
   const data = await apiRequest(`/tickets/available/${eventId}`);
   return data.seats || [];
 };
+
+export const refundTicketRequest = async (ticket_id) => {
+  return await apiRequest(`/tickets/${ticket_id}/refund`, 'POST');
+};

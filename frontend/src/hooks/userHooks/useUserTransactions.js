@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getUsersTransactionsRequest } from 'services/userService';
 
 const useUserTransactions = () => {
@@ -6,32 +6,36 @@ const useUserTransactions = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      setLoading(true);
-      setError(null);
+  const fetchTransactions = async () => {
+    setLoading(true);
+    setError(null);
 
-      try {
-        const response = await getUsersTransactionsRequest();
-        console.log(response);
-        if (response.success) {
-          setTransactions(response.transactions || null);
-        } else {
-          throw new Error(
-            response.message || 'Nie udało się załadować biletów.'
-          );
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    try {
+      const response = await getUsersTransactionsRequest();
+      console.log(response);
+      if (response.success) {
+        setTransactions(response.transactions || []);
+      } else {
+        throw new Error(
+          response.message || 'Nie udało się załadować transakcji.'
+        );
       }
-    };
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const refetchTransactions = useCallback(() => {
     fetchTransactions();
   }, []);
 
-  return { transactions, loading, error };
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  return { transactions, loading, error, refetchTransactions };
 };
 
 export default useUserTransactions;

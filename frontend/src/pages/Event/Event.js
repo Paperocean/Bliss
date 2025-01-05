@@ -26,7 +26,7 @@ const formatDate = (isoString) => {
 
 function EventPage() {
   const { event_id } = useParams();
-  const { cart } = useCart();
+  const { cart, addSeatToCart, error: cartError } = useCart();
 
   const {
     event,
@@ -41,17 +41,22 @@ function EventPage() {
   } = useAvailableSeats(event_id);
 
   useEffect(() => {
-    if (event?.title) {
-      document.title = `${event.title}`;
-    } else {
-      document.title = 'Ładowanie wydarzenia...';
-    }
+    document.title = event?.title ? `${event.title}` : 'Ładowanie wydarzenia...';
   }, [event]);
 
-  const { addSeatToCart, error: cartError } = useCart();
 
   const handleSeatSelect = (seatData) => {
-    console.log('Selected seat:', seatData);
+    if (!seatData || !seatData.ticket_id) {
+      alert('Nieprawidłowe dane biletu.');
+      return;
+    }
+
+    if (cart.some((item) => item.ticket_id === seatData.ticket_id)) {
+      alert('To miejsce jest już w koszyku.');
+      return;
+    }
+
+    console.log('Dodano miejsce:', seatData);
     addSeatToCart(seatData);
   };
 
@@ -66,12 +71,13 @@ function EventPage() {
     );
 
     if (seatsNotInCart.length === 0) {
-      alert('Brak wolnych miejsc.');
+      alert('Wszystkie bilety są już w koszyku.');
       return;
     }
 
     const nextSeat = seatsNotInCart[0];
 
+    console.log('Dodano nienumerowany bilet:', nextSeat);
     addSeatToCart(nextSeat);
   };
 
@@ -133,11 +139,11 @@ function EventPage() {
                 />
               </>
             ) : (
-              <Button onClick={handleBuyNonNumbered}>
-                {cheapestPrice !== null
-                  ? `Dodaj do koszyka bilet za ${cheapestPrice.toFixed(2)} zł`
-                  : ``}
-              </Button>
+              cheapestPrice !== null && (
+                <Button onClick={handleBuyNonNumbered}>
+                  Dodaj do koszyka bilet za {cheapestPrice.toFixed(2)} zł
+                </Button>
+              )
             )}
 
             {cartError && <ErrorMessage>{cartError}</ErrorMessage>}

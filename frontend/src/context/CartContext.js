@@ -8,9 +8,15 @@ export const CartProvider = ({ children }) => {
         return savedCart ? JSON.parse(savedCart) : [];
     });
 
+    const [cartMessage, setCartMessage] = useState('');
+
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cart));
-    }, [cart]);
+
+        if (cart.length === 0 && cartMessage === '') {
+            setCartMessage('Koszyk jest pusty. Dodaj bilety, aby kontynuować.');
+        }
+    }, [cart, cartMessage]);
 
     const addToCart = (ticket_id) => {
         setCart((prevCart) => {
@@ -21,6 +27,7 @@ export const CartProvider = ({ children }) => {
                 return prevCart; 
             }
 
+            setCartMessage('');
             return [...prevCart, { ticket_id }];
         });
     };
@@ -29,8 +36,20 @@ export const CartProvider = ({ children }) => {
         setCart((prevCart) => prevCart.filter((item) => item.ticket_id !== ticket_id));
     };
 
+    const clearCart = () => {
+        setCart([]);
+        localStorage.removeItem('cart'); 
+    };
+
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart }}>
+        <CartContext.Provider value={{ 
+            cart, 
+            addToCart, 
+            removeFromCart, 
+            clearCart, 
+            cartMessage, 
+            setCartMessage
+        }}>
             {children}
         </CartContext.Provider>
     );

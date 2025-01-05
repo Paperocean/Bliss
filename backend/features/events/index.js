@@ -9,6 +9,8 @@ const {
   getEventReport,
   buyTicket,
   createEventWithTickets,
+  deleteEvent,
+  getEventStatus,
 } = require('./eventController');
 const authenticateToken = require('../../middleware/authMiddleware');
 
@@ -31,5 +33,9 @@ router.post('/:eventId/buy', authenticateToken, buyTicket);
 router.post('/tickets', authenticateToken, createEventWithTickets);
 
 router.get('/get/:event_id', getEvent);
+
+router.post('/:eventId/delete', authenticateToken, deleteEvent);
+
+router.get('/status/:eventId', authenticateToken, getEventStatus);
 
 module.exports = router;

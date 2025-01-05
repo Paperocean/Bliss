@@ -31,6 +31,12 @@ const ReportEventModal = ({ isOpen, onClose, eventId }) => {
     }
   }, [isOpen, eventId]);
 
+  const reportStatus = report?.status === 'active' ?
+  'Aktywne'
+  : report?.status === 'cancelled' 
+  ? 'Anulowane' 
+  : 'N/A';
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2>Raport sprzedaży biletów</h2>
@@ -39,6 +45,11 @@ const ReportEventModal = ({ isOpen, onClose, eventId }) => {
       {report && (
         <div>
           <h3>{report.title}</h3>
+          <p>{report.description}</p>
+          <p>
+            <strong>Status:</strong>{' '}
+            {reportStatus}
+            </p>
           <p>
             <strong>Data:</strong>{' '}
             {new Date(report.start_time).toLocaleString()}

@@ -60,3 +60,17 @@ export const buyTicketRequest = async (payload) => {
     body: JSON.stringify(payload),
   });
 };
+
+export const deleteEventRequest = async (eventId) => {
+  return await apiRequest(`/events/${eventId}/delete`, 'POST', null, true);
+};
+
+export const fetchEventStatus = async (eventId) => {
+  try {
+    const response = await apiRequest(`/events/status/${eventId}`, 'GET', null, true);
+    return response?.status === 'cancelled';
+  } catch (error) {
+    console.error('Błąd pobierania statusu wydarzenia:', error);
+    return false; 
+  }
+};

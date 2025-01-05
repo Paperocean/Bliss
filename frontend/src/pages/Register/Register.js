@@ -35,6 +35,11 @@ const Register = () => {
     const trimmedPassword = password.trim();
     const trimmedRole = role.trim();
 
+    if (trimmedUsername.length < 5 || trimmedUsername.length > 16) {
+      setErrorMessage('Nazwa użytkownika musi mieć od 5 do 16 znaków.');
+      return;
+    }
+
     if (!trimmedUsername || !trimmedEmail || !trimmedPassword) {
       setErrorMessage(
         'Nazwa użytkownika, e-mail i hasło są wymagane do rejestracji.'

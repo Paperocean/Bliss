@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 import Button from 'components/props/Button/Button';
 import basicCover from 'assets/basic_cover.webp';
+import useAvailableSeats from 'hooks/eventHooks/useAvailableSeats'; 
 import './EventBlock.css';
 
 const formatDate = (isoString) => {
@@ -17,9 +18,10 @@ const formatDate = (isoString) => {
 };
 
 function EventBlock({ event }) {
-  const [isBuyModalOpen, setBuyModalOpen] = useState(false);
   const MAX_DESC_LENGTH = 1000;
   const isLongDescription = event.description.length > MAX_DESC_LENGTH;
+
+  const { seats, loading, error } = useAvailableSeats(event.event_id);
 
   return (
     <div className="event-block">
@@ -48,9 +50,17 @@ function EventBlock({ event }) {
           <div className="event-category category-badge">
             {event.category || 'General'}
           </div>
+          <div className="event-seats">
+            {loading ? (
+              <span>Ładowanie dostępnych miejsc...</span>
+            ) : error ? (
+              <span className="error-message">{error}</span>
+            ) : (
+              <span>Dostępne miejsca: {seats.length}</span>
+            )}
+          </div>
           <Link to={`event/${event.event_id}`}>
-            {' '}
-            <Button>Kup bilet</Button>{' '}
+            <Button>Kup bilet</Button>
           </Link>
         </div>
       </div>

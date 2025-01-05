@@ -22,9 +22,7 @@ exports.purchase = async (req, res) => {
       FROM tickets
       WHERE ticket_id = ANY($1) AND status = 'available';
     `;
-    const { rows: availableTickets } = await client.query(ticketQuery, [
-      ticketIds,
-    ]);
+    const { rows: availableTickets } = await client.query(ticketQuery, [ticketIds]);
 
     if (availableTickets.length !== cart.length) {
       const unavailableIds = ticketIds.filter(
@@ -33,42 +31,36 @@ exports.purchase = async (req, res) => {
       await client.query('ROLLBACK');
       return res.status(400).json({
         success: false,
-        message: `The following tickets are unavailable: ${unavailableIds.join(
-          ', '
-        )}`,
+        message: `The following tickets are unavailable: ${unavailableIds.join(', ')}`,
       });
     }
 
-    const transactions = [];
-    const updatedTickets = [];
+    // Sumujemy wartość biletów jako liczba (nie string)
+    const totalAmount = availableTickets.reduce((sum, ticket) => sum + parseFloat(ticket.price), 0).toFixed(2);
 
+    // Tworzymy jedną transakcję
+    const transactionQuery = `
+      INSERT INTO transactions (buyer_id, amount, payment_status)
+      VALUES ($1, $2::numeric, 'completed')
+      RETURNING transaction_id, transaction_time;
+    `;
+    const { rows: transaction } = await client.query(transactionQuery, [userId, parseFloat(totalAmount)]);
+    const transactionId = transaction[0].transaction_id;
+
+    // Powiązujemy bilety z transakcją w nowej tabeli
     for (const ticket of availableTickets) {
-      const { ticket_id: ticketId, event_id: eventId, price } = ticket;
-
-      const transactionQuery = `
-        INSERT INTO transactions (ticket_id, buyer_id, event_id, amount, payment_status)
-        VALUES ($1, $2, $3, $4, 'completed')
-        RETURNING transaction_id, transaction_time;
+      const transactionTicketsQuery = `
+        INSERT INTO transaction_tickets (transaction_id, ticket_id)
+        VALUES ($1, $2);
       `;
-      const { rows: transaction } = await client.query(transactionQuery, [
-        ticketId,
-        userId,
-        eventId,
-        price,
-      ]);
-      transactions.push(transaction[0]);
+      await client.query(transactionTicketsQuery, [transactionId, ticket.ticket_id]);
 
       const updateTicketQuery = `
         UPDATE tickets
         SET status = 'sold', user_id = $1, purchase_time = CURRENT_TIMESTAMP
-        WHERE ticket_id = $2
-        RETURNING ticket_id, status, user_id, purchase_time;
+        WHERE ticket_id = $2;
       `;
-      const { rows: updatedTicket } = await client.query(updateTicketQuery, [
-        userId,
-        ticketId,
-      ]);
-      updatedTickets.push(updatedTicket[0]);
+      await client.query(updateTicketQuery, [userId, ticket.ticket_id]);
     }
 
     await client.query('COMMIT');
@@ -76,8 +68,11 @@ exports.purchase = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Cart purchased successfully.',
-      transactions,
-      tickets: updatedTickets,
+      transaction: {
+        transaction_id: transactionId,
+        total_amount: totalAmount,
+        tickets: availableTickets,
+      },
     });
   } catch (error) {
     await client.query('ROLLBACK');

@@ -1,8 +1,39 @@
+/* .cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-large);
+} */
+
 .cart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: var(--font-size-large);
+  padding: 10px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Subtelna linia oddzielająca */
+}
+
+.cart-title {
+  font-weight: bold;
+  flex-grow: 1; /* Zapewnia lepsze rozmieszczenie elementów */
+}
+
+.cart-count {
+  font-size: var(--font-size-medium);
+  color: var(--primary-color);
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.close-icon {
+  font-size: var(--font-size-large);
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.close-icon:hover {
+  transform: scale(1.2);
 }
 
 .empty-cart-message {
@@ -85,7 +116,7 @@
   color: var(--color-text);
 }
 
-.close-icon {
+/* .close-icon {
   font-size: var(--font-size-small);
   color: var(--color-text);
   cursor: pointer;
@@ -94,7 +125,7 @@
 
 .close-icon:hover {
   color: var(--color-hover);
-}
+} */
 
 .remove-btn {
   background: var(--color-primary);

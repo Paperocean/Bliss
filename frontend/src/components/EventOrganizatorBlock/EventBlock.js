@@ -5,6 +5,7 @@ import Button from 'components/props/Button/Button';
 import EditEventModal from 'pages/Event/EditEventModal';
 import RaportEventModal from 'pages/Event/ReportEventModal';
 import useCategories from 'hooks/eventHooks/useCategories';
+import { deleteEventRequest } from 'services/eventService'; 
 
 import basicCover from 'assets/basic_cover.webp';
 import './EventBlock.css';
@@ -32,8 +33,25 @@ function EventBlock({ event, refetch }) {
   );
   const categoryName = eventCategory ? eventCategory.name : 'General';
 
+  const handleDeleteEvent = async () => {
+    if (!window.confirm('Czy na pewno chcesz anulować to wydarzenie?')) return;
+
+    try {
+      const response = await deleteEventRequest(event.event_id);
+      if (response.success) {
+        alert('Wydarzenie zostało anulowane.');
+        refetch();
+      } else {
+        alert(response.message || 'Nie udało się anulować wydarzenia.');
+      }
+    } catch (error) {
+      console.error('Błąd anulowania wydarzenia:', error);
+      alert('Wystąpił błąd podczas anulowania wydarzenia.');
+    }
+  };
+
   return (
-    <div className="event-block">
+    <div className={`event-block ${event.status === 'cancelled' ? 'cancelled' : ''}`}>
       <div className="event-image">
         <img
           src={event.image || basicCover}
@@ -43,7 +61,9 @@ function EventBlock({ event, refetch }) {
       </div>
       <div className="event-details">
         <div className="event-header">
-          <div className="event-title">{event.title}</div>
+          <div className="event-title">
+            {event.title} {event.status === 'cancelled' && '(Anulowane)'}
+          </div>
           <div className="event-loc-date">
             {event.location},<br />
             {formatDate(event.start_time)}
@@ -53,25 +73,29 @@ function EventBlock({ event, refetch }) {
           {isLongDescription
             ? `${event.description.substring(0, MAX_DESC_LENGTH)}`
             : event.description}
-          {isLongDescription && <Link to={`event/${event.id}`}>...</Link>}
+          {isLongDescription && <Link to={`event/${event.event_id}`}>...</Link>}
         </div>
         <div className="event-footer">
           <div className="event-category category-badge">
             {categoryName || 'General'}
           </div>
           <div className="event-buttons">
-            <Button onClick={() => setIsEditModalOpen(true)}>
-              Edytuj wydarzenie
-            </Button>{' '}
-            {isEditModalOpen && (
-              <EditEventModal
-                isOpen={isEditModalOpen}
-                onClose={() => {
-                  setIsEditModalOpen(false);
-                  refetch();
-                }}
-                eventId={parseInt(event.event_id, 10)}
-              />
+            {event.status !== 'cancelled' && (
+              <>
+                <Button onClick={() => setIsEditModalOpen(true)}>
+                  Edytuj wydarzenie
+                </Button>
+                {isEditModalOpen && (
+                  <EditEventModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => {
+                      setIsEditModalOpen(false);
+                      refetch();
+                    }}
+                    eventId={parseInt(event.event_id, 10)}
+                  />
+                )}
+              </>
             )}
             <Button onClick={() => setReportModalOpen(true)}>Raport</Button>
             {isReportModalOpen && (
@@ -83,6 +107,12 @@ function EventBlock({ event, refetch }) {
                 }}
                 eventId={parseInt(event.event_id, 10)}
               />
+            )}
+
+            {event.status !== 'cancelled' && (
+              <Button onClick={handleDeleteEvent} variant="danger">
+                Anuluj wydarzenie
+              </Button>
             )}
           </div>
         </div>

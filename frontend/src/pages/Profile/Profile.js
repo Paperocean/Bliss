@@ -7,6 +7,8 @@ import useUserTickets from 'hooks/userHooks/useUserTickets';
 import useUserTransactions from 'hooks/userHooks/useUserTransactions';
 import useOrganizerEvents from 'hooks/eventHooks/useOrganizerEvents';
 import { generatePdfTicket } from 'utils/generatePdfTicket';
+import { refundTicketRequest } from 'services/ticketService';
+import { fetchEventStatus } from 'services/eventService';
 
 import ContentWrapper from 'components/ContentWrapper/ContentWrapper';
 import List from 'components/props/List/List';
@@ -40,11 +42,13 @@ const Profile = () => {
     tickets,
     loading: ticketsLoading,
     error: ticketsError,
+    refetchTickets, 
   } = useUserTickets();
   const {
     transactions,
     loading: transactionsLoading,
     error: transactionsError,
+    refetchTransactions,
   } = useUserTransactions();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
@@ -64,13 +68,10 @@ const Profile = () => {
     if (!isLoggedIn) {
       navigate('/');
     }
-    // Jeśli profil zawiera błąd związany z tokenem (np. nieważny, uszkodzony), to wyloguj
     if (profileError?.message?.includes('token')) {
       logout();
       return;
     }
-
-    // Jeśli zwrócono błąd wskazujący, że użytkownika nie znaleziono lub brak profilu
     if (
       profileError?.message?.includes('not found') ||
       profileError?.message?.includes('nie znaleziono') ||
@@ -79,13 +80,29 @@ const Profile = () => {
       logout();
       return;
     }
-
-    // Jeśli załadowano profil (profileLoading == false), ale profil jest pusty lub null, wyloguj
     if (!profileLoading && (!profile || Object.keys(profile).length === 0)) {
       logout();
       return;
     }
   }, [isLoggedIn, navigate, profileError, logout, profile, profileLoading]);
+
+  const handleRefund = async (ticketId) => {
+    if (!window.confirm('Czy na pewno chcesz zwrócić ten bilet?')) return;
+    
+    try {
+      const response = await refundTicketRequest(ticketId);
+      if (response.success) {
+        alert('Bilet został zwrócony.');
+        refetchTickets();
+        refetchTransactions();
+      } else {
+        alert(response.message || 'Nie udało się zwrócić biletu.');
+      }
+    } catch (error) {
+      console.error('Błąd zwrotu biletu:', error);
+      alert('Wystąpił błąd podczas zwrotu biletu.');
+    }
+  };
 
   const columnsUserInfo = [
     {
@@ -133,10 +150,38 @@ const Profile = () => {
     },
     {
       render: (row) => (
-        <Button onClick={() => generatePdfTicket(row)}>Pobierz</Button>
+        <>
+          <Button onClick={() => generatePdfTicket(row)}>Pobierz</Button>
+          {' '}
+          <CheckRefundButton row={row} handleRefund={handleRefund} />
+        </>
       ),
     },
   ];
+
+  const CheckRefundButton = ({ row, handleRefund }) => {
+    const [isCancelled, setIsCancelled] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      const checkStatus = async () => {
+        setLoading(true);
+        const cancelled = await fetchEventStatus(row.event_id);
+        setIsCancelled(cancelled);
+        setLoading(false);
+      };
+
+      checkStatus();
+    }, [row.event_id]);
+
+    return loading ? (
+      <span>Sprawdzanie...</span>
+    ) : isCancelled ? (
+      <Button onClick={() => handleRefund(row.ticket_id)} variant="danger">
+        Zwrot
+      </Button>
+    ) : null;
+  };
 
   const columnsTransactions = [
     {
@@ -159,6 +204,8 @@ const Profile = () => {
           ? 'W trakcie'
           : row?.payment_status === 'failed'
           ? 'Nieudana'
+          : row?.payment_status === 'refunded'
+          ? 'Zwrot'
           : 'N/A',
     },
     {
@@ -170,6 +217,7 @@ const Profile = () => {
   useEffect(() => {
     document.title = 'Profil';
   }, []);
+
 
   return (
     <ContentWrapper>

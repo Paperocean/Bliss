@@ -12,6 +12,7 @@ exports.getEvents = async (req, res) => {
     const eventsQuery = `
       SELECT
           e.event_id, e.title, e.description, e.location, e.start_time, e.end_time,
+          e.status,
           c.name AS category,
           COUNT(t.ticket_id) FILTER (WHERE t.status = 'available') AS available_tickets
       FROM events e
@@ -19,7 +20,7 @@ exports.getEvents = async (req, res) => {
       LEFT JOIN event_categories c ON e.category_id = c.category_id
       WHERE
           (e.title ILIKE $1 OR e.location ILIKE $1)
-          AND ($2 = '' OR c.name = $2) -- Filtr kategorii, jeśli ustawiony
+          AND ($2 = '' OR c.name = $2)
       GROUP BY e.event_id, c.name
       ORDER BY e.start_time DESC
       LIMIT $3 OFFSET $4
@@ -32,6 +33,7 @@ exports.getEvents = async (req, res) => {
       WHERE
           (e.title ILIKE $1 OR e.location ILIKE $1)
           AND ($2 = '' OR c.name = $2)
+          AND e.status = 'active'
     `;
 
     const searchPattern = `%${search}%`;
@@ -82,7 +84,8 @@ exports.getEvent = async (req, res) => {
         e.seats_per_row,
         e.image,
         e.created_at,
-        e.updated_at
+        e.updated_at,
+        e.status
       FROM
         events e
       LEFT JOIN
@@ -311,6 +314,7 @@ exports.getEventReport = async (req, res) => {
         e.title,
         e.start_time,
         e.location,
+        e.status,
         COUNT(t.ticket_id) FILTER (WHERE t.status = 'sold') AS tickets_sold,
         COALESCE(SUM(t.price) FILTER (WHERE t.status = 'sold'), 0) AS total_revenue,
         COALESCE(JSON_AGG(
@@ -336,6 +340,7 @@ exports.getEventReport = async (req, res) => {
     res.json({
       success: true,
       report: {
+        status: eventData.status,
         event_id: eventData.event_id,
         title: eventData.title,
         start_time: eventData.start_time,
@@ -388,7 +393,8 @@ exports.buyTicket = async (req, res) => {
   try {
     // Pobierz szczegóły wydarzenia, aby sprawdzić czy ma numerowane miejsca
     const eventResult = await db.query(
-      `SELECT event_id, capacity FROM events WHERE event_id = $1`,
+      `SELECT event_id, capacity FROM events WHERE event_id = $1
+      AND status = 'active' AND start_time > NOW()`,
       [eventId]
     );
 
@@ -535,6 +541,90 @@ exports.createEventWithTickets = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to create event and generate tickets.',
+    });
+  }
+};
+
+exports.deleteEvent = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    if (!eventId || isNaN(eventId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Nieprawidłowy identyfikator wydarzenia.',
+      });
+    }
+
+    const parsedEventId = parseInt(eventId, 10);
+
+    const eventCheck = await db.query(
+      `SELECT * FROM events WHERE event_id = $1`,
+      [parsedEventId]
+    );
+
+    if (eventCheck.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Nie znaleziono wydarzenia do usunięcia.',
+      });
+    }
+
+    await db.query(
+      `UPDATE events 
+       SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
+       WHERE event_id = $1`,
+      [parsedEventId]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Wydarzenie zostało pomyślnie anulowane.',
+    });
+  } catch (error) {
+    console.error('Błąd anulowania wydarzenia:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Nie udało się anulować wydarzenia.',
+    });
+  }
+};
+
+
+exports.getEventStatus = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    if (!eventId || isNaN(eventId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Nieprawidłowy identyfikator wydarzenia.',
+      });
+    }
+
+    const parsedEventId = parseInt(eventId, 10);
+
+    const event = await db.query(
+      `SELECT status FROM events WHERE event_id = $1`,
+      [parsedEventId]
+    );
+
+    if (event.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Nie znaleziono wydarzenia.',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      status: event.rows[0].status, // 'active' lub 'cancelled'
+    });
+  } catch (error) {
+    console.error('Błąd pobierania statusu wydarzenia:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Nie udało się pobrać statusu wydarzenia.',
     });
   }
 };

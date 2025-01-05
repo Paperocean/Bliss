@@ -15,12 +15,14 @@ const Home = () => {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+
   const {
     events,
     loading: eventsLoading,
     error: eventsError,
     meta,
   } = useEvents(currentPage, 3, search, selectedCategory);
+
   const {
     categories,
     loading: categoriesLoading,
@@ -50,8 +52,17 @@ const Home = () => {
   };
 
   useEffect(() => {
+    if (meta?.totalPages === 0) {
+      setCurrentPage(0);
+    } else if (currentPage === 0 && meta?.totalPages > 0) {
+      setCurrentPage(1); 
+    }
+  }, [meta?.totalPages]);
+
+  useEffect(() => {
     document.title = 'Bliss';
   }, []);
+
   return (
     <ContentWrapper>
       {/* Search and Filter Row */}
@@ -83,23 +94,25 @@ const Home = () => {
         <ErrorMessage message={eventsError} />
       ) : eventsLoading ? (
         <p>Ładowanie wydarzeń...</p>
+      ) : meta?.totalPages === 0 ? (
+        <p className="no-results">Brak wyników wyszukiwania</p>
       ) : (
         <>
           <EventList events={events} />
           <div className="pagination-controls">
             <Button
               onClick={handlePrevPage}
-              disabled={meta?.currentPage === 1}
+              disabled={meta?.currentPage === 1 || meta?.totalPages === 0}
               className="pagination-button"
             >
               &lt;
             </Button>
             <div className="pagination-info">
-              Strona {meta?.currentPage} z {meta?.totalPages}
+              Strona {meta?.totalPages === 0 ? '0' : meta?.currentPage} z {meta?.totalPages}
             </div>
             <Button
               onClick={handleNextPage}
-              disabled={meta?.currentPage === meta?.totalPages}
+              disabled={meta?.currentPage === meta?.totalPages || meta?.totalPages === 0}
               className="pagination-button"
             >
               &gt;
