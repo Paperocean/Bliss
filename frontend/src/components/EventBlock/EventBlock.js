@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import Button from 'components/props/Button/Button';
 import basicCover from 'assets/basic_cover.webp';
-import useAvailableSeats from 'hooks/eventHooks/useAvailableSeats'; 
+import useAvailableSeats from 'hooks/eventHooks/useAvailableSeats';
 import './EventBlock.css';
 
 const formatDate = (isoString) => {
@@ -30,6 +30,7 @@ function EventBlock({ event }) {
           src={event.image || basicCover}
           alt={`Event: ${event.title}`}
           className="event-img"
+          loading="lazy"
         />
       </div>
       <div className="event-details">
@@ -37,7 +38,16 @@ function EventBlock({ event }) {
           <div className="event-title">{event.title}</div>
           <div className="event-loc-date">
             {event.location},<br />
-            {formatDate(event.start_time)}
+            {formatDate(event.start_time)}, <br />
+            {loading ? (
+              <span>Ładowanie dostępnych miejsc...</span>
+            ) : error ? (
+              <span className="error-message">{error}</span>
+            ) : (
+              <span>
+                Dostępne miejsca: {seats.length} / {event.capacity}
+              </span>
+            )}
           </div>
         </div>
         <div className="event-desc">
@@ -49,15 +59,6 @@ function EventBlock({ event }) {
         <div className="event-footer">
           <div className="event-category category-badge">
             {event.category || 'General'}
-          </div>
-          <div className="event-seats">
-            {loading ? (
-              <span>Ładowanie dostępnych miejsc...</span>
-            ) : error ? (
-              <span className="error-message">{error}</span>
-            ) : (
-              <span>Dostępne miejsca: {seats.length}</span>
-            )}
           </div>
           <Link to={`event/${event.event_id}`}>
             <Button>Kup bilet</Button>

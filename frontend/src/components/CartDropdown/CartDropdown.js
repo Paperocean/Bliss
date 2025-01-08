@@ -8,9 +8,18 @@ import { purchaseRequest } from 'services/transactionService';
 import './CartDropdown.css';
 
 const CartDropdown = ({ isVisible, toggleVisibility }) => {
-  const { cart, removeFromCart, clearCart, cartMessage, setCartMessage } = useContext(CartContext);
-  const { totalPrice, loading: totalLoading, error: totalError } = useCartTotal(cart);
-  const { eventDetails, loading: eventLoading, error: eventError } = useEventDetails(cart);
+  const { cart, removeFromCart, clearCart, cartMessage, setCartMessage } =
+    useContext(CartContext);
+  const {
+    totalPrice,
+    loading: totalLoading,
+    error: totalError,
+  } = useCartTotal(cart);
+  const {
+    eventDetails,
+    loading: eventLoading,
+    error: eventError,
+  } = useEventDetails(cart);
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -22,19 +31,18 @@ const CartDropdown = ({ isVisible, toggleVisibility }) => {
     setErrorMessage('');
 
     try {
-        const { transactionId, totalAmount } = await purchaseRequest(cart);
+      const { transactionId, totalAmount } = await purchaseRequest(cart);
 
-        setTransactionId(transactionId);
-        setTotalAmount(totalAmount ? parseFloat(totalAmount) : 0);
-        setCartMessage(`Zakup zakończony sukcesem!`);
+      setTransactionId(transactionId);
+      setTotalAmount(totalAmount ? parseFloat(totalAmount) : 0);
+      setCartMessage(`Zakup zakończony sukcesem!`);
 
-        clearCart();
-        
+      clearCart();
     } catch (error) {
-        console.error('Błąd podczas zakupu:', error.message);
-        setErrorMessage('Wystąpił błąd podczas przetwarzania zakupu.');
+      console.error('Błąd podczas zakupu:', error.message);
+      setErrorMessage('Wystąpił błąd podczas przetwarzania zakupu.');
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -58,22 +66,33 @@ const CartDropdown = ({ isVisible, toggleVisibility }) => {
                 <div className="ticket-details-row">
                   <span className="label">Wydarzenie:</span>
                   <span className="value">
-                    {eventLoading ? 'Ładowanie...' : event?.title || 'Brak danych'}
+                    {eventLoading
+                      ? 'Ładowanie...'
+                      : event?.title || 'Brak danych'}
                   </span>
                 </div>
                 <div className="ticket-details-row">
                   <span className="label">Miejsce:</span>
                   <span className="value">
-                    {eventLoading ? 'Ładowanie...' : event?.seat_label || 'Brak danych'}
+                    {eventLoading
+                      ? 'Ładowanie...'
+                      : event?.seat_label || 'Brak danych'}
                   </span>
                 </div>
                 <div className="ticket-details-row">
                   <span className="label">Cena:</span>
                   <span className="value">
-                    {eventLoading ? 'Ładowanie...' : event ? `${event.price} zł` : 'Brak danych'}
+                    {eventLoading
+                      ? 'Ładowanie...'
+                      : event
+                      ? `${event.price} zł`
+                      : 'Brak danych'}
                   </span>
                 </div>
-                <button className="remove-btn" onClick={() => removeFromCart(item.ticket_id)}>
+                <button
+                  className="remove-btn"
+                  onClick={() => removeFromCart(item.ticket_id)}
+                >
                   Usuń z koszyka
                 </button>
               </div>
@@ -92,25 +111,40 @@ const CartDropdown = ({ isVisible, toggleVisibility }) => {
         )}
 
         {cartMessage && (
-            <div className="success-message">
-                <p>{cartMessage}</p>
-                {transactionId && <p><b>ID transakcji:</b> {transactionId}</p>}
-                {totalAmount !== null && <p><b>Cena transakcji:</b> {Number(totalAmount).toFixed(2)} zł</p>}
-                <p><Link to={`/profile`}>Przejdź do profilu</Link></p>
-            </div>
+          <div className="success-message">
+            <p>{cartMessage}</p>
+            {transactionId && (
+              <p>
+                <b>ID transakcji:</b> {transactionId}
+              </p>
+            )}
+            {totalAmount !== null && (
+              <p>
+                <b>Cena transakcji:</b> {Number(totalAmount).toFixed(2)} zł
+              </p>
+            )}
+            <p>
+              <Link to={`/profile`}>Przejdź do profilu</Link>
+            </p>
+          </div>
         )}
 
         {cart.length > 0 && totalPrice > 0 && (
           <p>
             {totalError && <p className="error-message">{totalError}</p>}
-            <b>Łącznie: {totalLoading ? 'Ładowanie...' : `${parseFloat(totalPrice).toFixed(2)} zł`}</b>
+            <b>
+              <b>Łącznie:</b>{' '}
+              {totalLoading
+                ? 'Ładowanie...'
+                : `${parseFloat(totalPrice).toFixed(2)} zł`}
+            </b>
           </p>
         )}
 
         {totalPrice > 0 && (
-          <button className="view-cart-btn" onClick={handlePurchase} disabled={loading}>
+          <Link onClick={handlePurchase}>
             {loading ? 'Przetwarzanie...' : 'Dokonaj zakupu'}
-          </button>
+          </Link>
         )}
       </div>
     </div>

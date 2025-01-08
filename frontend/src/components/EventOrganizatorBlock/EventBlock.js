@@ -5,7 +5,7 @@ import Button from 'components/props/Button/Button';
 import EditEventModal from 'pages/Event/EditEventModal';
 import RaportEventModal from 'pages/Event/ReportEventModal';
 import useCategories from 'hooks/eventHooks/useCategories';
-import { deleteEventRequest } from 'services/eventService'; 
+import { deleteEventRequest } from 'services/eventService';
 
 import basicCover from 'assets/basic_cover.webp';
 import './EventBlock.css';
@@ -51,12 +51,17 @@ function EventBlock({ event, refetch }) {
   };
 
   return (
-    <div className={`event-block ${event.status === 'cancelled' ? 'cancelled' : ''}`}>
+    <div
+      className={`event-block ${
+        event.status === 'cancelled' ? 'cancelled' : ''
+      }`}
+    >
       <div className="event-image">
         <img
           src={event.image || basicCover}
           alt={`Event: ${event.title}`}
           className="event-img"
+          loading="lazy"
         />
       </div>
       <div className="event-details">

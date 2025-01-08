@@ -162,8 +162,8 @@ const AddEvent = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ContentWrapper>
+    <ContentWrapper>
+      <Modal isOpen={isOpen} onClose={onClose}>
         <form onSubmit={handleSubmitEventForm} className="form">
           <ErrorMessage message={errorMessage || categoryError} />
 
@@ -314,8 +314,8 @@ const AddEvent = ({ isOpen, onClose }) => {
             />
           </Modal>
         )}
-      </ContentWrapper>
-    </Modal>
+      </Modal>
+    </ContentWrapper>
   );
 };
 

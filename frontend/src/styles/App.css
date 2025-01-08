@@ -23,8 +23,8 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--spacing-large);
-  gap: var(--spacing-large);
+  padding: var(--spacing-medium);
+  gap: var(--spacing-medium);
   background: linear-gradient(
       to top,
       var(--color-primary) 5%,

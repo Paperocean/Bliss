@@ -5,7 +5,9 @@ import { AuthProvider } from './context/AuthContext';
 
 ReactDOM.render(
   <React.StrictMode>
-    <AuthProvider> { }
+    <AuthProvider>
+      {' '}
+      {}
       <App />
     </AuthProvider>
   </React.StrictMode>,

@@ -36,10 +36,6 @@ VALUES
     ('Konferencja')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO public.event_categories (name)
-VALUES ('Music'), ('Sports'), ('Theater'), ('Conference')
-ON CONFLICT DO NOTHING;
-
 CREATE TABLE public.events (
     event_id SERIAL PRIMARY KEY,
     organizer_id INT REFERENCES users(user_id) ON DELETE CASCADE,

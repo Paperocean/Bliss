@@ -11,7 +11,7 @@ exports.getEvents = async (req, res) => {
 
     const eventsQuery = `
       SELECT
-          e.event_id, e.title, e.description, e.location, e.start_time, e.end_time,
+          e.event_id, e.title, e.description, e.location, e.start_time, e.end_time, e.capacity,
           e.status,
           c.name AS category,
           COUNT(t.ticket_id) FILTER (WHERE t.status = 'available') AS available_tickets
@@ -571,7 +571,7 @@ exports.deleteEvent = async (req, res) => {
     }
 
     await db.query(
-      `UPDATE events 
+      `UPDATE events
        SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
        WHERE event_id = $1`,
       [parsedEventId]
@@ -589,7 +589,6 @@ exports.deleteEvent = async (req, res) => {
     });
   }
 };
-
 
 exports.getEventStatus = async (req, res) => {
   try {

@@ -55,7 +55,7 @@ const Home = () => {
     if (meta?.totalPages === 0) {
       setCurrentPage(0);
     } else if (currentPage === 0 && meta?.totalPages > 0) {
-      setCurrentPage(1); 
+      setCurrentPage(1);
     }
   }, [meta?.totalPages]);
 
@@ -108,11 +108,14 @@ const Home = () => {
               &lt;
             </Button>
             <div className="pagination-info">
-              Strona {meta?.totalPages === 0 ? '0' : meta?.currentPage} z {meta?.totalPages}
+              Strona {meta?.totalPages === 0 ? '0' : meta?.currentPage} z{' '}
+              {meta?.totalPages}
             </div>
             <Button
               onClick={handleNextPage}
-              disabled={meta?.currentPage === meta?.totalPages || meta?.totalPages === 0}
+              disabled={
+                meta?.currentPage === meta?.totalPages || meta?.totalPages === 0
+              }
               className="pagination-button"
             >
               &gt;
