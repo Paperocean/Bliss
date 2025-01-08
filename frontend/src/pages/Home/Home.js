@@ -98,7 +98,7 @@ const Home = () => {
         <p className="no-results">Brak wyników wyszukiwania</p>
       ) : (
         <>
-          <EventList events={events} />
+          <EventList events={events.filter(event => event.status === 'active')} />
           <div className="pagination-controls">
             <Button
               onClick={handlePrevPage}

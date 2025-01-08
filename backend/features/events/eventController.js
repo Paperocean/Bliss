@@ -21,7 +21,7 @@ exports.getEvents = async (req, res) => {
       WHERE
           (e.title ILIKE $1 OR e.location ILIKE $1)
           AND ($2 = '' OR c.name = $2)
-      GROUP BY e.event_id, c.name
+      GROUP BY e.event_id, e.capacity, c.name
       ORDER BY e.start_time DESC
       LIMIT $3 OFFSET $4
     `;

@@ -22,7 +22,12 @@ function EventBlock({ event }) {
   const isLongDescription = event.description.length > MAX_DESC_LENGTH;
 
   const { seats, loading, error } = useAvailableSeats(event.event_id);
+  const capacityValue = Number.isInteger(event.capacity) ? event.capacity : 'Brak danych';
+  console.log("event.capacity:", event.capacity);
+  console.log("event object:", event);
+  console.log("event object keys:", Object.keys(event));
 
+  
   return (
     <div className="event-block">
       <div className="event-image">
@@ -45,7 +50,7 @@ function EventBlock({ event }) {
               <span className="error-message">{error}</span>
             ) : (
               <span>
-                Dostępne miejsca: {seats.length} / {event.capacity}
+                Dostępne miejsca: {seats?.length ?? 0} / {event.capacity ?? 'Brak danych'}
               </span>
             )}
           </div>
