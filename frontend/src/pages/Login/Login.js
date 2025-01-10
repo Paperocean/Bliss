@@ -24,6 +24,10 @@ const Login = () => {
     }
   }, [isLoggedIn, navigate]);
 
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -32,19 +36,34 @@ const Login = () => {
       return;
     }
 
+    if (!isValidEmail(email)) {
+      setErrorMessage('Nieprawidłowy format adresu e-mail.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage('Hasło musi mieć co najmniej 6 znaków.');
+      return;
+    }
+
     try {
       const response = await loginUserRequest({ email, password });
+
       if (response.success) {
         login(response.token, response.user);
         navigate('/');
       } else {
-        setErrorMessage(response.message);
+        setErrorMessage('Nieprawidłowy e-mail lub hasło.');
       }
     } catch (error) {
       console.error('Login error:', error);
       setErrorMessage('Logowanie nie powiodło się. Spróbuj ponownie.');
     }
   };
+
+  useEffect(() => {
+    document.title = 'Logowanie';
+  }, []);
 
   return (
     <ContentWrapper>

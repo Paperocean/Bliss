@@ -28,7 +28,7 @@ exports.generateTickets = async (
       const price = priceInfo.price;
 
       for (let i = 0; i < capacity; i++) {
-        tickets.push([eventId, null, price, 'available', 'N/A']);
+        tickets.push([eventId, null, price, 'available', 'Miejsce Stojące']);
       }
     }
 

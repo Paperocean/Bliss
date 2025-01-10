@@ -9,6 +9,8 @@ html {
   font-family: var(--font-family);
   color: var(--color-text);
   background-color: var(--color-secondary);
+  overflow-y: hidden;
+  scrollbar-color: #13403b transparent;
 }
 
 .container {
@@ -21,8 +23,8 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--spacing-large);
-  gap: var(--spacing-large);
+  padding: var(--spacing-medium);
+  gap: var(--spacing-medium);
   background: linear-gradient(
       to top,
       var(--color-primary) 5%,

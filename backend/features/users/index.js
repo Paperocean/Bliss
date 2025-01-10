@@ -3,6 +3,7 @@ const {
   getUserProfile,
   getUserTickets,
   changePassword,
+  getUserTransactions,
 } = require('./userController');
 const authenticateToken = require('../../middleware/authMiddleware');
 
@@ -154,6 +155,7 @@ router.get('/profile', authenticateToken, getUserProfile);
  */
 router.get('/tickets', authenticateToken, getUserTickets);
 
+router.get('/transactions', authenticateToken, getUserTransactions);
 /**
  * @swagger
  * /api/user/change-password:

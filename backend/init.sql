@@ -36,10 +36,6 @@ VALUES
     ('Konferencja')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO public.event_categories (name)
-VALUES ('Music'), ('Sports'), ('Theater'), ('Conference')
-ON CONFLICT DO NOTHING;
-
 CREATE TABLE public.events (
     event_id SERIAL PRIMARY KEY,
     organizer_id INT REFERENCES users(user_id) ON DELETE CASCADE,
@@ -50,6 +46,11 @@ CREATE TABLE public.events (
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
     capacity INT NOT NULL,
+    has_numbered_seats BOOLEAN DEFAULT FALSE,
+    rows INT,
+    seats_per_row INT,
+    image VARCHAR(255),
+    status VARCHAR(20) DEFAULT 'active', -- 'active', 'cancelled'
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -68,10 +69,14 @@ CREATE TABLE public.tickets (
 
 CREATE TABLE public.transactions (
     transaction_id SERIAL PRIMARY KEY,
-    ticket_id INT REFERENCES tickets(ticket_id) ON DELETE CASCADE,
     buyer_id INT REFERENCES users(user_id) ON DELETE CASCADE,
-    event_id INT REFERENCES events(event_id) ON DELETE CASCADE,
-    payment_status VARCHAR(20) DEFAULT 'completed', -- 'completed', 'pending', 'failed'
+    payment_status VARCHAR(20) DEFAULT 'completed', -- 'completed', 'pending', 'failed', 'refunded'
     amount DECIMAL(10, 2) NOT NULL,
     transaction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE public.transaction_tickets (
+    transaction_id INT REFERENCES transactions(transaction_id) ON DELETE CASCADE,
+    ticket_id INT REFERENCES tickets(ticket_id) ON DELETE CASCADE,
+    PRIMARY KEY (transaction_id, ticket_id)
 );

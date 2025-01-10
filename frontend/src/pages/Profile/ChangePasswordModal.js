@@ -11,7 +11,7 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
   const { changePassword, isLoading, error, message } = useChangePassword();
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Ensure preventDefault is called on the event object
+    e.preventDefault();
     await changePassword(currentPassword, newPassword);
     setCurrentPassword('');
     setNewPassword('');
@@ -19,10 +19,10 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h2>Zmień hasło</h2>
       {error && <ErrorMessage message={error} />}
       {message && <p className="success-message">{message}</p>}
       <form onSubmit={handleSubmit} className="form">
+        <div className="form-title">Zmień hasło</div>
         <div className="form-group">
           <InputText
             label="Aktualne hasło:"

@@ -3,23 +3,116 @@ const { generateTickets } = require('../../services/ticketService');
 
 exports.getEvents = async (req, res) => {
   try {
-    const result = await db.query(`
-            SELECT
-                e.event_id, e.title, e.description, e.location, e.start_time, e.end_time,
-                c.name AS category,
-                COUNT(t.ticket_id) FILTER (WHERE t.status = 'available') AS available_tickets
-            FROM events e
-            LEFT JOIN tickets t ON e.event_id = t.event_id
-            LEFT JOIN event_categories c ON e.category_id = c.category_id
-            GROUP BY e.event_id, c.name
-        `);
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const offset = (page - 1) * limit;
+    const search = req.query.search || '';
+    const category = req.query.category || '';
 
-    res.status(200).json({ success: true, events: result.rows });
+    const eventsQuery = `
+      SELECT
+          e.event_id, e.title, e.description, e.location, e.start_time, e.end_time, e.capacity,
+          e.status,
+          c.name AS category,
+          COUNT(t.ticket_id) FILTER (WHERE t.status = 'available') AS available_tickets
+      FROM events e
+      LEFT JOIN tickets t ON e.event_id = t.event_id
+      LEFT JOIN event_categories c ON e.category_id = c.category_id
+      WHERE
+          (e.title ILIKE $1 OR e.location ILIKE $1)
+          AND ($2 = '' OR c.name = $2)
+      GROUP BY e.event_id, e.capacity, c.name
+      ORDER BY e.start_time DESC
+      LIMIT $3 OFFSET $4
+    `;
+
+    const countQuery = `
+      SELECT COUNT(*) AS total
+      FROM events e
+      LEFT JOIN event_categories c ON e.category_id = c.category_id
+      WHERE
+          (e.title ILIKE $1 OR e.location ILIKE $1)
+          AND ($2 = '' OR c.name = $2)
+          AND e.status = 'active'
+    `;
+
+    const searchPattern = `%${search}%`;
+
+    const [eventsResult, countResult] = await Promise.all([
+      db.query(eventsQuery, [searchPattern, category, limit, offset]),
+      db.query(countQuery, [searchPattern, category]),
+    ]);
+
+    const total = parseInt(countResult.rows[0].total, 10);
+    const totalPages = Math.ceil(total / limit);
+
+    res.status(200).json({
+      success: true,
+      events: eventsResult.rows,
+      meta: {
+        total,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
+    });
   } catch (error) {
     console.error('Error fetching events:', error.message);
-    res
-      .status(500)
-      .json({ success: false, message: 'Server error while fetching events' });
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching events',
+    });
+  }
+};
+
+exports.getEvent = async (req, res) => {
+  try {
+    const { event_id } = req.params;
+
+    const query = `
+      SELECT
+        e.event_id,
+        e.title,
+        e.description,
+        e.location,
+        ec.name AS category_name,
+        e.start_time,
+        e.end_time,
+        e.capacity,
+        e.has_numbered_seats,
+        e.rows,
+        e.seats_per_row,
+        e.image,
+        e.created_at,
+        e.updated_at,
+        e.status
+      FROM
+        events e
+      LEFT JOIN
+        event_categories ec ON e.category_id = ec.category_id
+      WHERE
+        e.event_id = $1;
+    `;
+
+    const result = await db.query(query, [event_id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Event with ID ${event_id} not found.`,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error getting event: ', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while getting the event.',
+    });
   }
 };
 
@@ -112,7 +205,7 @@ exports.createEvent = async (req, res) => {
 
     const categoryResult = await db.query(
       'SELECT * FROM event_categories WHERE category_id = $1',
-      [category_id]
+      [parseFloat(category_id)]
     );
     if (categoryResult.rows.length === 0) {
       return res
@@ -126,18 +219,21 @@ exports.createEvent = async (req, res) => {
 
     const eventResult = await db.query(
       `INSERT INTO events
-           (title, organizer_id, description, location, category_id, start_time, end_time, capacity, created_at, updated_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+           (title, organizer_id, description, location,  category_id, start_time, end_time, capacity, has_numbered_seats, rows, seats_per_row, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
            RETURNING *`,
       [
         title,
         organizer_id,
         description,
         location,
-        category_id,
+        parseFloat(category_id),
         start_time,
         end_time,
         calculatedCapacity,
+        has_numbered_seats,
+        has_numbered_seats ? rows : null,
+        has_numbered_seats ? seats_per_row : null,
       ]
     );
 
@@ -167,5 +263,367 @@ exports.createEvent = async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: 'Server error while creating event.' });
+  }
+};
+
+exports.getOrganizerEvents = async (req, res) => {
+  try {
+    const organizer_id = req.user.user_id;
+    const events = await db.query(
+      `SELECT * FROM events WHERE organizer_id = $1 ORDER BY created_at DESC`,
+      [organizer_id]
+    );
+    res.status(200).json({ success: true, events: events.rows });
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res
+      .status(500)
+      .json({ success: false, message: 'Server error while fetching events.' });
+  }
+};
+
+// Edycja wydarzenia
+exports.editEvent = async (req, res) => {
+  try {
+    const { title, description, location, start_time, end_time, category_id } =
+      req.body;
+    const { eventId } = req.params;
+
+    const result = await db.query(
+      `UPDATE events
+           SET title = $1, description = $2, location = $3, start_time = $4, end_time = $5, category_id = $6
+           WHERE event_id = $7 RETURNING *`,
+      [title, description, location, start_time, end_time, category_id, eventId]
+    );
+
+    res.json({ success: true, event: result.rows[0] });
+  } catch (error) {
+    console.error('Error editing event:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to edit event.' });
+  }
+};
+
+// Generowanie raportu sprzedaży
+exports.getEventReport = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    const query = `
+      SELECT
+        e.event_id,
+        e.title,
+        e.start_time,
+        e.location,
+        e.status,
+        COUNT(t.ticket_id) FILTER (WHERE t.status = 'sold') AS tickets_sold,
+        COALESCE(SUM(t.price) FILTER (WHERE t.status = 'sold'), 0) AS total_revenue,
+        COALESCE(JSON_AGG(
+          JSON_BUILD_OBJECT('seat_label', t.seat_label, 'price', t.price)
+        ) FILTER (WHERE t.status = 'sold'), '[]'::json) AS sold_tickets_details
+      FROM events e
+      LEFT JOIN tickets t ON e.event_id = t.event_id
+      WHERE e.event_id = $1
+      GROUP BY e.event_id;
+    `;
+
+    const { rows } = await db.query(query, [eventId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found or no sold tickets.',
+      });
+    }
+
+    const eventData = rows[0];
+
+    res.json({
+      success: true,
+      report: {
+        status: eventData.status,
+        event_id: eventData.event_id,
+        title: eventData.title,
+        start_time: eventData.start_time,
+        location: eventData.location,
+        tickets_sold: eventData.tickets_sold,
+        total_revenue: eventData.total_revenue,
+        sold_tickets_details: eventData.sold_tickets_details,
+      },
+    });
+  } catch (error) {
+    console.error('Error generating report:', error.message);
+    res
+      .status(500)
+      .json({ success: false, message: 'Failed to generate report.' });
+  }
+};
+
+// Aktualizacja eventu (np. dodanie opisu)
+exports.updateEvent = async (req, res) => {
+  try {
+    const { description } = req.body;
+    const { eventId } = req.params;
+
+    const result = await db.query(
+      `UPDATE events SET description = $1, updated_at = CURRENT_TIMESTAMP
+           WHERE event_id = $2 RETURNING *`,
+      [description, eventId]
+    );
+
+    res.json({ success: true, event: result.rows[0] });
+  } catch (error) {
+    console.error('Error updating event:', error.message);
+    res
+      .status(500)
+      .json({ success: false, message: 'Failed to update event.' });
+  }
+};
+
+exports.buyTicket = async (req, res) => {
+  const { eventId } = req.params;
+  const { selected_seats, quantity } = req.body;
+  const userId = req.user?.user_id;
+
+  if (!userId) {
+    return res
+      .status(401)
+      .json({ success: false, message: 'Unauthorized. Please log in.' });
+  }
+
+  try {
+    // Pobierz szczegóły wydarzenia, aby sprawdzić czy ma numerowane miejsca
+    const eventResult = await db.query(
+      `SELECT event_id, capacity FROM events WHERE event_id = $1
+      AND status = 'active' AND start_time > NOW()`,
+      [eventId]
+    );
+
+    if (eventResult.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Event not found.' });
+    }
+
+    let purchasedTickets = [];
+
+    if (Array.isArray(selected_seats) && selected_seats.length > 0) {
+      // Wydarzenie z numerowanymi miejscami (selected_seats przekazane)
+      const updateQuery = `
+        UPDATE tickets
+        SET status = 'sold', user_id = $1, purchase_time = NOW()
+        WHERE event_id = $2
+        AND seat_label = ANY($3)
+        AND status = 'available'
+        RETURNING *;
+      `;
+      const updateResult = await db.query(updateQuery, [
+        userId,
+        eventId,
+        selected_seats,
+      ]);
+
+      if (updateResult.rows.length < selected_seats.length) {
+        return res.status(400).json({
+          success: false,
+          message: 'Some of the selected seats are no longer available.',
+          purchased: updateResult.rows,
+        });
+      }
+
+      purchasedTickets = updateResult.rows;
+    } else if (quantity && quantity > 0) {
+      // Wydarzenie bez numerowanych miejsc (kupujemy "quantity" biletów)
+      const updateQuery = `
+        UPDATE tickets
+        SET status = 'sold', user_id = $1, purchase_time = NOW()
+        WHERE event_id = $2
+        AND status = 'available'
+        LIMIT $3
+        RETURNING *;
+      `;
+      const updateResult = await db.query(updateQuery, [
+        userId,
+        eventId,
+        quantity,
+      ]);
+
+      if (updateResult.rows.length < quantity) {
+        return res.status(400).json({
+          success: false,
+          message: 'Not enough tickets available.',
+          purchased: updateResult.rows,
+        });
+      }
+
+      purchasedTickets = updateResult.rows;
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: 'No seats or quantity specified.' });
+    }
+
+    // Tutaj dodajemy rekordy do tabeli transactions
+    // Dla każdego zakupionego biletu tworzymy wpis w transactions
+    const transactionValues = purchasedTickets
+      .map((ticket) => {
+        return `(${ticket.ticket_id}, ${userId}, ${eventId}, 'completed', ${ticket.price})`;
+      })
+      .join(', ');
+
+    const transactionQuery = `
+      INSERT INTO transactions (ticket_id, buyer_id, event_id, payment_status, amount)
+      VALUES ${transactionValues}
+      RETURNING *;
+    `;
+
+    const transactionResult = await db.query(transactionQuery);
+
+    return res.json({
+      success: true,
+      message: 'Tickets purchased successfully.',
+      tickets: purchasedTickets,
+      transactions: transactionResult.rows,
+    });
+  } catch (error) {
+    console.error('Error buying tickets:', error.message);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Failed to purchase tickets.' });
+  }
+};
+
+exports.createEventWithTickets = async (req, res) => {
+  try {
+    const {
+      organizer_id,
+      title,
+      description,
+      location,
+      start_time,
+      end_time,
+      capacity,
+      category_id,
+      has_numbered_seats,
+      rows,
+      seats_per_row,
+      priceInfo,
+    } = req.body;
+
+    // Najpierw utwórz wydarzenie w bazie
+    const eventResult = await createEvent({
+      organizer_id,
+      title,
+      description,
+      location,
+      start_time,
+      end_time,
+      capacity,
+      category_id,
+      has_numbered_seats,
+      rows,
+      seats_per_row,
+    });
+
+    const eventId = eventResult.event_id;
+
+    // Następnie wygeneruj bilety
+    await ticketService.generateTickets(
+      eventId,
+      has_numbered_seats ? rows : capacity,
+      has_numbered_seats ? seats_per_row : null,
+      has_numbered_seats,
+      priceInfo
+    );
+
+    res.json({ success: true, event: eventResult });
+  } catch (error) {
+    console.error('Error creating event with tickets:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create event and generate tickets.',
+    });
+  }
+};
+
+exports.deleteEvent = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    if (!eventId || isNaN(eventId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Nieprawidłowy identyfikator wydarzenia.',
+      });
+    }
+
+    const parsedEventId = parseInt(eventId, 10);
+
+    const eventCheck = await db.query(
+      `SELECT * FROM events WHERE event_id = $1`,
+      [parsedEventId]
+    );
+
+    if (eventCheck.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Nie znaleziono wydarzenia do usunięcia.',
+      });
+    }
+
+    await db.query(
+      `UPDATE events
+       SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
+       WHERE event_id = $1`,
+      [parsedEventId]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Wydarzenie zostało pomyślnie anulowane.',
+    });
+  } catch (error) {
+    console.error('Błąd anulowania wydarzenia:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Nie udało się anulować wydarzenia.',
+    });
+  }
+};
+
+exports.getEventStatus = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    if (!eventId || isNaN(eventId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Nieprawidłowy identyfikator wydarzenia.',
+      });
+    }
+
+    const parsedEventId = parseInt(eventId, 10);
+
+    const event = await db.query(
+      `SELECT status FROM events WHERE event_id = $1`,
+      [parsedEventId]
+    );
+
+    if (event.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Nie znaleziono wydarzenia.',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      status: event.rows[0].status, // 'active' lub 'cancelled'
+    });
+  } catch (error) {
+    console.error('Błąd pobierania statusu wydarzenia:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Nie udało się pobrać statusu wydarzenia.',
+    });
   }
 };

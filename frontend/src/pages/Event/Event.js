@@ -1,75 +1,157 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import useEvent from 'hooks/eventHooks/useEvent';
 import useAvailableSeats from 'hooks/eventHooks/useAvailableSeats';
-import useEvents from 'hooks/eventHooks/useEvents';
 import useCart from 'hooks/cartHooks/useCart';
+
+import basicCover from 'assets/basic_cover.webp';
+import './Event.css';
+
 import ErrorMessage from 'components/props/ErrorMessage/ErrorMessage';
+import Button from 'components/props/Button/Button';
+import ContentWrapper from 'components/ContentWrapper/ContentWrapper';
 
-const EventTestView = () => {
-  const [selectedEvent, setSelectedEvent] = useState(null);
+import SeatMapUser from 'components/SeatMap/SeatMapUser';
 
-  const { events, loading: eventsLoading, error: eventsError } = useEvents();
-  const {
-    seats,
-    error: seatsError,
-    loading: seatsLoading,
-  } = useAvailableSeats(selectedEvent?.event_id);
-  const { addSeatToCart, error: cartError } = useCart();
-
-  const handleAddToCart = (seat) => {
-    addSeatToCart(seat);
+const formatDate = (isoString) => {
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   };
-
-  return (
-    <div>
-      {(eventsError || seatsError || cartError) && (
-        <ErrorMessage message={eventsError || seatsError || cartError} />
-      )}
-      {eventsLoading ? (
-        <p>Loading events...</p>
-      ) : !selectedEvent ? (
-        <div>
-          {events.length === 0 ? (
-            <p>No events available.</p>
-          ) : (
-            <ul>
-              {events.map((event) => (
-                <li key={event.event_id}>
-                  <h3>{event.title}</h3>
-                  <p>{event.description}</p>
-                  <button onClick={() => setSelectedEvent(event)}>
-                    Select Event
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ) : (
-        <div>
-          <h2>Select a Seat for {selectedEvent.title}</h2>
-          {seatsLoading ? (
-            <p>Loading seats...</p>
-          ) : seats.length === 0 ? (
-            <p>No seats available.</p>
-          ) : (
-            <ul>
-              {seats.map((seat) => (
-                <li key={seat.ticket_id}>
-                  <span>
-                    {seat.seat_label} - {seat.price} zł
-                  </span>
-                  <button onClick={() => handleAddToCart(seat)}>
-                    Add to Cart
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          <button onClick={() => setSelectedEvent(null)}>Cancel</button>
-        </div>
-      )}
-    </div>
-  );
+  return new Date(isoString).toLocaleDateString('pl-PL', options);
 };
 
-export default EventTestView;
+function EventPage() {
+  const { event_id } = useParams();
+  const { cart, addSeatToCart, error: cartError } = useCart();
+
+  const {
+    event,
+    loading: eventLoading,
+    error: eventError,
+  } = useEvent(event_id);
+
+  const {
+    seats,
+    loading: seatsLoading,
+    error: seatsError,
+  } = useAvailableSeats(event_id);
+
+  useEffect(() => {
+    document.title = event?.title ? `${event.title}` : 'Ładowanie wydarzenia...';
+  }, [event]);
+
+
+  const handleSeatSelect = (seatData) => {
+    if (!seatData || !seatData.ticket_id) {
+      alert('Nieprawidłowe dane biletu.');
+      return;
+    }
+
+    if (cart.some((item) => item.ticket_id === seatData.ticket_id)) {
+      alert('To miejsce jest już w koszyku.');
+      return;
+    }
+
+    console.log('Dodano miejsce:', seatData);
+    addSeatToCart(seatData);
+  };
+
+  const handleBuyNonNumbered = () => {
+    if (!seats || seats.length === 0) {
+      alert('Brak dostępnych miejsc dla tego wydarzenia.');
+      return;
+    }
+
+    const seatsNotInCart = seats.filter(
+      (seat) => !cart.some((item) => item.ticket_id === seat.ticket_id)
+    );
+
+    if (seatsNotInCart.length === 0) {
+      alert('Wszystkie bilety są już w koszyku.');
+      return;
+    }
+
+    const nextSeat = seatsNotInCart[0];
+
+    console.log('Dodano nienumerowany bilet:', nextSeat);
+    addSeatToCart(nextSeat);
+  };
+
+  if (eventLoading || seatsLoading) {
+    return <div className="loading">Ładowanie...</div>;
+  }
+
+  if (eventError || seatsError) {
+    return <div className="error">{eventError || seatsError}</div>;
+  }
+
+  const { rows, seats_per_row, has_numbered_seats, title } = event;
+
+  const cheapestPrice =
+    seats.length > 0
+      ? Math.min(...seats.map((seat) => parseFloat(seat.price)))
+      : null;
+
+  return (
+    <ContentWrapper>
+      <div className="event-page">
+        <div className="event-main-content">
+          <div className="event-left-column">
+            <div className="event-image">
+              <img
+                src={event.image || basicCover}
+                alt={`Event: ${title}`}
+                className="event-img"
+              />
+            </div>
+            <h1 className="event-title">{event.title}</h1>
+            <div className="event-loc-date">
+              {event.location},<br />
+              {'od '}
+              {formatDate(event.start_time)}
+              {' do '}
+              {formatDate(event.end_time)}
+            </div>
+            <div className="category-badge">
+              {event.category_name || 'General'}
+            </div>
+          </div>
+
+          <div className="event-right-column">
+            <h2>Opis wydarzenia</h2>
+            <p>{event.description}</p>
+
+            {has_numbered_seats && rows && seats_per_row ? (
+              <>
+                <h2>Wybierz miejsce</h2>
+                <p>
+                  Ceny biletów zaczynają się już od <b>{cheapestPrice} zł</b>.
+                  Kliknij miejsce na mapce, aby dodać do koszyka.
+                </p>
+                <SeatMapUser
+                  event={event}
+                  seats={seats}
+                  onSeatSelect={handleSeatSelect}
+                />
+              </>
+            ) : (
+              cheapestPrice !== null && (
+                <Button onClick={handleBuyNonNumbered}>
+                  Dodaj do koszyka bilet za {cheapestPrice.toFixed(2)} zł
+                </Button>
+              )
+            )}
+
+            {cartError && <ErrorMessage>{cartError}</ErrorMessage>}
+          </div>
+        </div>
+      </div>
+    </ContentWrapper>
+  );
+}
+
+export default EventPage;

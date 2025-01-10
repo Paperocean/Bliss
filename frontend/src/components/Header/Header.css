@@ -1,6 +1,9 @@
 @import 'styles/variables.css';
 
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -52,7 +55,7 @@
 .cart-count {
   position: absolute;
   top: -7px;
-  right: -10px;
+  right: -18px;
   background: var(--color-primary);
   color: var(--color-text);
   border-radius: 50%;

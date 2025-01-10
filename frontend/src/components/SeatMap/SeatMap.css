@@ -1,6 +1,7 @@
 .seat-grid-wrapper {
   display: flex;
   flex-direction: row;
+  justify-content: center;
   width: 100%;
   height: 100%;
   align-items: stretch;
@@ -9,15 +10,15 @@
 }
 
 .react-transform-wrapper {
-  width: 100%;
-  height: 80%;
+  max-width: 450px;
+  max-height: 450px;
   display: flex;
   border-radius: 12px;
   justify-content: center;
   align-items: center;
   overflow: hidden;
   position: relative;
-  border: 1px solid var(--color-primary-light); 
+  border: 1px solid var(--color-primary-light);
   background-color: var(--color-off-black);
 }
 
@@ -55,7 +56,6 @@
   overflow: auto;
   box-sizing: border-box;
 }
-
 
 .bulk-selection-controls {
   display: flex;
@@ -138,7 +138,7 @@
   border: 1px solid var(--color-primary-light);
   border-radius: var(--border-radius);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 
 .seat:hover {
@@ -147,8 +147,14 @@
 }
 
 .seat-selected {
-  background-color: var(--color-hover);
-  color: var(--color-text);
+  box-shadow: 0 0 0 2px var(--color-text) inset;
+}
+
+.seat-unavailable {
+  background-color: #666 !important;
+  color: #999 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
 }
 
 .seat_id {

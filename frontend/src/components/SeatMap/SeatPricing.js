@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 import 'styles/Form.css';
-import './SeatPricing.css';
+import './SeatMap.css';
 
 import InputText from '../props/InputField/InputField';
 import Button from '../props/Button/Button';

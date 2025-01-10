@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAvailableSeats, getEventByTicket } = require('./ticketController');
+const { getAvailableSeats, getEventByTicket, refundTicket } = require('./ticketController');
 
 const router = express.Router();
 
@@ -118,5 +118,7 @@ router.get('/available/:eventId', getAvailableSeats);
  *         description: Internal server error
  */
 router.get('/:ticketId/event', getEventByTicket);
+
+router.post('/:ticketId/refund', refundTicket);
 
 module.exports = router;
