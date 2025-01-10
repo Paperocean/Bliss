@@ -59,4 +59,4 @@ README.md            - Dokumentacja projektu
 
 ## Licencja
 
-Projekt jest objęty licencją MIT. Szczegóły w pliku [LICENSE](LICENSE).
+Projekt jest objęty licencją MIT.
