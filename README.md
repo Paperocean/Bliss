@@ -25,7 +25,7 @@ Aby uruchomić projekt lokalnie:
 
 1. Sklonuj repozytorium:
    ```bash
-   git clone https://github.com/twoj-uzytkownik/Bliss.git
+   git clone https://github.com/Paperocean/Bliss.git
    ```
 2. Przejdź do katalogu projektu:
    ```bash
