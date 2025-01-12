@@ -53,7 +53,6 @@ Aby uruchomić projekt lokalnie:
 ```
 /frontend            - Frontend React
 /backend             - Backend Node.js
-/database            - Modele i diagramy UML dla bazy danych
 README.md            - Dokumentacja projektu
 ```
 
